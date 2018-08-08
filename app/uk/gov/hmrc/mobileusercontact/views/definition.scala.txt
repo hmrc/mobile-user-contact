@@ -1,0 +1,26 @@
+@import uk.gov.hmrc.mobileusercontact.api.ApiAccess
+@import play.api.libs.json.Json
+
+@(apiAccess: ApiAccess)
+{
+  "scopes": [
+    {
+      "key": "read:native-apps-api-orchestration",
+      "name": "Native Apps API Orchestration",
+      "description": "Access APIs that are provided specifically for use by the HMRC mobile apps"
+    }
+  ],
+  "api": {
+    "name": "Mobile User Contact",
+    "description": "Feedback and Support API specifically for HMRC mobile apps",
+    "context": "mobile-user-contact",
+    "versions": [
+      {
+        "version": "1.0",
+        "status": "STABLE",
+        "endpointsEnabled": true,
+        "access": @Json.toJson(apiAccess)
+      }
+    ]
+  }
+}

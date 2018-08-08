@@ -7,9 +7,10 @@ val appName = "mobile-user-contact"
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin)
   .settings(
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test(),
+    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test ++ AppDependencies.integrationTest,
     evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-    PlayKeys.playDefaultPort         := 8250
+    PlayKeys.playDefaultPort         := 8250,
+    unmanagedResourceDirectories in Compile += baseDirectory.value / "resources"
   )
   .settings(publishingSettings: _*)
   .settings(scoverageSettings: _*)
