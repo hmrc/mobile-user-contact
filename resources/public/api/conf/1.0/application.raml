@@ -17,19 +17,19 @@ uses:
   types: https://developer.service.hmrc.gov.uk/api-documentation/assets/common/modules/types.raml
 
 /mobile-user-contact:
-  /feedback:
+  /feedback-submissions:
     post:
       (annotations.scope): "read:native-apps-api-orchestration"
       securedBy: [ sec.oauth_2_0: { scopes: [ "read:native-apps-api-orchestration" ] } ]
-      displayName: Send feedback
+      displayName: Submit feedback
       description:
-        Sends user feedback about the HMRC mobile app.
-        Returns a 2xx response when the feedback was successfully be added to the queue.
+        Submits user feedback about the HMRC mobile app.
+        Returns a 2xx response when the feedback submission was successfully added to the queue.
         May be enhanced in future to include a ticket URL or ID in the response.
       body:
         application/json:
-          type: !include schemas/feedback.json
-          example: !include examples/feedback.json
+          type: !include schemas/feedback-submission.json
+          example: !include examples/feedback-submission.json
       responses:
         # we'll return 204 initially but want to be able to change this to 201 or 200 without breaking compatibility
         200:
