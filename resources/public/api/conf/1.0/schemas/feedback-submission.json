@@ -32,7 +32,6 @@
     "email",
     "message",
     "signUpForResearch",
-    "journeyId",
     "userAgent"
   ]
 }

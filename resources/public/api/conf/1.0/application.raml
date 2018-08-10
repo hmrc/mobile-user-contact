@@ -35,3 +35,21 @@ uses:
         200:
         201:
         204:
+  /support-requests:
+    post:
+      (annotations.scope): "read:native-apps-api-orchestration"
+      securedBy: [ sec.oauth_2_0: { scopes: [ "read:native-apps-api-orchestration" ] } ]
+      displayName: Request support
+      description:
+        Sends a request for support.
+        Returns a 2xx response when the feedback was successfully be added to the queue.
+        May be enhanced in future to include a ticket URL or ID in the response.
+      body:
+        application/json:
+          type: !include schemas/support-request.json
+          example: !include examples/support-request.json
+      responses:
+        # we'll return 204 initially but want to be able to change this to 201 or 200 without breaking compatibility
+        200:
+        201:
+        204:
