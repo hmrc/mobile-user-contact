@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "description": "User feedback about the HMRC mobile app",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Email address entered by the user submitting the feedback"
+    },
+    "message": {
+      "type": "string",
+      "description": "The feedback message"
+    },
+    "signUpForResearch": {
+      "type": "boolean",
+      "description": "Did user tick \"Sign up to be involved in our research and help test new app features\"?"
+    },
+    "town": {
+      "type": "string",
+      "description": "Town entered by user"
+    },
+    "journeyId": {
+      "type": "string",
+      "description": "Mobile app journey ID"
+    },
+    "userAgent": {
+      "type": "string",
+      "description": "Mobile app HTTP user agent"
+    }
+  },
+  "required": [
+    "email",
+    "message",
+    "signUpForResearch",
+    "journeyId",
+    "userAgent"
+  ]
+}
