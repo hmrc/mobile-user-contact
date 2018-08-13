@@ -23,6 +23,7 @@ lazy val microservice = Project(appName, file("."))
     parallelExecution in IntegrationTest          := false,
     addTestReportOption(IntegrationTest, "int-test-reports")
   )
+  .settings(addCommandAlias("testAll", ";reload;test;it:test"))
   .settings(
     resolvers += Resolver.jcenterRepo
   )
