@@ -16,32 +16,51 @@
 
 package uk.gov.hmrc.mobileusercontact.config
 
+import java.net.URL
+
 import com.google.inject.ImplementedBy
 import javax.inject.{Inject, Singleton}
-import play.api.Configuration
+import play.api.Mode.Mode
+import play.api.{Configuration, Environment}
+import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.collection.JavaConverters._
 
 @Singleton
 class MobileUserContactConfig @Inject()(
+  environment: Environment,
   configuration: Configuration
-) extends DocumentationControllerConfig
+) extends ServicesConfig
+ with DocumentationControllerConfig
+  with HmrcDeskproConnectorConfig
   with ServiceLocatorRegistrationTaskConfig {
+
+  override protected lazy val mode: Mode = environment.mode
+  override protected def runModeConfiguration: Configuration = configuration
 
   // These are eager vals so that missing or invalid configuration will be detected on startup
   private val accessConfig = configuration.underlying.getConfig("api.access")
   override val apiAccessType: String = accessConfig.getString("type")
   override val apiWhiteListApplicationIds: Seq[String] = accessConfig.getStringList("white-list.applicationIds").asScala
 
+  override val hmrcDeskproBaseUrl: URL = configBaseUrl("hmrc-deskpro")
+
   override val serviceLocatorEnabled: Boolean = configBoolean("microservice.services.service-locator.enabled")
 
   private def configBoolean(path: String): Boolean = configuration.underlying.getBoolean(path)
+
+  private def configBaseUrl(serviceName: String): URL = new URL(baseUrl(serviceName))
 }
 
 @ImplementedBy(classOf[MobileUserContactConfig])
 trait DocumentationControllerConfig {
   def apiAccessType: String
   def apiWhiteListApplicationIds: Seq[String]
+}
+
+@ImplementedBy(classOf[MobileUserContactConfig])
+trait HmrcDeskproConnectorConfig {
+  def hmrcDeskproBaseUrl: URL
 }
 
 @ImplementedBy(classOf[MobileUserContactConfig])
