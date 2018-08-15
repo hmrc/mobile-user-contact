@@ -1,0 +1,67 @@
+/*
+ * Copyright 2018 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package uk.gov.hmrc.mobileusercontact.stubs
+
+import com.github.tomakehurst.wiremock.client.WireMock._
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.api.libs.json.{JsObject, JsString, Json}
+
+object AuthStub {
+
+  private val authoriseRequestBody: String = {
+    """
+      |{
+      | "authorise": [{"confidenceLevel" : 200}],
+      | "retrieve": ["itmpName"]
+      |}""".stripMargin
+  }
+
+  def userIsLoggedIn(
+    givenName: Option[String],
+    middleName: Option[String],
+    familyName: Option[String]): Unit =
+    stubFor(post(urlPathEqualTo("/auth/authorise"))
+      .withRequestBody(equalToJson(authoriseRequestBody))
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withBody(
+          Json.obj(
+            "itmpName" -> JsObject(
+              Seq(
+                givenName.map("givenName" -> JsString(_)),
+                middleName.map("middleName" -> JsString(_)),
+                familyName.map("familyName" -> JsString(_))
+              ).flatten
+            )).toString
+        )))
+
+  def userIsLoggedInWithInsufficientConfidenceLevel(): Unit =
+    stubFor(post(urlPathEqualTo("/auth/authorise"))
+      .withRequestBody(equalToJson(authoriseRequestBody))
+      .willReturn(aResponse()
+        .withStatus(401)
+        .withHeader("WWW-Authenticate", """MDTP detail="InsufficientConfidenceLevel"""")
+      ))
+
+  def userIsNotLoggedIn(): Unit =
+    stubFor(post(urlPathEqualTo("/auth/authorise"))
+      .withRequestBody(equalToJson(authoriseRequestBody))
+      .willReturn(aResponse()
+        .withStatus(401)
+          .withHeader("WWW-Authenticate", """MDTP detail="MissingBearerToken"""")
+      ))
+}

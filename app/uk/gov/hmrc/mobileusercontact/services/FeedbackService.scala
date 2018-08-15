@@ -17,6 +17,7 @@
 package uk.gov.hmrc.mobileusercontact.services
 
 import javax.inject.{Inject, Singleton}
+import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.connectors.{HmrcDeskproConnector, HmrcDeskproFeedback}
 import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
@@ -24,14 +25,14 @@ import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FeedbackService  @Inject() (
+class FeedbackService @Inject() (
   hmrcDeskproConnector: HmrcDeskproConnector
 ){
-  def submitFeedback(appFeedback: FeedbackSubmission)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
-    hmrcDeskproConnector.createFeedback(toDeskpro(appFeedback))
+  def submitFeedback(appFeedback: FeedbackSubmission, itmpName: ItmpName)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+    hmrcDeskproConnector.createFeedback(toDeskpro(appFeedback, itmpName))
   }
 
-  private[services] def toDeskpro(appFeedback: FeedbackSubmission): HmrcDeskproFeedback = {
+  private[services] def toDeskpro(appFeedback: FeedbackSubmission, itmpName: ItmpName): HmrcDeskproFeedback = {
     val townMessage = if (appFeedback.signUpForResearch) {
       appFeedback.town.fold("") { t =>
         s"""
@@ -49,7 +50,10 @@ class FeedbackService  @Inject() (
 
     val messageWithExtras = s"${appFeedback.message}$contactMessage$townMessage"
 
+    val fullName = Seq(itmpName.givenName, itmpName.middleName, itmpName.familyName).flatten.mkString(" ")
+
     HmrcDeskproFeedback(
+      name = fullName,
       subject = "App Feedback",
       email = appFeedback.email,
       message = messageWithExtras,

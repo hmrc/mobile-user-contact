@@ -47,8 +47,7 @@ class HmrcDeskproConnectorImpl @Inject() (
 }
 
 case class HmrcDeskproFeedback(
-  //TODO
-//  name: String,
+  name: String,
   email: String,
   subject: String,
   message: String,

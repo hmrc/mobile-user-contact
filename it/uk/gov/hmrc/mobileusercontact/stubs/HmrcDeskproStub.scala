@@ -29,10 +29,18 @@ object HmrcDeskproStub {
         .withStatus(200)
         .withBody("{}")))
 
+  def createFeedbackWillRespondWithInternalServerError(): Unit =
+    stubFor(post(urlPathEqualTo(createFeedbackPath))
+      .willReturn(aResponse()
+        .withStatus(500)))
+
   def createFeedbackShouldHaveBeenCalled(body: JsValue): Unit =
     verify(1, postRequestedFor(urlPathEqualTo(createFeedbackPath))
       .withHeader("Content-Type", equalTo("application/json"))
       .withRequestBody(equalToJson(body.toString))
     )
+
+  def createFeedbackShouldNotHaveBeenCalled(): Unit =
+    verify(0, postRequestedFor(urlPathEqualTo(createFeedbackPath)))
 
 }

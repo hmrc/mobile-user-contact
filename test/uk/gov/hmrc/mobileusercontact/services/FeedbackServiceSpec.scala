@@ -19,37 +19,12 @@ package uk.gov.hmrc.mobileusercontact.services
 import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.connectors.{HmrcDeskproConnector, HmrcDeskproFeedback}
-import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
+import uk.gov.hmrc.mobileusercontact.support.FeedbackTestData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FeedbackServiceSpec extends WordSpec with Matchers {
-
-  private val appFeedback = FeedbackSubmission(
-    email = "email@example.com",
-    message = "It's OK",
-    userAgent = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
-    signUpForResearch = true,
-    town = Some("Test town"),
-    journeyId = Some("<JourneyID>")
-  )
-
-  private val expectedDeskproFeedback = HmrcDeskproFeedback(
-    email = "email@example.com",
-    message =
-      """It's OK
-        |
-        |Contact preference: yes
-        |
-        |Town: Test town""".stripMargin,
-    userAgent = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
-    referrer = "<JourneyID>",
-    subject = "App Feedback",
-    javascriptEnabled = "",
-    authId = "",
-    areaOfTax = "",
-    sessionId = "",
-    rating = "")
+class FeedbackServiceSpec extends WordSpec with Matchers
+  with FeedbackTestData {
 
   private val service = new FeedbackService(new HmrcDeskproConnector {
     //noinspection NotImplementedCode
@@ -58,11 +33,11 @@ class FeedbackServiceSpec extends WordSpec with Matchers {
 
   "toDeskpro" should {
     "map FeedbackSubmission fields to HmrcDeskproFeedback" in {
-      service.toDeskpro(appFeedback) shouldBe expectedDeskproFeedback
+      service.toDeskpro(appFeedback, itmpName) shouldBe expectedDeskproFeedback
     }
 
     "omit town when signUpForResearch = false" in {
-      service.toDeskpro(appFeedback.copy(signUpForResearch = false)) shouldBe expectedDeskproFeedback.copy(
+      service.toDeskpro(appFeedback.copy(signUpForResearch = false), itmpName) shouldBe expectedDeskproFeedback.copy(
         message =
           """It's OK
             |
@@ -71,12 +46,18 @@ class FeedbackServiceSpec extends WordSpec with Matchers {
     }
 
     "handle optional fields being None" in {
-      service.toDeskpro(appFeedback.copy(town = None, journeyId = None)) shouldBe expectedDeskproFeedback.copy(
+      service.toDeskpro(appFeedback.copy(town = None, journeyId = None), itmpName) shouldBe expectedDeskproFeedback.copy(
         message =
           """It's OK
             |
             |Contact preference: yes""".stripMargin,
         referrer = ""
+      )
+    }
+
+    "format name correctly when middleName is None" in {
+      service.toDeskpro(appFeedback, itmpName.copy(middleName = None)) shouldBe expectedDeskproFeedback.copy(
+        name = "Given Family"
       )
     }
   }
