@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.controllers
+package uk.gov.hmrc.mobileusercontact.domain
 
-import javax.inject.Singleton
+import play.api.libs.json.{Json, Reads}
 
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import play.api.mvc._
+case class FeedbackSubmission(
+  email: String,
+  message: String,
+  userAgent: String,
+  signUpForResearch: Boolean,
+  town: Option[String],
+  journeyId: Option[String]
+)
 
-import scala.concurrent.Future
-
-@Singleton()
-class MicroserviceHelloWorld extends BaseController {
-
-	def hello() = Action.async { implicit request =>
-		Future.successful(Ok("Hello world"))
-	}
-
+object FeedbackSubmission {
+  implicit val reads: Reads[FeedbackSubmission] = Json.reads[FeedbackSubmission]
 }
