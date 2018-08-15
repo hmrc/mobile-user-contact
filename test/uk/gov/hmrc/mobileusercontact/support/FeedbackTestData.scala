@@ -37,7 +37,14 @@ trait FeedbackTestData {
     familyName = Some("Family")
   )
 
-  /** The HmrcDeskproFeedback that should be sent when [appFeedback] is received and the the ItmpName retrieved from auth is [itmpName] */
+  protected val enrolledInHelpToSave = false
+
+  /**
+    * The HmrcDeskproFeedback that should be sent
+    * when [[appFeedback]] is received
+    * and the the ItmpName retrieved from auth is [[itmpName]]
+    * and the enrolment status received from help-to-save is [[enrolledInHelpToSave]]
+    */
   protected val expectedDeskproFeedback = HmrcDeskproFeedback(
     name = "Given Middle Family",
     email = "email@example.com",

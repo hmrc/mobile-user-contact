@@ -20,7 +20,7 @@ import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
-import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HmrcDeskproStub}
+import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HelpToSaveStub, HmrcDeskproStub}
 import uk.gov.hmrc.mobileusercontact.support.{OneServerPerSuiteWsClient, WireMockSupport}
 
 class FeedbackISpec extends WordSpec with Matchers
@@ -45,6 +45,7 @@ class FeedbackISpec extends WordSpec with Matchers
 
     "Use hmrc-deskpro to create a feedback Deskpro ticket" in {
       AuthStub.userIsLoggedIn(Some("Given"), Some("Middle"), Some("Family"))
+      HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
       val response = await(
@@ -54,11 +55,12 @@ class FeedbackISpec extends WordSpec with Matchers
 
       response.status shouldBe 204
 
-      //TODO HtS
       val messageWithExtras =
         """I think the app is great
            |
            |Contact preference: yes
+           |
+           |HtS: yes
            |
            |Town: Leeds""".stripMargin
 
@@ -80,6 +82,7 @@ class FeedbackISpec extends WordSpec with Matchers
 
     "return 401 if no user is logged in" in {
       AuthStub.userIsNotLoggedIn()
+      HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
       val response = await(
@@ -94,6 +97,7 @@ class FeedbackISpec extends WordSpec with Matchers
 
     "return 403 Forbidden when the user is logged in with an insufficient confidence level" in {
       AuthStub.userIsLoggedInWithInsufficientConfidenceLevel()
+      HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
       val response = await(
@@ -108,7 +112,21 @@ class FeedbackISpec extends WordSpec with Matchers
 
     "return 502 if hmrc-deskpro returns an error 500" in {
       AuthStub.userIsLoggedIn(Some("Given"), Some("Middle"), Some("Family"))
+      HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillRespondWithInternalServerError()
+
+      val response = await(
+        wsUrl("/feedback-submissions")
+          .withHeaders("Content-Type" -> "application/json")
+          .post(feedbackSubmissionJson))
+
+      response.status shouldBe 502
+    }
+
+    "return 502 if help-to-save returns an error 500" in {
+      AuthStub.userIsLoggedIn(Some("Given"), Some("Middle"), Some("Family"))
+      HelpToSaveStub.enrolmentStatusReturnsInternalServerError()
+      HmrcDeskproStub.createFeedbackWillSucceed()
 
       val response = await(
         wsUrl("/feedback-submissions")

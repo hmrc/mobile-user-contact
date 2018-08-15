@@ -32,6 +32,7 @@ class MobileUserContactConfig @Inject()(
   configuration: Configuration
 ) extends ServicesConfig
  with DocumentationControllerConfig
+  with HelpToSaveConnectorConfig
   with HmrcDeskproConnectorConfig
   with ServiceLocatorRegistrationTaskConfig {
 
@@ -42,6 +43,8 @@ class MobileUserContactConfig @Inject()(
   private val accessConfig = configuration.underlying.getConfig("api.access")
   override val apiAccessType: String = accessConfig.getString("type")
   override val apiWhiteListApplicationIds: Seq[String] = accessConfig.getStringList("white-list.applicationIds").asScala
+
+  override val helpToSaveBaseUrl: URL = configBaseUrl("help-to-save")
 
   override val hmrcDeskproBaseUrl: URL = configBaseUrl("hmrc-deskpro")
 
@@ -56,6 +59,11 @@ class MobileUserContactConfig @Inject()(
 trait DocumentationControllerConfig {
   def apiAccessType: String
   def apiWhiteListApplicationIds: Seq[String]
+}
+
+@ImplementedBy(classOf[MobileUserContactConfig])
+trait HelpToSaveConnectorConfig {
+  def helpToSaveBaseUrl: URL
 }
 
 @ImplementedBy(classOf[MobileUserContactConfig])
