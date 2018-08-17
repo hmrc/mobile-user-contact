@@ -16,25 +16,24 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
-import javax.inject.{Inject, Singleton}
-import play.api.mvc.Action
+import org.scalamock.scalatest.MockFactory
+import org.scalatest.{Matchers, WordSpec}
+import play.api.test.Helpers.{status, _}
+import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
 import uk.gov.hmrc.mobileusercontact.services.FeedbackService
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext.fromLoggingDetails
+import uk.gov.hmrc.mobileusercontact.support.FeedbackTestData
 
-@Singleton
-class FeedbackController @Inject() (
-  service: FeedbackService,
-  authorisedWithName: AuthorisedWithName
-) extends BaseController {
+class FeedbackControllerSpec extends WordSpec with Matchers
+  with DefaultAwaitTimeout
+  with MockFactory
+  with FeedbackTestData {
 
-  val submitFeedback: Action[FeedbackSubmission] = authorisedWithName.async(parse.json[FeedbackSubmission]) { implicit request =>
-    val appFeedback: FeedbackSubmission = request.body
-
-    service.submitFeedback(appFeedback, request.itmpName).map { _ =>
-      NoContent
+  "submitFeedback" should {
+    "ensure user is logged in by checking permissions using AuthorisedWithName" in {
+      val service = mock[FeedbackService]
+      val controller = new FeedbackController(service, NeverAuthorisedWithName)
+      status(controller.submitFeedback()(FakeRequest().withBody[FeedbackSubmission](appFeedback))) shouldBe FORBIDDEN
     }
   }
-
 }

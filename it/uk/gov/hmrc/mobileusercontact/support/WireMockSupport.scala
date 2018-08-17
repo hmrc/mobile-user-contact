@@ -61,6 +61,8 @@ trait WireMockSupport extends BeforeAndAfterAll with BeforeAndAfterEach with App
     "auditing.enabled" -> false,
     "microservice.services.auth.host" -> wireMockHost,
     "microservice.services.auth.port" -> wireMockPort,
+    "microservice.services.help-to-save.host" -> wireMockHost,
+    "microservice.services.help-to-save.port" -> wireMockPort,
     "microservice.services.hmrc-deskpro.host" -> wireMockHost,
     "microservice.services.hmrc-deskpro.port" -> wireMockPort,
     "microservice.services.service-locator.host" -> wireMockHost,
