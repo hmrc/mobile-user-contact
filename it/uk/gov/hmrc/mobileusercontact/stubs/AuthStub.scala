@@ -31,9 +31,9 @@ object AuthStub {
   }
 
   def userIsLoggedIn(
-    givenName: Option[String],
-    middleName: Option[String],
-    familyName: Option[String]): Unit =
+    givenName: Option[String] = Some("Testy"),
+    middleName: Option[String] = Some("Bobins"),
+    familyName: Option[String] = Some("McTest")): Unit =
     stubFor(post(urlPathEqualTo("/auth/authorise"))
       .withRequestBody(equalToJson(authoriseRequestBody))
       .willReturn(aResponse()
@@ -49,17 +49,19 @@ object AuthStub {
             )).toString
         )))
 
-  def userIsLoggedInWithInsufficientConfidenceLevel(): Unit =
+  def userIsLoggedIn(): Unit = userIsLoggedIn(None, None, None)
+
+  def userIsLoggedInWithInsufficientConfidenceLevel(): Unit = {
     stubFor(post(urlPathEqualTo("/auth/authorise"))
       .withRequestBody(equalToJson(authoriseRequestBody))
       .willReturn(aResponse()
         .withStatus(401)
         .withHeader("WWW-Authenticate", """MDTP detail="InsufficientConfidenceLevel"""")
       ))
+  }
 
   def userIsNotLoggedIn(): Unit =
     stubFor(post(urlPathEqualTo("/auth/authorise"))
-      .withRequestBody(equalToJson(authoriseRequestBody))
       .willReturn(aResponse()
         .withStatus(401)
           .withHeader("WWW-Authenticate", """MDTP detail="MissingBearerToken"""")

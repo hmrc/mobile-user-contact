@@ -22,25 +22,41 @@ import play.api.libs.json.JsValue
 object HmrcDeskproStub {
 
   private val createFeedbackPath = "/deskpro/feedback"
+  private val createSupportPath = "/deskpro/support"
 
-  def createFeedbackWillSucceed(): Unit =
-    stubFor(post(urlPathEqualTo(createFeedbackPath))
+  def createFeedbackWillSucceed(): Unit = stub200NoContentResponse(createFeedbackPath)
+  def createSupportTicketWillSucceed(): Unit = stub200NoContentResponse(createSupportPath)
+
+  private def stub200NoContentResponse(path: String) = {
+    stubFor(post(urlPathEqualTo(path))
       .willReturn(aResponse()
         .withStatus(200)
         .withBody("{}")))
+  }
 
-  def createFeedbackWillRespondWithInternalServerError(): Unit =
-    stubFor(post(urlPathEqualTo(createFeedbackPath))
+  def createFeedbackWillRespondWithInternalServerError(): Unit = stubInternalServerError(createFeedbackPath)
+  def createSupportWillRespondWithInternalServerError(): Unit = stubInternalServerError(createSupportPath)
+
+  private def stubInternalServerError(path: String) = {
+    stubFor(post(urlPathEqualTo(path))
       .willReturn(aResponse()
         .withStatus(500)))
+  }
 
-  def createFeedbackShouldHaveBeenCalled(body: JsValue): Unit =
-    verify(1, postRequestedFor(urlPathEqualTo(createFeedbackPath))
+  def createFeedbackShouldHaveBeenCalled(body: JsValue): Unit = verifyJsonContents(body, createFeedbackPath)
+  def createSupportShouldHaveBeenCalled(body: JsValue): Unit = verifyJsonContents(body, createSupportPath)
+
+  private def verifyJsonContents(body: JsValue, path: String) = {
+    verify(1, postRequestedFor(urlPathEqualTo(path))
       .withHeader("Content-Type", equalTo("application/json"))
       .withRequestBody(equalToJson(body.toString))
     )
+  }
 
-  def createFeedbackShouldNotHaveBeenCalled(): Unit =
-    verify(0, postRequestedFor(urlPathEqualTo(createFeedbackPath)))
+  def createFeedbackShouldNotHaveBeenCalled(): Unit = verifyResourceNotCalled(createFeedbackPath)
+  def createSupportShouldNotHaveBeenCalled(): Unit = verifyResourceNotCalled(createSupportPath)
 
+  private def verifyResourceNotCalled(path: String) = {
+    verify(0, postRequestedFor(urlPathEqualTo(path)))
+  }
 }

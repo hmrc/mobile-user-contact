@@ -16,22 +16,39 @@
 
 package uk.gov.hmrc.mobileusercontact.services
 
+import com.google.inject.ImplementedBy
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mobileusercontact.connectors.{HelpToSaveConnector, HmrcDeskproConnector}
-import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
+import uk.gov.hmrc.mobileusercontact.connectors.{HelpToSaveConnector, HmrcDeskproConnector, HmrcDeskproSupport}
+import uk.gov.hmrc.mobileusercontact.domain.{FeedbackSubmission, SupportRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+
+@ImplementedBy(classOf[DeskproService])
+trait Feedback {
+  def submitFeedback(appFeedback: FeedbackSubmission, itmpName: ItmpName)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+}
+
+@ImplementedBy(classOf[DeskproService])
+trait Support {
+  def submitSupportRequest(supportRequest: SupportRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+}
+
 @Singleton
-class FeedbackService @Inject() (
+class DeskproService @Inject()(
   hmrcDeskproConnector: HmrcDeskproConnector,
   helpToSaveConnector: HelpToSaveConnector
-){
-  def submitFeedback(appFeedback: FeedbackSubmission, itmpName: ItmpName)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+) extends Feedback with Support  {
+
+  override def submitFeedback(appFeedback: FeedbackSubmission, itmpName: ItmpName)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
     helpToSaveConnector.enrolmentStatus().flatMap { enrolledInHelpToSave =>
       hmrcDeskproConnector.createFeedback(appFeedback.toDeskpro(itmpName, enrolledInHelpToSave = enrolledInHelpToSave))
     }
+  }
+
+  override def submitSupportRequest(supportRequest: SupportRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+    hmrcDeskproConnector.createSupport(supportRequest.toDeskpro())
   }
 }
