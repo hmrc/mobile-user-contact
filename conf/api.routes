@@ -2,4 +2,4 @@
 
 POST    /feedback-submissions           uk.gov.hmrc.mobileusercontact.controllers.FeedbackController.submitFeedback
 
-POST    /support-requests               uk.gov.hmrc.mobileusercontact.controllers.SupportController.submitSupport
+POST    /support-requests               uk.gov.hmrc.mobileusercontact.controllers.SupportController.requestSupport

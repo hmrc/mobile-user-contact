@@ -36,7 +36,7 @@ class SupportISpec
 
   private val supportResourcePath = "/support-requests"
 
-  private val supportSubmissionJson =
+  private val supportRequestJson =
     """
       |{
       |  "name": "John Smith",
@@ -102,6 +102,6 @@ class SupportISpec
     await(
       wsUrl(supportResourcePath)
         .withHeaders("Content-Type" -> "application/json")
-        .post(supportSubmissionJson))
+        .post(supportRequestJson))
   }
 }

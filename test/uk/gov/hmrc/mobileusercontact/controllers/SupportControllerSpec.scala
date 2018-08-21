@@ -33,13 +33,13 @@ class SupportControllerSpec extends WordSpec with Matchers
   with ScalaFutures
   with SupportTestData {
 
-  "submitSupport" should {
+  "requestSupport" should {
 
     "reject support requests for users that have an insufficient confidence level" in {
 
       val service: Support = stub[Support]
       val controller = new SupportController(service, NeverAuthorisedWithName)
-      status(controller.submitSupport(FakeRequest().withBody[SupportRequest](supportTicket))) shouldBe FORBIDDEN
+      status(controller.requestSupport(FakeRequest().withBody[SupportRequest](supportTicket))) shouldBe FORBIDDEN
     }
   }
 }
