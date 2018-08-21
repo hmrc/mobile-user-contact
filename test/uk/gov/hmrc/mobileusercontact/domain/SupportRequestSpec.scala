@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.support
+package uk.gov.hmrc.mobileusercontact.domain
 
-import play.api.inject.guice.GuiceApplicationBuilder
+import org.scalatest.{Matchers, WordSpec}
+import uk.gov.hmrc.mobileusercontact.test.SupportTestData
 
-trait AppBuilder {
-  protected def appBuilder: GuiceApplicationBuilder = new GuiceApplicationBuilder()
+class SupportRequestSpec extends WordSpec with Matchers
+  with SupportTestData {
+
+  "toDeskpro" should {
+    "map SupportRequest fields to HmrcDeskproSupport" in {
+      supportTicket.toDeskpro shouldBe expectedDeskproSupport
+    }
+  }
 }

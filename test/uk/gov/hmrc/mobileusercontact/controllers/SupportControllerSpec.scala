@@ -17,23 +17,29 @@
 package uk.gov.hmrc.mobileusercontact.controllers
 
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, WordSpec}
 import play.api.test.Helpers.{status, _}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
-import uk.gov.hmrc.mobileusercontact.services.Feedback
-import uk.gov.hmrc.mobileusercontact.test.FeedbackTestData
+import uk.gov.hmrc.auth.core.retrieve._
+import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
+import uk.gov.hmrc.mobileusercontact.services.Support
+import uk.gov.hmrc.mobileusercontact.test.SupportTestData
 
-class FeedbackControllerSpec extends WordSpec with Matchers
+class SupportControllerSpec extends WordSpec with Matchers
   with DefaultAwaitTimeout
   with MockFactory
-  with FeedbackTestData {
+  with Retrievals
+  with ScalaFutures
+  with SupportTestData {
 
-  "submitFeedback" should {
-    "ensure user is logged in by checking permissions using AuthorisedWithName" in {
-      val service = mock[Feedback]
-      val controller = new FeedbackController(service, NeverAuthorisedWithName)
-      status(controller.submitFeedback()(FakeRequest().withBody[FeedbackSubmission](appFeedback))) shouldBe FORBIDDEN
+  "requestSupport" should {
+
+    "reject support requests for users that have an insufficient confidence level" in {
+
+      val service: Support = stub[Support]
+      val controller = new SupportController(service, NeverAuthorisedWithName)
+      status(controller.requestSupport(FakeRequest().withBody[SupportRequest](supportTicket))) shouldBe FORBIDDEN
     }
   }
 }

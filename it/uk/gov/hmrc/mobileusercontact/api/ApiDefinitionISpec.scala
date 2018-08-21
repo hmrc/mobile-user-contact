@@ -21,7 +21,7 @@ import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
-import uk.gov.hmrc.mobileusercontact.support.{OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
 class ApiDefinitionISpec
   extends WordSpec with Matchers with Eventually with FutureAwaits with DefaultAwaitTimeout

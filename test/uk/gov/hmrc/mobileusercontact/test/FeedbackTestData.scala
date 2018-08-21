@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.support
+package uk.gov.hmrc.mobileusercontact.test
 
 import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproFeedback

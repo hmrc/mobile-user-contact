@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.support
+package uk.gov.hmrc.mobileusercontact.test
 
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.OneInstancePerTest

@@ -18,22 +18,18 @@ package uk.gov.hmrc.mobileusercontact.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.Action
-import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
-import uk.gov.hmrc.mobileusercontact.services.Feedback
+import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
+import uk.gov.hmrc.mobileusercontact.services.Support
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext.fromLoggingDetails
 
 @Singleton
-class FeedbackController @Inject() (
-  service: Feedback,
+class SupportController @Inject()(
+  service: Support,
   authorisedWithName: AuthorisedWithName
 ) extends BaseController {
 
-  val submitFeedback: Action[FeedbackSubmission] = authorisedWithName.async(parse.json[FeedbackSubmission]) { implicit request =>
-    val appFeedback: FeedbackSubmission = request.body
-
-    service.submitFeedback(appFeedback, request.itmpName).map { _ =>
-      NoContent
-    }
+  val requestSupport: Action[SupportRequest] = authorisedWithName.async(parse.json[SupportRequest]) { implicit request =>
+    service.requestSupport(request.body) map ( _ => NoContent)
   }
 }

@@ -24,7 +24,7 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.PlayRunners
 import uk.gov.hmrc.mobileusercontact.stubs.ServiceLocatorStub
-import uk.gov.hmrc.mobileusercontact.support.WireMockSupport
+import uk.gov.hmrc.mobileusercontact.test.WireMockSupport
 
 class ServiceLocatorRegistrationISpec
   extends WordSpec with Matchers with Eventually

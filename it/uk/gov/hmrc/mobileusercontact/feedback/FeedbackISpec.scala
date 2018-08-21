@@ -21,7 +21,7 @@ import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HelpToSaveStub, HmrcDeskproStub}
-import uk.gov.hmrc.mobileusercontact.support.{OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
 class FeedbackISpec extends WordSpec with Matchers
  with FutureAwaits with DefaultAwaitTimeout

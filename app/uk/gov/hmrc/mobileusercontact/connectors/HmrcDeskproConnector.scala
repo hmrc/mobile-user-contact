@@ -20,7 +20,7 @@ import java.net.URL
 
 import com.google.inject.ImplementedBy
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{JsValue, Json, OWrites}
+import play.api.libs.json.{JsValue, Json, OWrites, Writes}
 import uk.gov.hmrc.http.{CorePost, HeaderCarrier}
 import uk.gov.hmrc.mobileusercontact.config.HmrcDeskproConnectorConfig
 
@@ -29,6 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @ImplementedBy(classOf[HmrcDeskproConnectorImpl])
 trait HmrcDeskproConnector {
   def createFeedback(feedback: HmrcDeskproFeedback)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+
+  def createSupport(ticket: HmrcDeskproSupport)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 }
 
 @Singleton
@@ -37,13 +39,14 @@ class HmrcDeskproConnectorImpl @Inject() (
   config: HmrcDeskproConnectorConfig
 ) extends HmrcDeskproConnector {
 
-  //TODO convert exceptions to Either?
-  def createFeedback(feedback: HmrcDeskproFeedback)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] =
-    http.POST[HmrcDeskproFeedback, JsValue](createFeedbackUrl.toString, feedback).map(_ => ())
+  def createFeedback(ticket: HmrcDeskproFeedback)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = create("feedback", ticket)
 
-  private val createFeedbackUrl =
-    new URL(config.hmrcDeskproBaseUrl, "/deskpro/feedback")
+  def createSupport(ticket: HmrcDeskproSupport)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = create("support", ticket)
 
+  private def create[T](resource:String, ticket: T)(implicit hc: HeaderCarrier, ec: ExecutionContext, wts: Writes[T]): Future[Unit] =
+    http.POST[T, JsValue](deskproUrl(resource), ticket).map(_ => ())
+
+  private val deskproUrl = (resource:String) => new URL(config.hmrcDeskproBaseUrl, s"/deskpro/$resource").toString
 }
 
 case class HmrcDeskproFeedback(
@@ -65,4 +68,23 @@ case class HmrcDeskproFeedback(
 
 object HmrcDeskproFeedback {
   implicit val writes: OWrites[HmrcDeskproFeedback] = Json.writes[HmrcDeskproFeedback]
+}
+
+case class HmrcDeskproSupport(
+  name: String,
+  email: String,
+  subject: String,
+  message: String,
+
+  referrer: String,
+  javascriptEnabled: String,
+  userAgent: String,
+  authId: String,
+  areaOfTax: String,
+  sessionId: String,
+  service: Option[String]
+)
+
+object HmrcDeskproSupport {
+  implicit val writes: OWrites[HmrcDeskproSupport] = Json.writes[HmrcDeskproSupport]
 }

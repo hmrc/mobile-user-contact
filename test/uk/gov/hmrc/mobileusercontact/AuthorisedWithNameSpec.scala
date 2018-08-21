@@ -29,7 +29,7 @@ import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{ItmpName, Retrieval, Retrievals}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.controllers.{AuthorisedWithNameImpl, RequestWithName}
-import uk.gov.hmrc.mobileusercontact.support.LoggerStub
+import uk.gov.hmrc.mobileusercontact.test.LoggerStub
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -109,5 +109,4 @@ class AuthorisedWithNameSpec extends WordSpec with Matchers
       .returns(itmpNameF)
     authConnectorStub
   }
-
 }

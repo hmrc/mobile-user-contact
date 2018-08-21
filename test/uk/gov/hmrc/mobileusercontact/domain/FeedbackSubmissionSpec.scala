@@ -17,7 +17,7 @@
 package uk.gov.hmrc.mobileusercontact.domain
 
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.mobileusercontact.support.FeedbackTestData
+import uk.gov.hmrc.mobileusercontact.test.FeedbackTestData
 
 class FeedbackSubmissionSpec extends WordSpec with Matchers
   with FeedbackTestData {
