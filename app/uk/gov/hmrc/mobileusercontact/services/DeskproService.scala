@@ -49,6 +49,6 @@ class DeskproService @Inject()(
   }
 
   override def requestSupport(appSupportRequest: SupportRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
-    hmrcDeskproConnector.createSupport(appSupportRequest.toDeskpro())
+    hmrcDeskproConnector.createSupport(appSupportRequest.toDeskpro)
   }
 }

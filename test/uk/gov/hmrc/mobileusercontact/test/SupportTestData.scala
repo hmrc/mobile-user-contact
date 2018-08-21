@@ -40,7 +40,7 @@ trait SupportTestData {
     message = "Where is my payment?",
     userAgent = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
     referrer = "<JourneyID>",
-    subject = "App Support",
+    subject = "App Support Request",
     javascriptEnabled = "",
     authId = "",
     areaOfTax = "",

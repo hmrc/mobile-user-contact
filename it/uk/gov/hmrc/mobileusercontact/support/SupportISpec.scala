@@ -61,7 +61,7 @@ class SupportISpec
       HmrcDeskproStub.createSupportShouldHaveBeenCalled(Json.obj(
         "name" -> "John Smith",
         "email" -> "testy@example.com",
-        "subject" -> "App Support",
+        "subject" -> "App Support Request",
         "message" -> "I can't find my latest payment",
         "referrer" -> "eaded345-4ccd-4c27-9285-cde938bd896d",
         "userAgent" -> "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",

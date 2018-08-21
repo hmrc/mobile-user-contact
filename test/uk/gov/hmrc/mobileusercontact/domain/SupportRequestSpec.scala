@@ -24,7 +24,7 @@ class SupportRequestSpec extends WordSpec with Matchers
 
   "toDeskpro" should {
     "map SupportRequest fields to HmrcDeskproSupport" in {
-      supportTicket.toDeskpro() shouldBe expectedDeskproSupport
+      supportTicket.toDeskpro shouldBe expectedDeskproSupport
     }
   }
 }

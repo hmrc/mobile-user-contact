@@ -28,10 +28,10 @@ case class SupportRequest(
    service: Option[String]
  ) {
 
-  def toDeskpro(): HmrcDeskproSupport = HmrcDeskproSupport(
+  def toDeskpro: HmrcDeskproSupport = HmrcDeskproSupport(
     name = name,
     email = email,
-    subject = "App Support",
+    subject = "App Support Request",
     message = message,
     referrer = journeyId.getOrElse(""),
     javascriptEnabled = "",
