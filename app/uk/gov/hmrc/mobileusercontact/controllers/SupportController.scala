@@ -17,19 +17,33 @@
 package uk.gov.hmrc.mobileusercontact.controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.Action
+import play.api.mvc.{Action, Request, Result}
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
 import uk.gov.hmrc.mobileusercontact.services.Support
+import uk.gov.hmrc.play.HeaderCarrierConverter._
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext.fromLoggingDetails
 
+import scala.concurrent.Future
+
 @Singleton
 class SupportController @Inject()(
-  service: Support,
-  authorisedWithName: AuthorisedWithName
-) extends BaseController {
+   service: Support,
+   override val authConnector: AuthConnector
+) extends BaseController with SupportRequestAuthorisation {
 
-  val submitSupport: Action[SupportRequest] = authorisedWithName.async(parse.json[SupportRequest]) { implicit request =>
-    service.submitSupportRequest(request.body) map ( _ => NoContent)
+  val submitSupport: Action[SupportRequest] = Action.async(parse.json[SupportRequest])(submitSupportTicket)
+
+  private def submitSupportTicket(r: Request[SupportRequest]): Future[Result] = {
+    implicit val hc = fromHeadersAndSession(r.headers)
+    authoriseSupportRequest(r) {
+      _ => service.submitSupportRequest(r.body).map(_ => NoContent)
+    }
   }
 }
+
+
+
+
+

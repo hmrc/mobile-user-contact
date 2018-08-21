@@ -17,23 +17,32 @@
 package uk.gov.hmrc.mobileusercontact.controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.Action
+import play.api.mvc.{Action, Request, Result}
+import uk.gov.hmrc.auth.core._
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
 import uk.gov.hmrc.mobileusercontact.services.Feedback
+import uk.gov.hmrc.play.HeaderCarrierConverter.fromHeadersAndSession
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext.fromLoggingDetails
+
+import scala.concurrent.Future
 
 @Singleton
 class FeedbackController @Inject() (
   service: Feedback,
-  authorisedWithName: AuthorisedWithName
-) extends BaseController {
+  override val authConnector: AuthConnector
+) extends BaseController with FeedbackRequestAuthorisation {
 
-  val submitFeedback: Action[FeedbackSubmission] = authorisedWithName.async(parse.json[FeedbackSubmission]) { implicit request =>
-    val appFeedback: FeedbackSubmission = request.body
+  val submitFeedback: Action[FeedbackSubmission] = Action.async(parse.json[FeedbackSubmission])(submitFeedbackTicket)
 
-    service.submitFeedback(appFeedback, request.itmpName).map { _ =>
-      NoContent
+  private def submitFeedbackTicket(request: Request[FeedbackSubmission]): Future[Result] = {
+
+    implicit val headerCarrier: HeaderCarrier = fromHeadersAndSession(request.headers)
+
+    authoriseAndEnrichFeedbackRequest(request) {
+      requestWithItmpName => service.submitFeedback(request.body, requestWithItmpName.itmpName).map(_ => NoContent)
     }
   }
 }
+
