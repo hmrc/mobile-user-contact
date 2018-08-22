@@ -29,11 +29,13 @@ class FeedbackController @Inject() (
   authorisedWithName: AuthorisedWithName
 ) extends BaseController {
 
-  val submitFeedback: Action[FeedbackSubmission] = authorisedWithName.async(parse.json[FeedbackSubmission]) { implicit request =>
-    val appFeedback: FeedbackSubmission = request.body
+  val submitFeedback: Action[FeedbackSubmission] = Action.async(parse.json[FeedbackSubmission]) { implicit request =>
+    authorisedWithName.authorise(request) { itmpName =>
+      val appFeedback: FeedbackSubmission = request.body
 
-    service.submitFeedback(appFeedback, request.itmpName).map { _ =>
-      NoContent
+      service.submitFeedback(appFeedback, itmpName).map { _ =>
+        NoContent
+      }
     }
   }
 }

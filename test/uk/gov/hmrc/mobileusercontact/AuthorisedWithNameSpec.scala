@@ -21,14 +21,14 @@ import akka.stream.ActorMaterializer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
 import play.api.http.Status._
-import play.api.mvc.{AnyContent, Results}
+import play.api.mvc.{Action, Results}
 import play.api.test.Helpers.{contentAsString, status}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{ItmpName, Retrieval, Retrievals}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mobileusercontact.controllers.{AuthorisedWithNameImpl, RequestWithName}
+import uk.gov.hmrc.mobileusercontact.controllers.AuthorisedWithNameImpl
 import uk.gov.hmrc.mobileusercontact.test.LoggerStub
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,15 +43,17 @@ class AuthorisedWithNameSpec extends WordSpec with Matchers
   implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   "AuthorisedWithName" should {
-    "include the ITMP Name in the request" in {
+    "pass the ITMP Name to the block" in {
       val authConnectorStub = authConnectorStubThatWillReturn(ItmpName(Some("Testgiven"), None, Some("Testfamily")))
 
       val authorised = new AuthorisedWithNameImpl(logger, authConnectorStub)
 
       var capturedItmpName: Option[ItmpName] = None
-      val action = authorised { request: RequestWithName[AnyContent] =>
-        capturedItmpName = Some(request.itmpName)
-        Ok
+      val action = Action.async { request =>
+        authorised.authorise(request) { itmpName =>
+          capturedItmpName = Some(itmpName)
+          Future successful Ok
+        }
       }
 
       await(action(FakeRequest())) shouldBe Ok
@@ -63,8 +65,10 @@ class AuthorisedWithNameSpec extends WordSpec with Matchers
 
       val authorised = new AuthorisedWithNameImpl(logger, authConnectorStub)
 
-      val action = authorised { _ =>
-        Ok
+      val action = Action.async { request =>
+        authorised.authorise(request) { _ =>
+          Future successful Ok
+        }
       }
 
       status(action(FakeRequest())) shouldBe UNAUTHORIZED
@@ -75,8 +79,10 @@ class AuthorisedWithNameSpec extends WordSpec with Matchers
 
       val authorised = new AuthorisedWithNameImpl(logger, authConnectorStub)
 
-      val action = authorised { _ =>
-        Ok
+      val action = Action.async { request =>
+        authorised.authorise(request) { _ =>
+          Future successful Ok
+        }
       }
 
       status(action(FakeRequest())) shouldBe FORBIDDEN
@@ -87,8 +93,10 @@ class AuthorisedWithNameSpec extends WordSpec with Matchers
 
       val authorised = new AuthorisedWithNameImpl(logger, authConnectorStub)
 
-      val action = authorised { _ =>
-        Ok
+      val action = Action.async { request =>
+        authorised.authorise(request) { _ =>
+          Future successful Ok
+        }
       }
 
       val resultF = action(FakeRequest())

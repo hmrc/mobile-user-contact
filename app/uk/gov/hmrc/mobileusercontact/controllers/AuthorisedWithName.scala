@@ -28,30 +28,30 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext.fromLoggingDetai
 
 import scala.concurrent.Future
 
-class RequestWithName[+A](val itmpName: ItmpName, request: Request[A]) extends WrappedRequest[A](request)
-
 @ImplementedBy(classOf[AuthorisedWithNameImpl])
-trait AuthorisedWithName extends ActionBuilder[RequestWithName] with ActionRefiner[Request, RequestWithName]
+trait AuthorisedWithName {
+  def authorise[B](request: Request[B])(block: ItmpName => Future[Result]): Future[Result]
+}
 
 @Singleton
 class AuthorisedWithNameImpl @Inject() (
   logger: LoggerLike,
   authConnector: AuthConnector
 ) extends AuthorisedWithName with Results {
-  override protected def refine[A](request: Request[A]): Future[Either[Result, RequestWithName[A]]] = {
+  override def authorise[B](request: Request[B])(block: ItmpName => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
 
     val predicates = ConfidenceLevel.L200
     val retrievals = Retrievals.itmpName
 
-    authConnector.authorise(predicates, retrievals).map { itmpName =>
-      Right(new RequestWithName(itmpName, request))
+    authConnector.authorise(predicates, retrievals).flatMap { itmpName =>
+      block(itmpName)
     }.recover {
-      case e: NoActiveSession => Left(Unauthorized(s"Authorisation failure [${e.reason}]"))
+      case e: NoActiveSession => Unauthorized(s"Authorisation failure [${e.reason}]")
       case e: InsufficientConfidenceLevel =>
         logger.warn("Forbidding access due to insufficient confidence level. User will see an error screen. To fix this see NGC-3381.")
-        Left(Forbidden(s"Authorisation failure [${e.reason}]"))
-      case e: AuthorisationException => Left(Forbidden(s"Authorisation failure [${e.reason}]"))
+        Forbidden(s"Authorisation failure [${e.reason}]")
+      case e: AuthorisationException => Forbidden(s"Authorisation failure [${e.reason}]")
     }
   }
 }

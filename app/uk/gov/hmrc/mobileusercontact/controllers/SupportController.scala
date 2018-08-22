@@ -29,7 +29,9 @@ class SupportController @Inject()(
   authorisedWithName: AuthorisedWithName
 ) extends BaseController {
 
-  val requestSupport: Action[SupportRequest] = authorisedWithName.async(parse.json[SupportRequest]) { implicit request =>
-    service.requestSupport(request.body) map ( _ => NoContent)
+  val requestSupport: Action[SupportRequest] = Action.async(parse.json[SupportRequest]) { implicit request =>
+    authorisedWithName.authorise(request) { _ =>
+      service.requestSupport(request.body) map (_ => NoContent)
+    }
   }
 }
