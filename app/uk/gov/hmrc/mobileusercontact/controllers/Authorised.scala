@@ -21,31 +21,30 @@ import javax.inject.{Inject, Singleton}
 import play.api.LoggerLike
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.{ItmpName, Retrievals}
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext.fromLoggingDetails
 
 import scala.concurrent.Future
 
-@ImplementedBy(classOf[AuthorisedWithNameImpl])
-trait AuthorisedWithName {
-  def authorise[B](request: Request[B])(block: ItmpName => Future[Result]): Future[Result]
+@ImplementedBy(classOf[AuthorisedImpl])
+trait Authorised {
+  def authorise[B, R](request: Request[B], retrievals: Retrieval[R])(block: R => Future[Result]): Future[Result]
 }
 
 @Singleton
-class AuthorisedWithNameImpl @Inject() (
+class AuthorisedImpl @Inject() (
   logger: LoggerLike,
   authConnector: AuthConnector
-) extends AuthorisedWithName with Results {
-  override def authorise[B](request: Request[B])(block: ItmpName => Future[Result]): Future[Result] = {
+) extends Authorised with Results {
+  override def authorise[B, R](request: Request[B], retrievals: Retrieval[R])(block: R => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
 
     val predicates = ConfidenceLevel.L200
-    val retrievals = Retrievals.itmpName
 
-    authConnector.authorise(predicates, retrievals).flatMap { itmpName =>
-      block(itmpName)
+    authConnector.authorise(predicates, retrievals).flatMap { retrieved =>
+      block(retrieved)
     }.recover {
       case e: NoActiveSession => Unauthorized(s"Authorisation failure [${e.reason}]")
       case e: InsufficientConfidenceLevel =>

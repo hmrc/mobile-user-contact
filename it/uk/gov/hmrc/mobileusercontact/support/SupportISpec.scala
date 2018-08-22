@@ -70,6 +70,9 @@ class SupportISpec
         "authId" ->  "",
         "areaOfTax" ->  "",
         "sessionId" ->  ""))
+
+      // We avoid retrieving the ITMP name as a minor performance enhancement
+      AuthStub.itmpNameShouldNotHaveBeenRetrieved()
     }
 
     "return 401 if no user is logged in" in {

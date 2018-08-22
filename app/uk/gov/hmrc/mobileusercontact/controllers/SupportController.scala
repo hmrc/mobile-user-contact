@@ -18,6 +18,7 @@ package uk.gov.hmrc.mobileusercontact.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.Action
+import uk.gov.hmrc.auth.core.retrieve.EmptyRetrieval
 import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
 import uk.gov.hmrc.mobileusercontact.services.Support
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
@@ -26,11 +27,11 @@ import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext.fromLoggingDetai
 @Singleton
 class SupportController @Inject()(
   service: Support,
-  authorisedWithName: AuthorisedWithName
+  authorised: Authorised
 ) extends BaseController {
 
   val requestSupport: Action[SupportRequest] = Action.async(parse.json[SupportRequest]) { implicit request =>
-    authorisedWithName.authorise(request) { _ =>
+    authorised.authorise(request, EmptyRetrieval) { _ =>
       service.requestSupport(request.body) map (_ => NoContent)
     }
   }

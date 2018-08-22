@@ -17,11 +17,11 @@
 package uk.gov.hmrc.mobileusercontact.controllers
 
 import play.api.mvc.{Request, Result, Results}
-import uk.gov.hmrc.auth.core.retrieve.ItmpName
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
 
 import scala.concurrent.Future
 
-object NeverAuthorisedWithName extends AuthorisedWithName with Results {
-  override def authorise[B](request: Request[B])(block: ItmpName => Future[Result]): Future[Result] =
+object NeverAuthorised extends Authorised with Results {
+  override def authorise[B, R](request: Request[B], retrievals: Retrieval[R])(block: R => Future[Result]): Future[Result] =
     Future successful Forbidden
 }
