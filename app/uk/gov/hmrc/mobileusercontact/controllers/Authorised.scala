@@ -21,7 +21,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.LoggerLike
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.retrieve.{EmptyRetrieval, Retrieval}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext.fromLoggingDetails
@@ -31,6 +31,10 @@ import scala.concurrent.Future
 @ImplementedBy(classOf[AuthorisedImpl])
 trait Authorised {
   def authorise[B, R](request: Request[B], retrievals: Retrieval[R])(block: R => Future[Result]): Future[Result]
+
+  def authorise[B](request: Request[B])(block: => Future[Result]): Future[Result] = {
+    authorise(request, EmptyRetrieval)(_ => block)
+  }
 }
 
 @Singleton
