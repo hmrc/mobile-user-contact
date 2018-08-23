@@ -22,20 +22,41 @@ import play.api.libs.json.{JsObject, JsString, Json}
 
 object AuthStub {
 
-  private val authoriseRequestBody: String = {
-    """
-      |{
-      | "authorise": [{"confidenceLevel" : 200}],
-      | "retrieve": ["itmpName"]
+  private val authoriseBodyWithItmpNameRetrieval: String =
+    """{
+      |  "authorise": [{"confidenceLevel": 200}],
+      |  "retrieve": ["itmpName"]
       |}""".stripMargin
-  }
+
+  private val authoriseBodyWithEmptyRetrieval: String =
+    """{
+      |  "authorise": [{"confidenceLevel": 200}],
+      |  "retrieve": []
+      |}""".stripMargin
+
+  private val authoriseBodyConfidenceLevelElementOnly: String =
+    """{
+      |  "authorise": [{"confidenceLevel": 200}]
+      |}""".stripMargin
+
+  private val authoriseBodyRetrieveItmpNameElementOnly: String =
+    """{
+      |  "retrieve": ["itmpName"]
+      |}""".stripMargin
 
   def userIsLoggedIn(
     givenName: Option[String] = Some("Testy"),
     middleName: Option[String] = Some("Bobins"),
-    familyName: Option[String] = Some("McTest")): Unit =
+    familyName: Option[String] = Some("McTest")): Unit = {
+
     stubFor(post(urlPathEqualTo("/auth/authorise"))
-      .withRequestBody(equalToJson(authoriseRequestBody))
+      .withRequestBody(equalToJson(authoriseBodyWithEmptyRetrieval))
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withBody("{}")))
+
+    stubFor(post(urlPathEqualTo("/auth/authorise"))
+      .withRequestBody(equalToJson(authoriseBodyWithItmpNameRetrieval))
       .willReturn(aResponse()
         .withStatus(200)
         .withBody(
@@ -48,12 +69,13 @@ object AuthStub {
               ).flatten
             )).toString
         )))
+  }
 
   def userIsLoggedIn(): Unit = userIsLoggedIn(None, None, None)
 
   def userIsLoggedInWithInsufficientConfidenceLevel(): Unit = {
     stubFor(post(urlPathEqualTo("/auth/authorise"))
-      .withRequestBody(equalToJson(authoriseRequestBody))
+      .withRequestBody(equalToJson(authoriseBodyConfidenceLevelElementOnly, false, true))
       .willReturn(aResponse()
         .withStatus(401)
         .withHeader("WWW-Authenticate", """MDTP detail="InsufficientConfidenceLevel"""")
@@ -66,4 +88,8 @@ object AuthStub {
         .withStatus(401)
           .withHeader("WWW-Authenticate", """MDTP detail="MissingBearerToken"""")
       ))
+
+  def itmpNameShouldNotHaveBeenRetrieved(): Unit =
+    verify(0, postRequestedFor(urlPathEqualTo("/auth/authorise"))
+      .withRequestBody(equalToJson(authoriseBodyRetrieveItmpNameElementOnly, false, true)))
 }

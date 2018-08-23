@@ -21,37 +21,36 @@ import javax.inject.{Inject, Singleton}
 import play.api.LoggerLike
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.retrieve.{ItmpName, Retrievals}
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext.fromLoggingDetails
 
 import scala.concurrent.Future
 
-class RequestWithName[+A](val itmpName: ItmpName, request: Request[A]) extends WrappedRequest[A](request)
-
-@ImplementedBy(classOf[AuthorisedWithNameImpl])
-trait AuthorisedWithName extends ActionBuilder[RequestWithName] with ActionRefiner[Request, RequestWithName]
+@ImplementedBy(classOf[AuthorisedImpl])
+trait Authorised {
+  def authorise[B, R](request: Request[B], retrievals: Retrieval[R])(block: R => Future[Result]): Future[Result]
+}
 
 @Singleton
-class AuthorisedWithNameImpl @Inject() (
+class AuthorisedImpl @Inject() (
   logger: LoggerLike,
   authConnector: AuthConnector
-) extends AuthorisedWithName with Results {
-  override protected def refine[A](request: Request[A]): Future[Either[Result, RequestWithName[A]]] = {
+) extends Authorised with Results {
+  override def authorise[B, R](request: Request[B], retrievals: Retrieval[R])(block: R => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
 
     val predicates = ConfidenceLevel.L200
-    val retrievals = Retrievals.itmpName
 
-    authConnector.authorise(predicates, retrievals).map { itmpName =>
-      Right(new RequestWithName(itmpName, request))
+    authConnector.authorise(predicates, retrievals).flatMap { retrieved =>
+      block(retrieved)
     }.recover {
-      case e: NoActiveSession => Left(Unauthorized(s"Authorisation failure [${e.reason}]"))
+      case e: NoActiveSession => Unauthorized(s"Authorisation failure [${e.reason}]")
       case e: InsufficientConfidenceLevel =>
         logger.warn("Forbidding access due to insufficient confidence level. User will see an error screen. To fix this see NGC-3381.")
-        Left(Forbidden(s"Authorisation failure [${e.reason}]"))
-      case e: AuthorisationException => Left(Forbidden(s"Authorisation failure [${e.reason}]"))
+        Forbidden(s"Authorisation failure [${e.reason}]")
+      case e: AuthorisationException => Forbidden(s"Authorisation failure [${e.reason}]")
     }
   }
 }

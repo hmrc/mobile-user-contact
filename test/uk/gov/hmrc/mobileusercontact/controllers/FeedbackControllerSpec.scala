@@ -30,9 +30,9 @@ class FeedbackControllerSpec extends WordSpec with Matchers
   with FeedbackTestData {
 
   "submitFeedback" should {
-    "ensure user is logged in by checking permissions using AuthorisedWithName" in {
+    "ensure user is logged in by checking permissions using Authorised" in {
       val service = mock[Feedback]
-      val controller = new FeedbackController(service, NeverAuthorisedWithName)
+      val controller = new FeedbackController(service, NeverAuthorised)
       status(controller.submitFeedback()(FakeRequest().withBody[FeedbackSubmission](appFeedback))) shouldBe FORBIDDEN
     }
   }
