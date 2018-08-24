@@ -14,32 +14,27 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.feedback
+package uk.gov.hmrc.mobileusercontact.api
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HelpToSaveStub, HmrcDeskproStub}
-import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.{IntegrationTestJson, MobileUserContactClient, OneServerPerSuiteWsClient, WireMockSupport}
 
-class FeedbackISpec extends WordSpec with Matchers
- with FutureAwaits with DefaultAwaitTimeout
- with WireMockSupport with OneServerPerSuiteWsClient {
+class FeedbackISpec
+  extends WordSpec
+    with Matchers
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with WireMockSupport
+    with OneServerPerSuiteWsClient
+    with MobileUserContactClient {
 
   override implicit lazy val app: Application = appBuilder.build()
 
-  private val feedbackSubmissionJson =
-    """
-      |{
-      |  "email": "testy@example.com",
-      |  "message": "I think the app is great",
-      |  "signUpForResearch": true,
-      |  "town": "Leeds",
-      |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
-      |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)"
-      |}
-    """.stripMargin
+  import IntegrationTestJson.feedbackSubmissionJson
 
   "POST /feedback-submissions" should {
 
@@ -48,10 +43,7 @@ class FeedbackISpec extends WordSpec with Matchers
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
-      val response = await(
-        wsUrl("/feedback-submissions")
-          .withHeaders("Content-Type" -> "application/json")
-          .post(feedbackSubmissionJson))
+      val response = await(postToFeedbackResource(feedbackSubmissionJson))
 
       response.status shouldBe 204
 
@@ -85,10 +77,7 @@ class FeedbackISpec extends WordSpec with Matchers
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
-      val response = await(
-        wsUrl("/feedback-submissions")
-          .withHeaders("Content-Type" -> "application/json")
-          .post(feedbackSubmissionJson))
+      val response = await(postToFeedbackResource(feedbackSubmissionJson))
 
       response.status shouldBe 401
 
@@ -100,10 +89,7 @@ class FeedbackISpec extends WordSpec with Matchers
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
-      val response = await(
-        wsUrl("/feedback-submissions")
-          .withHeaders("Content-Type" -> "application/json")
-          .post(feedbackSubmissionJson))
+      val response = await(postToFeedbackResource(feedbackSubmissionJson))
 
       response.status shouldBe 403
 
@@ -115,10 +101,7 @@ class FeedbackISpec extends WordSpec with Matchers
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillRespondWithInternalServerError()
 
-      val response = await(
-        wsUrl("/feedback-submissions")
-          .withHeaders("Content-Type" -> "application/json")
-          .post(feedbackSubmissionJson))
+      val response = await(postToFeedbackResource(feedbackSubmissionJson))
 
       response.status shouldBe 502
     }
@@ -128,10 +111,7 @@ class FeedbackISpec extends WordSpec with Matchers
       HelpToSaveStub.enrolmentStatusReturnsInternalServerError()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
-      val response = await(
-        wsUrl("/feedback-submissions")
-          .withHeaders("Content-Type" -> "application/json")
-          .post(feedbackSubmissionJson))
+      val response = await(postToFeedbackResource(feedbackSubmissionJson))
 
       response.status shouldBe 502
     }
