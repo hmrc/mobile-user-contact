@@ -21,7 +21,7 @@ import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HmrcDeskproStub}
-import uk.gov.hmrc.mobileusercontact.test.{IntegrationTestJson, MobileUserContactClient, OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.{MobileUserContactClient, OneServerPerSuiteWsClient, WireMockSupport}
 
 class SupportISpec
   extends WordSpec
@@ -34,7 +34,16 @@ class SupportISpec
 
   override implicit lazy val app: Application = appBuilder.build()
 
-  import IntegrationTestJson.supportRequestJson
+  private val supportRequestJson = """
+                             |{
+                             |  "name": "John Smith",
+                             |  "email": "testy@example.com",
+                             |  "message": "I can't find my latest payment",
+                             |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
+                             |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+                             |  "service": "HTS"
+                             |}
+                           """.stripMargin
 
 
   "POST /support-requests" should {

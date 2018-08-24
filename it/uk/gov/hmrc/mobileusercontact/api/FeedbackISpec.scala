@@ -21,7 +21,7 @@ import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HelpToSaveStub, HmrcDeskproStub}
-import uk.gov.hmrc.mobileusercontact.test.{IntegrationTestJson, MobileUserContactClient, OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.{MobileUserContactClient, OneServerPerSuiteWsClient, WireMockSupport}
 
 class FeedbackISpec
   extends WordSpec
@@ -34,7 +34,17 @@ class FeedbackISpec
 
   override implicit lazy val app: Application = appBuilder.build()
 
-  import IntegrationTestJson.feedbackSubmissionJson
+  private val feedbackSubmissionJson =
+    """
+      |{
+      |  "email": "testy@example.com",
+      |  "message": "I think the app is great",
+      |  "signUpForResearch": true,
+      |  "town": "Leeds",
+      |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
+      |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)"
+      |}
+    """.stripMargin
 
   "POST /feedback-submissions" should {
 

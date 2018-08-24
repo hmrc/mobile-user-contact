@@ -24,10 +24,10 @@ import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import scala.concurrent.Future._
 
 @Singleton
-class SandboxController @Inject()(authorised:Authorised) extends BaseController {
+class SandboxController @Inject()() extends BaseController {
 
   private def authorisedNoContentResponse[A](implicit r:Reads[A]): Action[A] = Action.async(parse.json[A]) {
-    implicit request => authorised.authorise(request)(successful(NoContent))
+    implicit request => successful(NoContent)
   }
 
   val requestSupport: Action[SupportRequest] = authorisedNoContentResponse[SupportRequest]
