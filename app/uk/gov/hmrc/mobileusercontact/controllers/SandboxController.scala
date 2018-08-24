@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.bootstrap.controller.BaseController
 import scala.concurrent.Future._
 
 @Singleton
-class SandboxController @Inject()() extends BaseController {
+class SandboxController extends BaseController {
 
   private def authorisedNoContentResponse[A](implicit r:Reads[A]): Action[A] = Action.async(parse.json[A]) {
     implicit request => successful(NoContent)
