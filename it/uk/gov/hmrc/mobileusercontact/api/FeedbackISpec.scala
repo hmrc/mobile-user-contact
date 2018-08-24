@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.feedback
+package uk.gov.hmrc.mobileusercontact.api
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
@@ -23,9 +23,13 @@ import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HelpToSaveStub, HmrcDeskproStub}
 import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
-class FeedbackISpec extends WordSpec with Matchers
- with FutureAwaits with DefaultAwaitTimeout
- with WireMockSupport with OneServerPerSuiteWsClient {
+class FeedbackISpec
+  extends WordSpec
+    with Matchers
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with WireMockSupport
+    with OneServerPerSuiteWsClient {
 
   override implicit lazy val app: Application = appBuilder.build()
 
@@ -51,7 +55,8 @@ class FeedbackISpec extends WordSpec with Matchers
       val response = await(
         wsUrl("/feedback-submissions")
           .withHeaders("Content-Type" -> "application/json")
-          .post(feedbackSubmissionJson))
+          .post(feedbackSubmissionJson)
+      )
 
       response.status shouldBe 204
 
@@ -88,7 +93,8 @@ class FeedbackISpec extends WordSpec with Matchers
       val response = await(
         wsUrl("/feedback-submissions")
           .withHeaders("Content-Type" -> "application/json")
-          .post(feedbackSubmissionJson))
+          .post(feedbackSubmissionJson)
+      )
 
       response.status shouldBe 401
 
@@ -103,7 +109,8 @@ class FeedbackISpec extends WordSpec with Matchers
       val response = await(
         wsUrl("/feedback-submissions")
           .withHeaders("Content-Type" -> "application/json")
-          .post(feedbackSubmissionJson))
+          .post(feedbackSubmissionJson)
+      )
 
       response.status shouldBe 403
 
@@ -118,7 +125,8 @@ class FeedbackISpec extends WordSpec with Matchers
       val response = await(
         wsUrl("/feedback-submissions")
           .withHeaders("Content-Type" -> "application/json")
-          .post(feedbackSubmissionJson))
+          .post(feedbackSubmissionJson)
+      )
 
       response.status shouldBe 502
     }
@@ -131,7 +139,8 @@ class FeedbackISpec extends WordSpec with Matchers
       val response = await(
         wsUrl("/feedback-submissions")
           .withHeaders("Content-Type" -> "application/json")
-          .post(feedbackSubmissionJson))
+          .post(feedbackSubmissionJson)
+      )
 
       response.status shouldBe 502
     }

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.support
+package uk.gov.hmrc.mobileusercontact.api
 
 import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.libs.json.Json
-import play.api.libs.ws.WSResponse
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HmrcDeskproStub}
 import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
@@ -34,19 +33,17 @@ class SupportISpec
 
   override implicit lazy val app: Application = appBuilder.build()
 
-  private val supportResourcePath = "/support-requests"
+  private val supportRequestJson = """
+                             |{
+                             |  "name": "John Smith",
+                             |  "email": "testy@example.com",
+                             |  "message": "I can't find my latest payment",
+                             |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
+                             |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+                             |  "service": "HTS"
+                             |}
+                           """.stripMargin
 
-  private val supportRequestJson =
-    """
-      |{
-      |  "name": "John Smith",
-      |  "email": "testy@example.com",
-      |  "message": "I can't find my latest payment",
-      |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
-      |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
-      |  "service": "HTS"
-      |}
-    """.stripMargin
 
   "POST /support-requests" should {
 
@@ -55,7 +52,12 @@ class SupportISpec
       AuthStub.userIsLoggedIn()
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
-      val response = postSupportRequest()
+      val response = await(
+        wsUrl("/support-requests")
+          .withHeaders("Content-Type" -> "application/json")
+          .post(supportRequestJson)
+      )
+
       response.status shouldBe 204
 
       HmrcDeskproStub.createSupportShouldHaveBeenCalled(Json.obj(
@@ -79,7 +81,12 @@ class SupportISpec
       AuthStub.userIsNotLoggedIn()
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
-      postSupportRequest().status shouldBe 401
+      val response = await(wsUrl("/support-requests")
+        .withHeaders("Content-Type" -> "application/json")
+        .post(supportRequestJson)
+      )
+
+      response.status shouldBe 401
 
       HmrcDeskproStub.createSupportShouldNotHaveBeenCalled()
     }
@@ -88,7 +95,12 @@ class SupportISpec
       AuthStub.userIsLoggedInWithInsufficientConfidenceLevel()
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
-      postSupportRequest().status shouldBe 403
+      val response = await(wsUrl("/support-requests")
+        .withHeaders("Content-Type" -> "application/json")
+        .post(supportRequestJson)
+      )
+
+      response.status shouldBe 403
 
       HmrcDeskproStub.createSupportShouldNotHaveBeenCalled()
     }
@@ -97,14 +109,12 @@ class SupportISpec
       AuthStub.userIsLoggedIn()
       HmrcDeskproStub.createSupportWillRespondWithInternalServerError()
 
-      postSupportRequest().status shouldBe 502
-    }
-  }
-
-  private def postSupportRequest(): WSResponse = {
-    await(
-      wsUrl(supportResourcePath)
+      val response = await(wsUrl("/support-requests")
         .withHeaders("Content-Type" -> "application/json")
-        .post(supportRequestJson))
+        .post(supportRequestJson)
+      )
+
+      response.status shouldBe 502
+    }
   }
 }
