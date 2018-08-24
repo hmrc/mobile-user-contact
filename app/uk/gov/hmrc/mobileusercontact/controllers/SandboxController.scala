@@ -16,20 +16,21 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Singleton
 import play.api.libs.json.Reads
 import play.api.mvc.Action
 import uk.gov.hmrc.mobileusercontact.domain.{FeedbackSubmission, SupportRequest}
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
+
 import scala.concurrent.Future._
 
 @Singleton
 class SandboxController extends BaseController {
 
-  private def authorisedNoContentResponse[A](implicit r:Reads[A]): Action[A] = Action.async(parse.json[A]) {
+  private def noContentAction[A](implicit r:Reads[A]): Action[A] = Action.async(parse.json[A]) {
     implicit request => successful(NoContent)
   }
 
-  val requestSupport: Action[SupportRequest] = authorisedNoContentResponse[SupportRequest]
-  val submitFeedback: Action[FeedbackSubmission] = authorisedNoContentResponse[FeedbackSubmission]
+  val requestSupport: Action[SupportRequest] = noContentAction[SupportRequest]
+  val submitFeedback: Action[FeedbackSubmission] = noContentAction[FeedbackSubmission]
 }
