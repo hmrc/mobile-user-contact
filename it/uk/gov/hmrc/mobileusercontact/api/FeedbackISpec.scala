@@ -21,7 +21,7 @@ import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HelpToSaveStub, HmrcDeskproStub}
-import uk.gov.hmrc.mobileusercontact.test.{MobileUserContactClient, OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
 class FeedbackISpec
   extends WordSpec
@@ -29,8 +29,7 @@ class FeedbackISpec
     with FutureAwaits
     with DefaultAwaitTimeout
     with WireMockSupport
-    with OneServerPerSuiteWsClient
-    with MobileUserContactClient {
+    with OneServerPerSuiteWsClient {
 
   override implicit lazy val app: Application = appBuilder.build()
 
@@ -53,7 +52,11 @@ class FeedbackISpec
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
-      val response = await(postToFeedbackResource(feedbackSubmissionJson))
+      val response = await(
+        wsUrl("/feedback-submissions")
+          .withHeaders("Content-Type" -> "application/json")
+          .post(feedbackSubmissionJson)
+      )
 
       response.status shouldBe 204
 
@@ -87,7 +90,11 @@ class FeedbackISpec
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
-      val response = await(postToFeedbackResource(feedbackSubmissionJson))
+      val response = await(
+        wsUrl("/feedback-submissions")
+          .withHeaders("Content-Type" -> "application/json")
+          .post(feedbackSubmissionJson)
+      )
 
       response.status shouldBe 401
 
@@ -99,7 +106,11 @@ class FeedbackISpec
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
-      val response = await(postToFeedbackResource(feedbackSubmissionJson))
+      val response = await(
+        wsUrl("/feedback-submissions")
+          .withHeaders("Content-Type" -> "application/json")
+          .post(feedbackSubmissionJson)
+      )
 
       response.status shouldBe 403
 
@@ -111,7 +122,11 @@ class FeedbackISpec
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillRespondWithInternalServerError()
 
-      val response = await(postToFeedbackResource(feedbackSubmissionJson))
+      val response = await(
+        wsUrl("/feedback-submissions")
+          .withHeaders("Content-Type" -> "application/json")
+          .post(feedbackSubmissionJson)
+      )
 
       response.status shouldBe 502
     }
@@ -121,7 +136,11 @@ class FeedbackISpec
       HelpToSaveStub.enrolmentStatusReturnsInternalServerError()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
-      val response = await(postToFeedbackResource(feedbackSubmissionJson))
+      val response = await(
+        wsUrl("/feedback-submissions")
+          .withHeaders("Content-Type" -> "application/json")
+          .post(feedbackSubmissionJson)
+      )
 
       response.status shouldBe 502
     }

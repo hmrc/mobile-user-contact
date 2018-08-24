@@ -20,7 +20,7 @@ import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileusercontact.stubs.AuthStub
-import uk.gov.hmrc.mobileusercontact.test.{MobileUserContactClient, OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future._
@@ -31,8 +31,7 @@ class SandboxISpec
     with FutureAwaits
     with DefaultAwaitTimeout
     with WireMockSupport
-    with OneServerPerSuiteWsClient
-    with MobileUserContactClient {
+    with OneServerPerSuiteWsClient {
 
   override implicit lazy val app: Application = appBuilder.build()
   val sandboxUserId1 = "208606423740"
@@ -56,7 +55,11 @@ class SandboxISpec
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
         AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
-        postToFeedbackSandboxResource(feedbackSubmissionJson, id).map(_.status)
+
+        wsUrl("/feedback-submissions")
+          .withHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+          .post(feedbackSubmissionJson)
+          .map(_.status)
       }
 
       await(sequence(responses)).distinct shouldBe Seq(204)
@@ -81,7 +84,11 @@ class SandboxISpec
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
         AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
-        postToSupportSandboxResource(supportRequestJson, id).map(_.status)
+
+        wsUrl("/support-requests")
+          .withHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+          .post(supportRequestJson)
+          .map(_.status)
       }
 
       await(sequence(responses)).distinct shouldBe Seq(204)

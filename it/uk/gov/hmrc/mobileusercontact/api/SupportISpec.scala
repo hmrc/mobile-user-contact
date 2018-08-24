@@ -21,7 +21,7 @@ import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HmrcDeskproStub}
-import uk.gov.hmrc.mobileusercontact.test.{MobileUserContactClient, OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
 class SupportISpec
   extends WordSpec
@@ -29,8 +29,7 @@ class SupportISpec
     with FutureAwaits
     with DefaultAwaitTimeout
     with WireMockSupport
-    with OneServerPerSuiteWsClient
-    with MobileUserContactClient {
+    with OneServerPerSuiteWsClient {
 
   override implicit lazy val app: Application = appBuilder.build()
 
@@ -53,7 +52,11 @@ class SupportISpec
       AuthStub.userIsLoggedIn()
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
-      val response = await(postToSupportResource(supportRequestJson))
+      val response = await(
+        wsUrl("/support-requests")
+          .withHeaders("Content-Type" -> "application/json")
+          .post(supportRequestJson)
+      )
 
       response.status shouldBe 204
 
@@ -78,7 +81,12 @@ class SupportISpec
       AuthStub.userIsNotLoggedIn()
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
-      await(postToSupportResource(supportRequestJson)).status shouldBe 401
+      val response = await(wsUrl("/support-requests")
+        .withHeaders("Content-Type" -> "application/json")
+        .post(supportRequestJson)
+      )
+
+      response.status shouldBe 401
 
       HmrcDeskproStub.createSupportShouldNotHaveBeenCalled()
     }
@@ -87,7 +95,12 @@ class SupportISpec
       AuthStub.userIsLoggedInWithInsufficientConfidenceLevel()
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
-      await(postToSupportResource(supportRequestJson)).status shouldBe 403
+      val response = await(wsUrl("/support-requests")
+        .withHeaders("Content-Type" -> "application/json")
+        .post(supportRequestJson)
+      )
+
+      response.status shouldBe 403
 
       HmrcDeskproStub.createSupportShouldNotHaveBeenCalled()
     }
@@ -96,7 +109,12 @@ class SupportISpec
       AuthStub.userIsLoggedIn()
       HmrcDeskproStub.createSupportWillRespondWithInternalServerError()
 
-      await(postToSupportResource(supportRequestJson)).status shouldBe 502
+      val response = await(wsUrl("/support-requests")
+        .withHeaders("Content-Type" -> "application/json")
+        .post(supportRequestJson)
+      )
+
+      response.status shouldBe 502
     }
   }
 }
