@@ -22,7 +22,7 @@ import play.api.libs.json.JsValue
 object HmrcDeskproStub {
 
   private val createFeedbackPath = "/deskpro/feedback"
-  private val createSupportPath = "/deskpro/support"
+  private val createSupportPath = "/deskpro/get-help-ticket"
 
   def createFeedbackWillSucceed(): Unit = stub200NoContentResponse(createFeedbackPath)
   def createSupportTicketWillSucceed(): Unit = stub200NoContentResponse(createSupportPath)

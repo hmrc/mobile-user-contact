@@ -41,7 +41,7 @@ class HmrcDeskproConnectorImpl @Inject() (
 
   def createFeedback(ticket: HmrcDeskproFeedback)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = create("feedback", ticket)
 
-  def createSupport(ticket: HmrcDeskproSupport)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = create("support", ticket)
+  def createSupport(ticket: HmrcDeskproSupport)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = create("get-help-ticket", ticket)
 
   private def create[T](resource:String, ticket: T)(implicit hc: HeaderCarrier, ec: ExecutionContext, wts: Writes[T]): Future[Unit] =
     http.POST[T, JsValue](deskproUrl(resource), ticket).map(_ => ())
