@@ -58,7 +58,7 @@ class FeedbackISpec
           .post(feedbackSubmissionJson)
       )
 
-      response.status shouldBe 204
+      response.status shouldBe 202
 
       val messageWithExtras =
         """I think the app is great

@@ -31,7 +31,7 @@ class SupportController @Inject()(
 
   val requestSupport: Action[SupportRequest] = Action.async(parse.json[SupportRequest]) { implicit request =>
     authorised.authorise(request) {
-      service.requestSupport(request.body) map (_ => NoContent)
+      service.requestSupport(request.body) map (_ => Accepted)
     }
   }
 }

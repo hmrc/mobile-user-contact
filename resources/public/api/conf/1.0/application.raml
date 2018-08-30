@@ -31,9 +31,10 @@ uses:
           type: !include schemas/feedback-submission.json
           example: !include examples/feedback-submission.json
       responses:
-        # we'll return 204 initially but want to be able to change this to 201 or 200 without breaking compatibility
+        # we'll return 202 initially but want to be able to change this without breaking compatibility
         200:
         201:
+        202:
         204:
   /support-requests:
     post:
@@ -49,7 +50,8 @@ uses:
           type: !include schemas/support-request.json
           example: !include examples/support-request.json
       responses:
-        # we'll return 204 initially but want to be able to change this to 201 or 200 without breaking compatibility
+        # we'll return 202 initially but want to be able to change this without breaking compatibility
         200:
         201:
+        202:
         204:
