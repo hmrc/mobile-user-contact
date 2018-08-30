@@ -62,7 +62,7 @@ class SandboxISpec
           .map(_.status)
       }
 
-      await(sequence(responses)).distinct shouldBe Seq(204)
+      await(sequence(responses)).distinct shouldBe Seq(202)
     }
   }
 
@@ -91,7 +91,7 @@ class SandboxISpec
           .map(_.status)
       }
 
-      await(sequence(responses)).distinct shouldBe Seq(204)
+      await(sequence(responses)).distinct shouldBe Seq(202)
     }
   }
 }

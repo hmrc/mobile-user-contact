@@ -35,7 +35,7 @@ class FeedbackController @Inject() (
       val appFeedback: FeedbackSubmission = request.body
 
       service.submitFeedback(appFeedback, itmpName).map { _ =>
-        NoContent
+        Accepted
       }
     }
   }

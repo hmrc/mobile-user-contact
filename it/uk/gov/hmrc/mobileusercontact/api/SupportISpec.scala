@@ -58,7 +58,7 @@ class SupportISpec
           .post(supportRequestJson)
       )
 
-      response.status shouldBe 204
+      response.status shouldBe 202
 
       HmrcDeskproStub.createSupportShouldHaveBeenCalled(Json.obj(
         "name" -> "John Smith",

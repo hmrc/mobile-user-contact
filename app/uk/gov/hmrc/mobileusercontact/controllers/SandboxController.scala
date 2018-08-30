@@ -27,10 +27,10 @@ import scala.concurrent.Future._
 @Singleton
 class SandboxController extends BaseController {
 
-  private def noContentAction[A](implicit r:Reads[A]): Action[A] = Action.async(parse.json[A]) {
-    implicit request => successful(NoContent)
+  private def acceptedAction[A](implicit r:Reads[A]): Action[A] = Action.async(parse.json[A]) {
+    implicit request => successful(Accepted)
   }
 
-  val requestSupport: Action[SupportRequest] = noContentAction[SupportRequest]
-  val submitFeedback: Action[FeedbackSubmission] = noContentAction[FeedbackSubmission]
+  val requestSupport: Action[SupportRequest] = acceptedAction[SupportRequest]
+  val submitFeedback: Action[FeedbackSubmission] = acceptedAction[FeedbackSubmission]
 }
