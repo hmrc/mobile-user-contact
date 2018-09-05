@@ -50,11 +50,17 @@ class AuthorisedImpl @Inject() (
     authConnector.authorise(predicates, retrievals).flatMap { retrieved =>
       block(retrieved)
     }.recover {
-      case e: NoActiveSession => Unauthorized(s"Authorisation failure [${e.reason}]")
+      case e: NoActiveSession =>
+        val message = s"Authorisation failure - NoActiveSession [${e.reason}]"
+        logger.info(message)
+        Unauthorized(message)
       case e: InsufficientConfidenceLevel =>
         logger.warn("Forbidding access due to insufficient confidence level. User will see an error screen. To fix this see NGC-3381.")
         Forbidden(s"Authorisation failure [${e.reason}]")
-      case e: AuthorisationException => Forbidden(s"Authorisation failure [${e.reason}]")
+      case e: AuthorisationException =>
+        val message = s"Authorisation failure [${e.reason}]"
+        logger.info(message)
+        Forbidden(message)
     }
   }
 }

@@ -95,10 +95,11 @@ class AuthorisedSpec extends WordSpec with Matchers
       }
 
       status(action(FakeRequest())) shouldBe UNAUTHORIZED
+      (slf4jLoggerStub.info(_: String)) verify "Authorisation failure - NoActiveSession [not logged in]"
     }
 
     "return 403 when AuthConnector throws any other AuthorisationException" in {
-      val authConnectorStub = authConnectorStubThatWillFail(new AuthorisationException("not authorised") {})
+      val authConnectorStub = authConnectorStubThatWillFail(new AuthorisationException("test not authorised reason") {})
 
       val authorised = new AuthorisedImpl(logger, authConnectorStub)
 
@@ -109,6 +110,7 @@ class AuthorisedSpec extends WordSpec with Matchers
       }
 
       status(action(FakeRequest())) shouldBe FORBIDDEN
+      (slf4jLoggerStub.info(_: String)) verify "Authorisation failure [test not authorised reason]"
     }
 
     "return 403 Forbidden and log a warning when AuthConnector throws InsufficientConfidenceLevel" in {
