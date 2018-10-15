@@ -16,15 +16,26 @@
 
 package uk.gov.hmrc.mobileusercontact.domain
 
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, WordSpec}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mobileusercontact.contactfrontend.FieldTransformer
 import uk.gov.hmrc.mobileusercontact.test.SupportTestData
 
 class SupportRequestSpec extends WordSpec with Matchers
-  with SupportTestData {
+  with SupportTestData
+  with MockFactory {
 
   "toDeskpro" should {
-    "map SupportRequest fields to HmrcDeskproSupport" in {
-      supportTicket.toDeskpro shouldBe expectedDeskproSupport
+    "map SupportRequest fields to HmrcDeskproSupport and use FieldTransformer to populate authId, sessionId and userTaxIdentifiers" in {
+      val fieldTransformer = mock[FieldTransformer]
+
+      fieldTransformer.userIdFrom _ expects hc returning "test-authId"
+      fieldTransformer.sessionIdFrom _ expects hc returning "test-sessionId"
+      fieldTransformer.userTaxIdentifiersFromEnrolments _ expects Some(enrolments) returning expectedUserTaxIdentifiers
+
+      implicit val implicitHc: HeaderCarrier = hc
+      supportTicket.toDeskpro(fieldTransformer, Some(enrolments)) shouldBe expectedDeskproSupport
     }
   }
 }

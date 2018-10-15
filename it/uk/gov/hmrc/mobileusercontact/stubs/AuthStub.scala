@@ -19,6 +19,7 @@ package uk.gov.hmrc.mobileusercontact.stubs
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsObject, JsString, Json}
+import uk.gov.hmrc.domain.Nino
 
 object AuthStub {
 
@@ -31,7 +32,7 @@ object AuthStub {
   private val authoriseBodyWithEmptyRetrieval: String =
     """{
       |  "authorise": [{"confidenceLevel": 200}],
-      |  "retrieve": []
+      |  "retrieve": ["allEnrolments"]
       |}""".stripMargin
 
   private val authoriseBodyConfidenceLevelElementOnly: String =
@@ -44,7 +45,26 @@ object AuthStub {
       |  "retrieve": ["itmpName"]
       |}""".stripMargin
 
+
+  private val frak =
+    """{
+      |  "allEnrolments": [
+      |    {
+      |      "key": "HMRC-NI",
+      |      "identifiers": [
+      |        {
+      |          "key": "NINO",
+      |          "value": "AA000003D"
+      |        }
+      |      ],
+      |      "state": "Activated",
+      |      "confidenceLevel": 200
+      |    }
+      |  ]
+      |}""".stripMargin
+
   def userIsLoggedIn(
+    nino: Option[Nino] = None,
     givenName: Option[String] = Some("Testy"),
     middleName: Option[String] = Some("Bobins"),
     familyName: Option[String] = Some("McTest")): Unit = {
@@ -53,7 +73,22 @@ object AuthStub {
       .withRequestBody(equalToJson(authoriseBodyWithEmptyRetrieval))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody("{}")))
+        .withBody(Json.obj(
+          "allEnrolments" -> nino.toSeq.map(n =>
+            Json.obj(
+              "key" -> "HMRC-NI",
+              "identifiers" -> Seq(
+                Json.obj(
+                  "key" -> "NINO",
+                  "value" -> n.value
+                )
+              ),
+              "state" -> "Activated",
+              "confidenceLevel" -> 200
+            )
+          )
+        ).toString
+        )))
 
     stubFor(post(urlPathEqualTo("/auth/authorise"))
       .withRequestBody(equalToJson(authoriseBodyWithItmpNameRetrieval))

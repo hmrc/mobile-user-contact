@@ -23,6 +23,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json, OWrites, Writes}
 import uk.gov.hmrc.http.{CorePost, HeaderCarrier}
 import uk.gov.hmrc.mobileusercontact.config.HmrcDeskproConnectorConfig
+import uk.gov.hmrc.mobileusercontact.contactfrontend.UserTaxIdentifiers
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -82,7 +83,8 @@ case class HmrcDeskproSupport(
   authId: String,
   areaOfTax: String,
   sessionId: String,
-  service: Option[String]
+  service: Option[String],
+  userTaxIdentifiers: UserTaxIdentifiers
 )
 
 object HmrcDeskproSupport {

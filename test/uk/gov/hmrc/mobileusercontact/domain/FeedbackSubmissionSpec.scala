@@ -70,6 +70,8 @@ class FeedbackSubmissionSpec extends WordSpec with Matchers
         name = "Given Family"
       )
     }
+
+    "use FieldTransformer to populate authId, sessionId and userTaxIdentifiers" is pending
   }
 
 }

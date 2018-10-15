@@ -20,6 +20,8 @@ import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
+import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HmrcDeskproStub}
 import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
@@ -44,17 +46,21 @@ class SupportISpec
                              |}
                            """.stripMargin
 
+  private val generator = new Generator(0)
+  private val nino = generator.nextNino
+
 
   "POST /support-requests" should {
 
     "Use hmrc-deskpro to create a support Deskpro ticket" in {
 
-      AuthStub.userIsLoggedIn()
+      AuthStub.userIsLoggedIn(nino = Some(nino))
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
       val response = await(
         wsUrl("/support-requests")
           .withHeaders("Content-Type" -> "application/json")
+          .withHeaders(HeaderNames.xSessionId -> "test-sessionId")
           .post(supportRequestJson)
       )
 
@@ -69,9 +75,14 @@ class SupportISpec
         "userAgent" -> "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
         "service" -> "HTS",
         "javascriptEnabled" -> "",
-        "authId" ->  "",
+        // authId this is n/a because there is no userId in the session - to inject one we'd have to build & encrypt a Play session cookie
+        "authId" ->  "n/a",
         "areaOfTax" ->  "",
-        "sessionId" ->  ""))
+        "sessionId" ->  "test-sessionId",
+        "userTaxIdentifiers" -> Json.obj(
+          "nino" -> nino.value
+        )
+      ))
 
       // We avoid retrieving the ITMP name as a minor performance enhancement
       AuthStub.itmpNameShouldNotHaveBeenRetrieved()

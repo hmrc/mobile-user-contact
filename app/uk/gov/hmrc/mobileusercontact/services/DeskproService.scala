@@ -18,9 +18,11 @@ package uk.gov.hmrc.mobileusercontact.services
 
 import com.google.inject.ImplementedBy
 import javax.inject.{Inject, Singleton}
+import uk.gov.hmrc.auth.core.Enrolments
 import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.connectors.{HelpToSaveConnector, HmrcDeskproConnector}
+import uk.gov.hmrc.mobileusercontact.contactfrontend.FieldTransformer
 import uk.gov.hmrc.mobileusercontact.domain.{FeedbackSubmission, SupportRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +35,7 @@ trait Feedback {
 
 @ImplementedBy(classOf[DeskproService])
 trait Support {
-  def requestSupport(appSupportRequest: SupportRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+  def requestSupport(appSupportRequest: SupportRequest,  enrolments: Enrolments)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 }
 
 @Singleton
@@ -48,7 +50,7 @@ class DeskproService @Inject()(
     }
   }
 
-  override def requestSupport(appSupportRequest: SupportRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
-    hmrcDeskproConnector.createSupport(appSupportRequest.toDeskpro)
+  override def requestSupport(appSupportRequest: SupportRequest, enrolments: Enrolments)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+    hmrcDeskproConnector.createSupport(appSupportRequest.toDeskpro(FieldTransformer, Some(enrolments)))
   }
 }

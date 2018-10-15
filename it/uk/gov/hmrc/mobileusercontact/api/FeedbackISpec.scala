@@ -48,7 +48,7 @@ class FeedbackISpec
   "POST /feedback-submissions" should {
 
     "Use hmrc-deskpro to create a feedback Deskpro ticket" in {
-      AuthStub.userIsLoggedIn(Some("Given"), Some("Middle"), Some("Family"))
+      AuthStub.userIsLoggedIn(nino = None, Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
@@ -118,7 +118,7 @@ class FeedbackISpec
     }
 
     "return 502 if hmrc-deskpro returns an error 500" in {
-      AuthStub.userIsLoggedIn(Some("Given"), Some("Middle"), Some("Family"))
+      AuthStub.userIsLoggedIn(nino = None, Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillRespondWithInternalServerError()
 
@@ -132,7 +132,7 @@ class FeedbackISpec
     }
 
     "return 502 if help-to-save returns an error 500" in {
-      AuthStub.userIsLoggedIn(Some("Given"), Some("Middle"), Some("Family"))
+      AuthStub.userIsLoggedIn(nino = None, Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.enrolmentStatusReturnsInternalServerError()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
