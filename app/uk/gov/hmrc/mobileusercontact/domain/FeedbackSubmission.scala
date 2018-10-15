@@ -26,7 +26,8 @@ case class FeedbackSubmission(
   userAgent: String,
   signUpForResearch: Boolean,
   town: Option[String],
-  journeyId: Option[String]
+  journeyId: Option[String],
+  service: Option[String]
 ) {
   
   def toDeskpro(
@@ -66,6 +67,7 @@ case class FeedbackSubmission(
       email = email,
       message = messageWithExtras,
       userAgent = userAgent,
+      service = service,
       referrer = journeyId.getOrElse(""),
       javascriptEnabled = "",
       authId = "",

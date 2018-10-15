@@ -41,7 +41,8 @@ class FeedbackISpec
       |  "signUpForResearch": true,
       |  "town": "Leeds",
       |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
-      |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)"
+      |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+      |  "service": "HTS"
       |}
     """.stripMargin
 
@@ -76,6 +77,7 @@ class FeedbackISpec
         "message" -> messageWithExtras,
         "referrer" -> "eaded345-4ccd-4c27-9285-cde938bd896d",
         "userAgent" -> "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+        "service" -> "HTS",
         // These empty strings are here because based on reading hmrc-deskpro's code it looks like these fields must be present.
         // iOS app sends them as empty strings to the old native-apps-api-orchestration API too.
         "javascriptEnabled" -> "",
