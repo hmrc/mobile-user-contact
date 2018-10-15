@@ -28,7 +28,8 @@ trait FeedbackTestData {
     userAgent = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
     signUpForResearch = true,
     town = Some("Test town"),
-    journeyId = Some("<JourneyID>")
+    journeyId = Some("<JourneyID>"),
+    service = None
   )
 
   protected val itmpName = ItmpName(
@@ -55,6 +56,7 @@ trait FeedbackTestData {
         |
         |Town: Test town""".stripMargin,
     userAgent = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+    service = None,
     referrer = "<JourneyID>",
     subject = "App Feedback",
     javascriptEnabled = "",
