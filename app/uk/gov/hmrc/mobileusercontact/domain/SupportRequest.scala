@@ -31,7 +31,7 @@ case class SupportRequest(
    service: Option[String]
  ) {
 
-  def toDeskpro(fieldTransformer: FieldTransformer, enrolmentsOption: Option[Enrolments])(implicit hc: HeaderCarrier): HmrcDeskproSupport = HmrcDeskproSupport(
+  def toDeskpro(fieldTransformer: FieldTransformer, enrolments: Enrolments)(implicit hc: HeaderCarrier): HmrcDeskproSupport = HmrcDeskproSupport(
     name = name,
     email = email,
     subject = "App Support Request",
@@ -43,7 +43,7 @@ case class SupportRequest(
     areaOfTax = "",
     sessionId = fieldTransformer.sessionIdFrom(hc),
     service = service,
-    userTaxIdentifiers = fieldTransformer.userTaxIdentifiersFromEnrolments(enrolmentsOption)
+    userTaxIdentifiers = fieldTransformer.userTaxIdentifiersFromEnrolments(Some(enrolments))
   )
 }
 

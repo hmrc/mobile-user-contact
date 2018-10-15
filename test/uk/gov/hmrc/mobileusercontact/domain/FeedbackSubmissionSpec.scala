@@ -17,18 +17,26 @@
 package uk.gov.hmrc.mobileusercontact.domain
 
 import org.scalatest.{Matchers, WordSpec}
-import uk.gov.hmrc.mobileusercontact.test.FeedbackTestData
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mobileusercontact.test.{FeedbackTestData, MockFieldTransformerForTestData}
 
 class FeedbackSubmissionSpec extends WordSpec with Matchers
-  with FeedbackTestData {
+  with FeedbackTestData
+  with MockFieldTransformerForTestData {
 
   "toDeskpro" should {
-    "map FeedbackSubmission fields to HmrcDeskproFeedback" in {
-      appFeedback.toDeskpro(itmpName, enrolledInHelpToSave = enrolledInHelpToSave) shouldBe expectedDeskproFeedback
+    "map FeedbackSubmission fields to HmrcDeskproFeedback and use FieldTransformer to populate authId, sessionId and userTaxIdentifiers" in {
+      val fieldTransformer = mockFieldTransformerForTestData
+      implicit val implicitHc: HeaderCarrier = hc
+
+      appFeedback.toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback
     }
 
     "omit town when signUpForResearch = false" in {
-      appFeedback.copy(signUpForResearch = false).toDeskpro(itmpName, enrolledInHelpToSave = enrolledInHelpToSave) shouldBe expectedDeskproFeedback.copy(
+      val fieldTransformer = mockFieldTransformerForTestData
+      implicit val implicitHc: HeaderCarrier = hc
+
+      appFeedback.copy(signUpForResearch = false).toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback.copy(
         message =
           """It's OK
             |
@@ -37,7 +45,10 @@ class FeedbackSubmissionSpec extends WordSpec with Matchers
     }
 
     """include "HtS: yes" when user is not enrolled in Help to Save""" in {
-      val deskproFeedback = appFeedback.toDeskpro(itmpName, enrolledInHelpToSave = true)
+      val fieldTransformer = mockFieldTransformerForTestData
+      implicit val implicitHc: HeaderCarrier = hc
+
+      val deskproFeedback = appFeedback.toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = true, enrolments)
       deskproFeedback.message should include("HtS: yes")
       deskproFeedback shouldBe expectedDeskproFeedback.copy(
         message =
@@ -52,11 +63,17 @@ class FeedbackSubmissionSpec extends WordSpec with Matchers
     }
 
     """omit "HtS: yes" when user is not enrolled in Help to Save""" in {
-      appFeedback.toDeskpro(itmpName, enrolledInHelpToSave = false).message should not include "HtS: yes"
+      val fieldTransformer = mockFieldTransformerForTestData
+      implicit val implicitHc: HeaderCarrier = hc
+
+      appFeedback.toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = false, enrolments).message should not include "HtS: yes"
     }
 
     "handle optional fields being None" in {
-      appFeedback.copy(town = None, journeyId = None).toDeskpro(itmpName, enrolledInHelpToSave = enrolledInHelpToSave) shouldBe expectedDeskproFeedback.copy(
+      val fieldTransformer = mockFieldTransformerForTestData
+      implicit val implicitHc: HeaderCarrier = hc
+
+      appFeedback.copy(town = None, journeyId = None).toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback.copy(
         message =
           """It's OK
             |
@@ -66,12 +83,13 @@ class FeedbackSubmissionSpec extends WordSpec with Matchers
     }
 
     "format name correctly when middleName is None" in {
-      appFeedback.toDeskpro(itmpName.copy(middleName = None), enrolledInHelpToSave = enrolledInHelpToSave) shouldBe expectedDeskproFeedback.copy(
+      val fieldTransformer = mockFieldTransformerForTestData
+      implicit val implicitHc: HeaderCarrier = hc
+
+      appFeedback.toDeskpro(fieldTransformer, itmpName.copy(middleName = None), enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback.copy(
         name = "Given Family"
       )
     }
-
-    "use FieldTransformer to populate authId, sessionId and userTaxIdentifiers" is pending
   }
 
 }

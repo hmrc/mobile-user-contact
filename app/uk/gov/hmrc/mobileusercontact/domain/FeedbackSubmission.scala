@@ -17,8 +17,11 @@
 package uk.gov.hmrc.mobileusercontact.domain
 
 import play.api.libs.json.{Json, Reads}
+import uk.gov.hmrc.auth.core.Enrolments
 import uk.gov.hmrc.auth.core.retrieve.ItmpName
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproFeedback
+import uk.gov.hmrc.mobileusercontact.contactfrontend.FieldTransformer
 
 case class FeedbackSubmission(
   email: String,
@@ -30,8 +33,12 @@ case class FeedbackSubmission(
 ) {
   
   def toDeskpro(
+    fieldTransformer: FieldTransformer,
     itmpName: ItmpName,
-    enrolledInHelpToSave: Boolean
+    enrolledInHelpToSave: Boolean,
+    enrolments: Enrolments
+  )(
+    implicit hc: HeaderCarrier
   ): HmrcDeskproFeedback = {
     val contactMessage =
       s"""
@@ -68,10 +75,11 @@ case class FeedbackSubmission(
       userAgent = userAgent,
       referrer = journeyId.getOrElse(""),
       javascriptEnabled = "",
-      authId = "",
+      authId = fieldTransformer.userIdFrom(hc),
       areaOfTax = "",
-      sessionId = "",
-      rating = ""
+      sessionId = fieldTransformer.sessionIdFrom(hc),
+      rating = "",
+      userTaxIdentifiers = fieldTransformer.userTaxIdentifiersFromEnrolments(Some(enrolments))
     )
   }
 

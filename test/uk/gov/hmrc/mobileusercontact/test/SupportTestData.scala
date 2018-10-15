@@ -16,14 +16,10 @@
 
 package uk.gov.hmrc.mobileusercontact.test
 
-import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
-import uk.gov.hmrc.http.logging.SessionId
-import uk.gov.hmrc.http.{HeaderCarrier, UserId}
 import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproSupport
-import uk.gov.hmrc.mobileusercontact.contactfrontend.UserTaxIdentifiers
 import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
 
-trait SupportTestData {
+trait SupportTestData extends FieldTransformerTestData {
 
   protected val supportTicket = SupportRequest(
     email = "email@example.com",
@@ -33,16 +29,6 @@ trait SupportTestData {
     name = "Name Namely",
     service = Some("HTS")
   )
-
-  protected val hc = HeaderCarrier(
-    userId = Some(UserId("test-authId")),
-    sessionId = Some(SessionId("test-sessionId"))
-  )
-  protected val enrolments = Enrolments(
-    Set(Enrolment("HMRC-NI", Seq(EnrolmentIdentifier("NINO", "AA000003D")), "Activated", None))
-  )
-
-  protected val expectedUserTaxIdentifiers = UserTaxIdentifiers(nino = Some("AA000003D"), ctUtr = None, utr = None, vrn = None, empRef = None)
 
   /**
     * The HmrcDeskproSupport that should be sent
@@ -56,9 +42,9 @@ trait SupportTestData {
     referrer = "<JourneyID>",
     subject = "App Support Request",
     javascriptEnabled = "",
-    authId = hc.userId.get.value,
+    authId = testAuthId,
     areaOfTax = "",
-    sessionId = hc.sessionId.get.value,
+    sessionId = testSessionId,
     service = Some("HTS"),
     userTaxIdentifiers = expectedUserTaxIdentifiers
   )

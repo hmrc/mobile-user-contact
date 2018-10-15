@@ -49,7 +49,6 @@ class SupportISpec
   private val generator = new Generator(0)
   private val nino = generator.nextNino
 
-
   "POST /support-requests" should {
 
     "Use hmrc-deskpro to create a support Deskpro ticket" in {
@@ -75,7 +74,7 @@ class SupportISpec
         "userAgent" -> "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
         "service" -> "HTS",
         "javascriptEnabled" -> "",
-        // authId this is n/a because there is no userId in the session - to inject one we'd have to build & encrypt a Play session cookie
+        // authId is n/a because there is no userId in the session - to inject one we'd have to build & encrypt a Play session cookie
         "authId" ->  "n/a",
         "areaOfTax" ->  "",
         "sessionId" ->  "test-sessionId",

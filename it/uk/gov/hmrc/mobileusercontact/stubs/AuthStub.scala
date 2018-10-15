@@ -23,13 +23,13 @@ import uk.gov.hmrc.domain.Nino
 
 object AuthStub {
 
-  private val authoriseBodyWithItmpNameRetrieval: String =
+  private val authoriseBodyWithItmpNameAndAllEnrolmentsRetrievals: String =
     """{
       |  "authorise": [{"confidenceLevel": 200}],
-      |  "retrieve": ["itmpName"]
+      |  "retrieve": ["itmpName", "allEnrolments"]
       |}""".stripMargin
 
-  private val authoriseBodyWithEmptyRetrieval: String =
+  private val authoriseBodyWithAllEnrolmentsRetrieval: String =
     """{
       |  "authorise": [{"confidenceLevel": 200}],
       |  "retrieve": ["allEnrolments"]
@@ -46,64 +46,49 @@ object AuthStub {
       |}""".stripMargin
 
 
-  private val frak =
-    """{
-      |  "allEnrolments": [
-      |    {
-      |      "key": "HMRC-NI",
-      |      "identifiers": [
-      |        {
-      |          "key": "NINO",
-      |          "value": "AA000003D"
-      |        }
-      |      ],
-      |      "state": "Activated",
-      |      "confidenceLevel": 200
-      |    }
-      |  ]
-      |}""".stripMargin
-
   def userIsLoggedIn(
     nino: Option[Nino] = None,
     givenName: Option[String] = Some("Testy"),
     middleName: Option[String] = Some("Bobins"),
     familyName: Option[String] = Some("McTest")): Unit = {
 
-    stubFor(post(urlPathEqualTo("/auth/authorise"))
-      .withRequestBody(equalToJson(authoriseBodyWithEmptyRetrieval))
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withBody(Json.obj(
-          "allEnrolments" -> nino.toSeq.map(n =>
+    val allEnrolmentsJson = Json.obj(
+      "allEnrolments" -> nino.toSeq.map(n =>
+        Json.obj(
+          "key" -> "HMRC-NI",
+          "identifiers" -> Seq(
             Json.obj(
-              "key" -> "HMRC-NI",
-              "identifiers" -> Seq(
-                Json.obj(
-                  "key" -> "NINO",
-                  "value" -> n.value
-                )
-              ),
-              "state" -> "Activated",
-              "confidenceLevel" -> 200
+              "key" -> "NINO",
+              "value" -> n.value
             )
-          )
-        ).toString
-        )))
+          ),
+          "state" -> "Activated",
+          "confidenceLevel" -> 200
+        )
+      )
+    )
 
     stubFor(post(urlPathEqualTo("/auth/authorise"))
-      .withRequestBody(equalToJson(authoriseBodyWithItmpNameRetrieval))
+      .withRequestBody(equalToJson(authoriseBodyWithAllEnrolmentsRetrieval))
       .willReturn(aResponse()
         .withStatus(200)
-        .withBody(
-          Json.obj(
-            "itmpName" -> JsObject(
-              Seq(
-                givenName.map("givenName" -> JsString(_)),
-                middleName.map("middleName" -> JsString(_)),
-                familyName.map("familyName" -> JsString(_))
-              ).flatten
-            )).toString
-        )))
+        .withBody(allEnrolmentsJson.toString)))
+
+    val itmpNameAndAllEnrolmentsJson = allEnrolmentsJson ++ Json.obj(
+      "itmpName" -> JsObject(
+        Seq(
+          givenName.map("givenName" -> JsString(_)),
+          middleName.map("middleName" -> JsString(_)),
+          familyName.map("familyName" -> JsString(_))
+        ).flatten
+      )
+    )
+
+    stubFor(post(urlPathEqualTo("/auth/authorise"))
+      .withRequestBody(equalToJson(authoriseBodyWithItmpNameAndAllEnrolmentsRetrievals, true, false))
+      .willReturn(aResponse()
+        .withStatus(200)
+        .withBody(itmpNameAndAllEnrolmentsJson.toString)))
   }
 
   def userIsLoggedIn(): Unit = userIsLoggedIn(None, None, None)
