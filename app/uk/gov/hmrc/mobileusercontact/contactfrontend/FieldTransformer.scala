@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 trait FieldTransformer {
   val NA = "n/a"
 
-  def sessionIdFrom(hc: HeaderCarrier): String = hc.sessionId.map(_.value).getOrElse("n/a")
+  def sessionIdFrom(hc: HeaderCarrier): String = hc.sessionId.map(_.value).getOrElse(NA)
 
   def userIdFrom(hc: HeaderCarrier): String =
     hc.userId.map(_.value).getOrElse(NA)
