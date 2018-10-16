@@ -62,7 +62,6 @@ case class HmrcDeskproFeedback(
   authId: String,
   areaOfTax: String,
   sessionId: String,
-//  service: Option[String] //TODO not sent by apps for feedback but would be nice to have for consistency with support
 
   rating: String,
   userTaxIdentifiers: UserTaxIdentifiers
