@@ -18,7 +18,7 @@ package uk.gov.hmrc.mobileusercontact.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.Action
-import uk.gov.hmrc.auth.core.retrieve.Retrievals.itmpName
+import uk.gov.hmrc.auth.core.retrieve.{Retrievals, ~}
 import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
 import uk.gov.hmrc.mobileusercontact.services.Feedback
 import uk.gov.hmrc.play.bootstrap.controller.BaseController
@@ -31,10 +31,10 @@ class FeedbackController @Inject() (
 ) extends BaseController {
 
   val submitFeedback: Action[FeedbackSubmission] = Action.async(parse.json[FeedbackSubmission]) { implicit request =>
-    authorised.authorise(request, itmpName) { itmpName =>
+    authorised.authorise(request, Retrievals.itmpName and Retrievals.allEnrolments) { case itmpName ~ enrolments =>
       val appFeedback: FeedbackSubmission = request.body
 
-      service.submitFeedback(appFeedback, itmpName).map { _ =>
+      service.submitFeedback(appFeedback, itmpName, enrolments).map { _ =>
         Accepted
       }
     }

@@ -20,6 +20,8 @@ import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
+import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HelpToSaveStub, HmrcDeskproStub}
 import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
@@ -45,16 +47,20 @@ class FeedbackISpec
       |}
     """.stripMargin
 
+  private val generator = new Generator(0)
+  private val nino = generator.nextNino
+
   "POST /feedback-submissions" should {
 
     "Use hmrc-deskpro to create a feedback Deskpro ticket" in {
-      AuthStub.userIsLoggedIn(Some("Given"), Some("Middle"), Some("Family"))
+      AuthStub.userIsLoggedIn(nino = Some(nino), Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillSucceed()
 
       val response = await(
         wsUrl("/feedback-submissions")
           .withHeaders("Content-Type" -> "application/json")
+          .withHeaders(HeaderNames.xSessionId -> "test-sessionId")
           .post(feedbackSubmissionJson)
       )
 
@@ -79,10 +85,15 @@ class FeedbackISpec
         // These empty strings are here because based on reading hmrc-deskpro's code it looks like these fields must be present.
         // iOS app sends them as empty strings to the old native-apps-api-orchestration API too.
         "javascriptEnabled" -> "",
-        "authId" ->  "",
+        // authId is n/a because there is no userId in the session - to inject one we'd have to build & encrypt a Play session cookie
+        "authId" ->  "n/a",
         "areaOfTax" ->  "",
-        "sessionId" ->  "",
-        "rating" -> ""))
+        "sessionId" ->  "test-sessionId",
+        "rating" -> "",
+        "userTaxIdentifiers" -> Json.obj(
+          "nino" -> nino.value
+        )
+      ))
     }
 
     "return 401 if no user is logged in" in {
@@ -118,7 +129,7 @@ class FeedbackISpec
     }
 
     "return 502 if hmrc-deskpro returns an error 500" in {
-      AuthStub.userIsLoggedIn(Some("Given"), Some("Middle"), Some("Family"))
+      AuthStub.userIsLoggedIn(nino = Some(nino), Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillRespondWithInternalServerError()
 
@@ -132,7 +143,7 @@ class FeedbackISpec
     }
 
     "return 502 if help-to-save returns an error 500" in {
-      AuthStub.userIsLoggedIn(Some("Given"), Some("Middle"), Some("Family"))
+      AuthStub.userIsLoggedIn(nino = Some(nino), Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.enrolmentStatusReturnsInternalServerError()
       HmrcDeskproStub.createFeedbackWillSucceed()
 

@@ -19,7 +19,7 @@ package uk.gov.hmrc.mobileusercontact.test
 import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproSupport
 import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
 
-trait SupportTestData {
+trait SupportTestData extends FieldTransformerTestData {
 
   protected val supportTicket = SupportRequest(
     email = "email@example.com",
@@ -32,7 +32,7 @@ trait SupportTestData {
 
   /**
     * The HmrcDeskproSupport that should be sent
-    * when [[supportTicket]] is received
+    * when [[supportTicket]] is received, headers are [[hc]] and enrolments returned by auth are [[enrolments]]
     */
   protected val expectedDeskproSupport = HmrcDeskproSupport(
     name = "Name Namely",
@@ -42,9 +42,10 @@ trait SupportTestData {
     referrer = "<JourneyID>",
     subject = "App Support Request",
     javascriptEnabled = "",
-    authId = "",
+    authId = testAuthId,
     areaOfTax = "",
-    sessionId = "",
-    service = Some("HTS")
+    sessionId = testSessionId,
+    service = Some("HTS"),
+    userTaxIdentifiers = expectedUserTaxIdentifiers
   )
 }

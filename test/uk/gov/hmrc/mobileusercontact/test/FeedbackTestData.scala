@@ -20,7 +20,7 @@ import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproFeedback
 import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
 
-trait FeedbackTestData {
+trait FeedbackTestData extends FieldTransformerTestData {
 
   protected val appFeedback = FeedbackSubmission(
     email = "email@example.com",
@@ -58,9 +58,10 @@ trait FeedbackTestData {
     referrer = "<JourneyID>",
     subject = "App Feedback",
     javascriptEnabled = "",
-    authId = "",
+    authId = testAuthId,
     areaOfTax = "",
-    sessionId = "",
-    rating = "")
+    sessionId = testSessionId,
+    rating = "",
+    userTaxIdentifiers = expectedUserTaxIdentifiers)
 
 }

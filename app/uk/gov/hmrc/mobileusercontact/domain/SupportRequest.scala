@@ -17,7 +17,10 @@
 package uk.gov.hmrc.mobileusercontact.domain
 
 import play.api.libs.json.{Json, Reads}
+import uk.gov.hmrc.auth.core.Enrolments
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproSupport
+import uk.gov.hmrc.mobileusercontact.contactfrontend.FieldTransformer
 
 case class SupportRequest(
    name: String,
@@ -28,7 +31,7 @@ case class SupportRequest(
    service: Option[String]
  ) {
 
-  def toDeskpro: HmrcDeskproSupport = HmrcDeskproSupport(
+  def toDeskpro(fieldTransformer: FieldTransformer, enrolments: Enrolments)(implicit hc: HeaderCarrier): HmrcDeskproSupport = HmrcDeskproSupport(
     name = name,
     email = email,
     subject = "App Support Request",
@@ -36,10 +39,11 @@ case class SupportRequest(
     referrer = journeyId.getOrElse(""),
     javascriptEnabled = "",
     userAgent = userAgent,
-    authId = "",
+    authId = fieldTransformer.userIdFrom(hc),
     areaOfTax = "",
-    sessionId = "",
-    service = service
+    sessionId = fieldTransformer.sessionIdFrom(hc),
+    service = service,
+    userTaxIdentifiers = fieldTransformer.userTaxIdentifiersFromEnrolments(Some(enrolments))
   )
 }
 
