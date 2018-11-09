@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.domain
+package uk.gov.hmrc.mobileusercontact.api
 
 import org.scalatest.{Matchers, WordSpec}
-import play.api.libs.json.Json
-import uk.gov.hmrc.mobileusercontact.api.SupportRequestJsonSchema
+import uk.gov.hmrc.mobileusercontact.json.JsonResource.loadResourceJson
 import uk.gov.hmrc.mobileusercontact.scalatest.SchemaMatchers
-import uk.gov.hmrc.mobileusercontact.test.SupportTestData
 
-class SupportRequestJsonSpec
+class JsonExamplesSpec
   extends WordSpec with Matchers
-    with SupportRequestJsonSchema with SchemaMatchers
-    with SupportTestData {
+    with FeedbackSubmissionJsonSchema with SupportRequestJsonSchema
+    with SchemaMatchers {
 
-  "SupportRequest case class JSON" should {
+  "examples/feedback-submission.json" should {
     "be a valid instance of the schema used in the RAML and not contain undocumented properties" in {
-      Json.toJson(supportTicket) should validateAgainstSchema(strictRamlSupportRequestSchema)
+      loadResourceJson("/public/api/conf/1.0/examples/feedback-submission.json") should validateAgainstSchema(strictRamlFeedbackSubmissionSchema)
+    }
+  }
+
+  "examples/support-request.json" should {
+    "be a valid instance of the schema used in the RAML and not contain undocumented properties" in {
+      loadResourceJson("/public/api/conf/1.0/examples/support-request.json") should validateAgainstSchema(strictRamlSupportRequestSchema)
     }
   }
 }

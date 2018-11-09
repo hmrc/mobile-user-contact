@@ -16,24 +16,20 @@
 
 package uk.gov.hmrc.mobileusercontact.domain
 
-import com.eclipsesource.schema.SchemaType
 import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.mobileusercontact.json.JsonResource.loadResourceJson
-import uk.gov.hmrc.mobileusercontact.json.Schema.banAdditionalProperties
+import uk.gov.hmrc.mobileusercontact.api.FeedbackSubmissionJsonSchema
 import uk.gov.hmrc.mobileusercontact.scalatest.SchemaMatchers
 import uk.gov.hmrc.mobileusercontact.test.FeedbackTestData
 
-class FeedbackSubmissionJsonSpec extends WordSpec with Matchers with SchemaMatchers with FeedbackTestData {
-
-  private val strictRamlFeedbackSubmissionSchema =
-    banAdditionalProperties(loadResourceJson("/public/api/conf/1.0/schemas/feedback-submission.json"))
-      .as[SchemaType]
+class FeedbackSubmissionJsonSpec
+  extends WordSpec with Matchers
+    with FeedbackSubmissionJsonSchema with SchemaMatchers
+    with FeedbackTestData {
 
   "FeedbackSubmission JSON" should {
     "be a valid instance of the schema used in the RAML and not contain undocumented properties" in {
       Json.toJson(appFeedback) should validateAgainstSchema(strictRamlFeedbackSubmissionSchema)
     }
   }
-
 }
