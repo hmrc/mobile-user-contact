@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobileusercontact.domain
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.auth.core.Enrolments
 import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.http.HeaderCarrier
@@ -86,5 +86,5 @@ case class FeedbackSubmission(
 }
 
 object FeedbackSubmission {
-  implicit val reads: Reads[FeedbackSubmission] = Json.reads[FeedbackSubmission]
+  implicit val format: OFormat[FeedbackSubmission] = Json.format
 }

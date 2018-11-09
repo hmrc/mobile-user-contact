@@ -24,6 +24,7 @@ object AppDependencies {
     "org.scalatest" %% "scalatest" % "3.0.5" % scope,
     "org.scalatestplus.play" %% "scalatestplus-play" % "2.0.1" % scope,
     "org.pegdown" % "pegdown" % "1.6.0" % scope,
+    "com.eclipsesource" %% "play-json-schema-validator" % "0.8.9" % scope,
 
     "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
 
