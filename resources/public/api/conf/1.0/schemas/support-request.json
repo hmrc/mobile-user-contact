@@ -22,6 +22,10 @@
     "userAgent": {
       "type": "string",
       "description": "Mobile app HTTP user agent"
+    },
+    "service": {
+      "type": "string",
+      "description": "The name of the feature that the support request relates to"
     }
   },
   "required": [
