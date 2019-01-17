@@ -5,12 +5,21 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 val appName = "mobile-user-contact"
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
+  .enablePlugins(
+    play.sbt.PlayScala,
+    SbtAutoBuildPlugin,
+    SbtGitVersioning,
+    SbtDistributablesPlugin,
+    SbtArtifactory
+  )
   .settings(
-    majorVersion                     := 0,
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test ++ AppDependencies.integrationTest,
-    evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-    PlayKeys.playDefaultPort         := 8250,
+    majorVersion := 0,
+    scalaVersion := "2.11.12",
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test ++ AppDependencies.integrationTest,
+    dependencyOverrides ++= AppDependencies.overrides(),
+    evictionWarningOptions in update := EvictionWarningOptions.default
+      .withWarnScalaVersionEviction(false),
+    PlayKeys.playDefaultPort := 8250,
     unmanagedResourceDirectories in Compile += baseDirectory.value / "resources"
   )
   .settings(publishingSettings: _*)
@@ -18,16 +27,18 @@ lazy val microservice = Project(appName, file("."))
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(
-    Keys.fork in IntegrationTest                  := false,
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value,
-    testGrouping in IntegrationTest               := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
-    parallelExecution in IntegrationTest          := false,
+    Keys.fork in IntegrationTest := false,
+    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(
+      base => Seq(base / "it")
+    ).value,
+    testGrouping in IntegrationTest := oneForkedJvmPerTest(
+      (definedTests in IntegrationTest).value
+    ),
+    parallelExecution in IntegrationTest := false,
     addTestReportOption(IntegrationTest, "int-test-reports")
   )
   .settings(addCommandAlias("testAll", ";reload;test;it:test"))
-  .settings(
-    resolvers += Resolver.jcenterRepo
-  )
+  .settings(resolvers += Resolver.jcenterRepo)
 
 lazy val scoverageSettings = {
   import scoverage.ScoverageKeys

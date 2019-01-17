@@ -25,13 +25,7 @@ import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HmrcDeskproStub}
 import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
-class SupportISpec
-  extends WordSpec
-    with Matchers
-    with FutureAwaits
-    with DefaultAwaitTimeout
-    with WireMockSupport
-    with OneServerPerSuiteWsClient {
+class SupportISpec extends WordSpec with Matchers with FutureAwaits with DefaultAwaitTimeout with WireMockSupport with OneServerPerSuiteWsClient {
 
   override implicit lazy val app: Application = appBuilder.build()
 
@@ -47,7 +41,7 @@ class SupportISpec
                            """.stripMargin
 
   private val generator = new Generator(0)
-  private val nino = generator.nextNino
+  private val nino      = generator.nextNino
 
   "POST /support-requests" should {
 
@@ -58,30 +52,31 @@ class SupportISpec
 
       val response = await(
         wsUrl("/support-requests")
-          .withHeaders("Content-Type" -> "application/json")
-          .withHeaders(HeaderNames.xSessionId -> "test-sessionId")
+          .addHttpHeaders("Content-Type" -> "application/json")
+          .addHttpHeaders(HeaderNames.xSessionId -> "test-sessionId")
           .post(supportRequestJson)
       )
 
       response.status shouldBe 202
 
-      HmrcDeskproStub.createSupportShouldHaveBeenCalled(Json.obj(
-        "name" -> "John Smith",
-        "email" -> "testy@example.com",
-        "subject" -> "App Support Request",
-        "message" -> "I can't find my latest payment",
-        "referrer" -> "eaded345-4ccd-4c27-9285-cde938bd896d",
-        "userAgent" -> "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
-        "service" -> "HTS",
-        "javascriptEnabled" -> "",
-        // authId is n/a because there is no userId in the session - to inject one we'd have to build & encrypt a Play session cookie
-        "authId" ->  "n/a",
-        "areaOfTax" ->  "",
-        "sessionId" ->  "test-sessionId",
-        "userTaxIdentifiers" -> Json.obj(
-          "nino" -> nino.value
-        )
-      ))
+      HmrcDeskproStub.createSupportShouldHaveBeenCalled(
+        Json.obj(
+          "name"              -> "John Smith",
+          "email"             -> "testy@example.com",
+          "subject"           -> "App Support Request",
+          "message"           -> "I can't find my latest payment",
+          "referrer"          -> "eaded345-4ccd-4c27-9285-cde938bd896d",
+          "userAgent"         -> "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+          "service"           -> "HTS",
+          "javascriptEnabled" -> "",
+          // authId is n/a because there is no userId in the session - to inject one we'd have to build & encrypt a Play session cookie
+          "authId"    -> "n/a",
+          "areaOfTax" -> "",
+          "sessionId" -> "test-sessionId",
+          "userTaxIdentifiers" -> Json.obj(
+            "nino" -> nino.value
+          )
+        ))
 
       // We avoid retrieving the ITMP name as a minor performance enhancement
       AuthStub.itmpNameShouldNotHaveBeenRetrieved()
@@ -91,10 +86,10 @@ class SupportISpec
       AuthStub.userIsNotLoggedIn()
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
-      val response = await(wsUrl("/support-requests")
-        .withHeaders("Content-Type" -> "application/json")
-        .post(supportRequestJson)
-      )
+      val response = await(
+        wsUrl("/support-requests")
+          .addHttpHeaders("Content-Type" -> "application/json")
+          .post(supportRequestJson))
 
       response.status shouldBe 401
 
@@ -105,10 +100,10 @@ class SupportISpec
       AuthStub.userIsLoggedInWithInsufficientConfidenceLevel()
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
-      val response = await(wsUrl("/support-requests")
-        .withHeaders("Content-Type" -> "application/json")
-        .post(supportRequestJson)
-      )
+      val response = await(
+        wsUrl("/support-requests")
+          .addHttpHeaders("Content-Type" -> "application/json")
+          .post(supportRequestJson))
 
       response.status shouldBe 403
 
@@ -119,10 +114,10 @@ class SupportISpec
       AuthStub.userIsLoggedIn()
       HmrcDeskproStub.createSupportWillRespondWithInternalServerError()
 
-      val response = await(wsUrl("/support-requests")
-        .withHeaders("Content-Type" -> "application/json")
-        .post(supportRequestJson)
-      )
+      val response = await(
+        wsUrl("/support-requests")
+          .addHttpHeaders("Content-Type" -> "application/json")
+          .post(supportRequestJson))
 
       response.status shouldBe 502
     }

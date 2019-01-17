@@ -57,7 +57,7 @@ class SandboxISpec
         AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
         wsUrl("/feedback-submissions")
-          .withHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
           .post(feedbackSubmissionJson)
           .map(_.status)
       }
@@ -86,7 +86,7 @@ class SandboxISpec
         AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
         wsUrl("/support-requests")
-          .withHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
           .post(supportRequestJson)
           .map(_.status)
       }
