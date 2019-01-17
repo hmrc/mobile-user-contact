@@ -21,7 +21,7 @@ import akka.stream.ActorMaterializer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
 import play.api.http.Status._
-import play.api.mvc.{Action, Results}
+import play.api.mvc.Results
 import play.api.test.Helpers.{contentAsString, status}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
 import uk.gov.hmrc.auth.core._
@@ -31,55 +31,59 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.controllers.AuthorisedImpl
 import uk.gov.hmrc.mobileusercontact.test.LoggerStub
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthorisedSpec extends WordSpec with Matchers
-  with FutureAwaits with DefaultAwaitTimeout
-  with MockFactory with OneInstancePerTest
-  with LoggerStub
-  with Retrievals with Results {
+class AuthorisedSpec
+    extends WordSpec
+    with Matchers
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with MockFactory
+    with OneInstancePerTest
+    with LoggerStub
+    with Retrievals
+    with Results {
 
-  implicit val system: ActorSystem = ActorSystem()
+  implicit val system:       ActorSystem       = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   "Authorised" should {
     "retrieve ItmpName when specified and pass it to the block" in {
       val authConnectorStub = stub[AuthConnector]
-      (authConnectorStub.authorise[ItmpName](_: Predicate, _: Retrieval[ItmpName])(_: HeaderCarrier, _: ExecutionContext))
+      (authConnectorStub
+        .authorise[ItmpName](_: Predicate, _: Retrieval[ItmpName])(_: HeaderCarrier, _: ExecutionContext))
         .when(ConfidenceLevel.L200, itmpName, *, *)
         .returns(Future successful ItmpName(Some("Testgiven"), None, Some("Testfamily")))
 
       val authorised = new AuthorisedImpl(logger, authConnectorStub)
 
       var capturedItmpName: Option[ItmpName] = None
-      val action = Action.async { request =>
-        authorised.authorise(request, itmpName) { itmpName =>
-          capturedItmpName = Some(itmpName)
-          Future successful Ok
-        }
+      val action = authorised.authorise(FakeRequest(), itmpName) { itmpName =>
+        capturedItmpName = Some(itmpName)
+        Future successful Ok
       }
 
-      await(action(FakeRequest())) shouldBe Ok
+      await(action)    shouldBe Ok
       capturedItmpName shouldBe Some(ItmpName(Some("Testgiven"), None, Some("Testfamily")))
     }
 
     "retrieve something else when specified and pass it to the block" in {
       val authConnectorStub = stub[AuthConnector]
-      (authConnectorStub.authorise[Option[String]](_: Predicate, _: Retrieval[Option[String]])(_: HeaderCarrier, _: ExecutionContext))
+      (authConnectorStub
+        .authorise[Option[String]](_: Predicate, _: Retrieval[Option[String]])(_: HeaderCarrier, _: ExecutionContext))
         .when(ConfidenceLevel.L200, externalId, *, *)
         .returns(Future successful Some("<test-external-id>"))
 
       val authorised = new AuthorisedImpl(logger, authConnectorStub)
 
       var capturedItmpName: Option[Option[String]] = None
-      val action = Action.async { request =>
-        authorised.authorise(request, externalId) { maybeExternalId =>
-          capturedItmpName = Some(maybeExternalId)
-          Future successful Ok
-        }
+      val action = authorised.authorise(FakeRequest(), externalId) { maybeExternalId =>
+        capturedItmpName = Some(maybeExternalId)
+        Future successful Ok
       }
 
-      await(action(FakeRequest())) shouldBe Ok
+      await(action)    shouldBe Ok
       capturedItmpName shouldBe Some(Some("<test-external-id>"))
     }
 
@@ -88,13 +92,11 @@ class AuthorisedSpec extends WordSpec with Matchers
 
       val authorised = new AuthorisedImpl(logger, authConnectorStub)
 
-      val action = Action.async { request =>
-        authorised.authorise(request, EmptyRetrieval) { _ =>
-          Future successful Ok
-        }
+      val action = authorised.authorise(FakeRequest(), EmptyRetrieval) { _ =>
+        Future successful Ok
       }
 
-      status(action(FakeRequest())) shouldBe UNAUTHORIZED
+      status(action) shouldBe UNAUTHORIZED
       (slf4jLoggerStub.info(_: String)) verify "Authorisation failure - NoActiveSession [not logged in]"
     }
 
@@ -103,13 +105,11 @@ class AuthorisedSpec extends WordSpec with Matchers
 
       val authorised = new AuthorisedImpl(logger, authConnectorStub)
 
-      val action = Action.async { request =>
-        authorised.authorise(request, EmptyRetrieval) { _ =>
-          Future successful Ok
-        }
+      val action = authorised.authorise(FakeRequest(), EmptyRetrieval) { _ =>
+        Future successful Ok
       }
 
-      status(action(FakeRequest())) shouldBe FORBIDDEN
+      status(action) shouldBe FORBIDDEN
       (slf4jLoggerStub.info(_: String)) verify "Authorisation failure [test not authorised reason]"
     }
 
@@ -118,23 +118,21 @@ class AuthorisedSpec extends WordSpec with Matchers
 
       val authorised = new AuthorisedImpl(logger, authConnectorStub)
 
-      val action = Action.async { request =>
-        authorised.authorise(request, EmptyRetrieval) { _ =>
-          Future successful Ok
-        }
+      val action = authorised.authorise(FakeRequest(), EmptyRetrieval) { _ =>
+        Future successful Ok
       }
 
-      val resultF = action(FakeRequest())
-      status(resultF) shouldBe FORBIDDEN
-      contentAsString(resultF) shouldBe "Authorisation failure [Insufficient ConfidenceLevel]"
-      (slf4jLoggerStub.warn(_: String)) verify "Forbidding access due to insufficient confidence level. User will see an error screen. To fix this see NGC-3381."
+      status(action)          shouldBe FORBIDDEN
+      contentAsString(action) shouldBe "Authorisation failure [Insufficient ConfidenceLevel]"
+      (slf4jLoggerStub
+        .warn(_: String)) verify "Forbidding access due to insufficient confidence level. User will see an error screen. To fix this see NGC-3381."
     }
   }
 
-
   private def authConnectorStubThatWillFail(e: Throwable): AuthConnector = {
     val authConnectorStub = stub[AuthConnector]
-    (authConnectorStub.authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
+    (authConnectorStub
+      .authorise(_: Predicate, _: Retrieval[_])(_: HeaderCarrier, _: ExecutionContext))
       .when(ConfidenceLevel.L200, *, *, *)
       .returns(Future failed e)
     authConnectorStub

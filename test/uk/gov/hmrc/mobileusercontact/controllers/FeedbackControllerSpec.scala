@@ -17,23 +17,22 @@
 package uk.gov.hmrc.mobileusercontact.controllers
 
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers.{status, _}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
 import uk.gov.hmrc.mobileusercontact.services.Feedback
 import uk.gov.hmrc.mobileusercontact.test.FeedbackTestData
 
-class FeedbackControllerSpec extends WordSpec with Matchers
-  with DefaultAwaitTimeout
-  with MockFactory
-  with FeedbackTestData {
+import scala.concurrent.ExecutionContext.Implicits.global
 
-  "submitFeedback" should {
+class FeedbackControllerSpec extends PlaySpec with DefaultAwaitTimeout with MockFactory with FeedbackTestData {
+
+  "submitFeedback" must {
     "ensure user is logged in by checking permissions using Authorised" in {
-      val service = mock[Feedback]
-      val controller = new FeedbackController(service, NeverAuthorised)
-      status(controller.submitFeedback()(FakeRequest().withBody[FeedbackSubmission](appFeedback))) shouldBe FORBIDDEN
+      val service    = mock[Feedback]
+      val controller = new FeedbackController(service, NeverAuthorised, stubControllerComponents())
+      status(controller.submitFeedback()(FakeRequest().withBody[FeedbackSubmission](appFeedback))) mustBe FORBIDDEN
     }
   }
 }

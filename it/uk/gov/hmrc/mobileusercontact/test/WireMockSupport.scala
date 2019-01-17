@@ -19,52 +19,55 @@ package uk.gov.hmrc.mobileusercontact.test
 import java.net.URL
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.{configureFor, reset}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 import play.api.inject.guice.GuiceApplicationBuilder
-import uk.gov.hmrc.play.it.Port
 
 case class WireMockBaseUrl(value: URL)
 
 trait WireMockSupport extends BeforeAndAfterAll with BeforeAndAfterEach with AppBuilder {
   me: Suite =>
 
-  val wireMockPort: Int = Port.randomAvailable
-  val wireMockHost = "localhost"
+  val wireMockPort: Int = wireMockServer.port()
+  val wireMockHost            = "localhost"
   val wireMockBaseUrlAsString = s"http://$wireMockHost:$wireMockPort"
-  val wireMockBaseUrl = new URL(wireMockBaseUrlAsString)
+  val wireMockBaseUrl         = new URL(wireMockBaseUrlAsString)
   protected implicit val implicitWireMockBaseUrl: WireMockBaseUrl = WireMockBaseUrl(wireMockBaseUrl)
 
   protected def basicWireMockConfig(): WireMockConfiguration = wireMockConfig()
 
-  private val wireMockServer = new WireMockServer(basicWireMockConfig().port(wireMockPort))
+  protected implicit lazy val wireMockServer: WireMockServer = {
+    val server = new WireMockServer(basicWireMockConfig().dynamicPort())
+    server.start()
+    server
+  }
 
-  override protected def beforeAll(): Unit = {
+  override def beforeAll(): Unit = {
     super.beforeAll()
-    WireMock.configureFor(wireMockHost, wireMockPort)
+    configureFor(wireMockHost, wireMockPort)
     wireMockServer.start()
   }
 
-  override protected def afterAll(): Unit = {
+  override def afterAll(): Unit = {
     wireMockServer.stop()
     super.afterAll()
   }
 
-  override protected def beforeEach(): Unit = {
+  override def beforeEach(): Unit = {
     super.beforeEach()
-    WireMock.reset()
+    reset()
   }
 
   override protected def appBuilder: GuiceApplicationBuilder = super.appBuilder.configure(
-    "auditing.enabled" -> false,
-    "microservice.services.auth.host" -> wireMockHost,
-    "microservice.services.auth.port" -> wireMockPort,
-    "microservice.services.help-to-save.host" -> wireMockHost,
-    "microservice.services.help-to-save.port" -> wireMockPort,
-    "microservice.services.hmrc-deskpro.host" -> wireMockHost,
-    "microservice.services.hmrc-deskpro.port" -> wireMockPort,
+    "auditing.enabled"                           -> false,
+    "microservice.services.auth.host"            -> wireMockHost,
+    "microservice.services.auth.port"            -> wireMockPort,
+    "microservice.services.help-to-save.host"    -> wireMockHost,
+    "microservice.services.help-to-save.port"    -> wireMockPort,
+    "microservice.services.hmrc-deskpro.host"    -> wireMockHost,
+    "microservice.services.hmrc-deskpro.port"    -> wireMockPort,
     "microservice.services.service-locator.host" -> wireMockHost,
     "microservice.services.service-locator.port" -> wireMockPort
   )
