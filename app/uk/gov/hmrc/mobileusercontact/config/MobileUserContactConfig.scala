@@ -31,8 +31,7 @@ class MobileUserContactConfig @Inject()(
   configuration: Configuration
 ) extends DocumentationControllerConfig
     with HelpToSaveConnectorConfig
-    with HmrcDeskproConnectorConfig
-    with ServiceLocatorRegistrationTaskConfig {
+    with HmrcDeskproConnectorConfig {
 
   val servicesConfig = new ServicesConfig(configuration, new RunMode(configuration, environment.mode))
 
@@ -44,8 +43,6 @@ class MobileUserContactConfig @Inject()(
   override val helpToSaveBaseUrl: URL = configBaseUrl("help-to-save")
 
   override val hmrcDeskproBaseUrl: URL = configBaseUrl("hmrc-deskpro")
-
-  override val serviceLocatorEnabled: Boolean = configBoolean("microservice.services.service-locator.enabled")
 
   private def configBoolean(path: String): Boolean = configuration.underlying.getBoolean(path)
 
@@ -66,9 +63,4 @@ trait HelpToSaveConnectorConfig {
 @ImplementedBy(classOf[MobileUserContactConfig])
 trait HmrcDeskproConnectorConfig {
   def hmrcDeskproBaseUrl: URL
-}
-
-@ImplementedBy(classOf[MobileUserContactConfig])
-trait ServiceLocatorRegistrationTaskConfig {
-  def serviceLocatorEnabled: Boolean
 }
