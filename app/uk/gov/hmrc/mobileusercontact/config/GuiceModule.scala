@@ -19,7 +19,6 @@ package uk.gov.hmrc.mobileusercontact.config
 import com.google.inject.AbstractModule
 import play.api.{Logger, LoggerLike}
 import uk.gov.hmrc.http.{CoreGet, CorePost}
-import uk.gov.hmrc.mobileusercontact.api.ServiceLocatorRegistrationTask
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 class GuiceModule extends AbstractModule {
@@ -28,7 +27,5 @@ class GuiceModule extends AbstractModule {
 
     bind(classOf[CoreGet]).to(classOf[DefaultHttpClient])
     bind(classOf[CorePost]).to(classOf[DefaultHttpClient])
-
-    bind(classOf[ServiceLocatorRegistrationTask]).asEagerSingleton()
   }
 }
