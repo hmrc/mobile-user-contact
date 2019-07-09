@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package uk.gov.hmrc.mobileusercontact.config
 import com.google.inject.AbstractModule
 import play.api.{Logger, LoggerLike}
 import uk.gov.hmrc.http.{CoreGet, CorePost}
-import uk.gov.hmrc.mobileusercontact.api.ServiceLocatorRegistrationTask
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 class GuiceModule extends AbstractModule {
@@ -28,7 +27,5 @@ class GuiceModule extends AbstractModule {
 
     bind(classOf[CoreGet]).to(classOf[DefaultHttpClient])
     bind(classOf[CorePost]).to(classOf[DefaultHttpClient])
-
-    bind(classOf[ServiceLocatorRegistrationTask]).asEagerSingleton()
   }
 }

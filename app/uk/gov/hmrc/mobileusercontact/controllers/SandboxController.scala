@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,21 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Reads
-import play.api.mvc.Action
+import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.mobileusercontact.domain.{FeedbackSubmission, SupportRequest}
-import uk.gov.hmrc.play.bootstrap.controller.BaseController
+import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.Future._
 
 @Singleton
-class SandboxController extends BaseController {
+class SandboxController @Inject()(cc: ControllerComponents) extends BackendController(cc) {
 
-  private def acceptedAction[A](implicit r:Reads[A]): Action[A] = Action.async(parse.json[A]) {
-    implicit request => successful(Accepted)
+  private def acceptedAction[A](implicit r: Reads[A]): Action[A] = Action.async(parse.json[A]) { implicit request =>
+    successful(Accepted)
   }
 
-  val requestSupport: Action[SupportRequest] = acceptedAction[SupportRequest]
+  val requestSupport: Action[SupportRequest]     = acceptedAction[SupportRequest]
   val submitFeedback: Action[FeedbackSubmission] = acceptedAction[FeedbackSubmission]
 }

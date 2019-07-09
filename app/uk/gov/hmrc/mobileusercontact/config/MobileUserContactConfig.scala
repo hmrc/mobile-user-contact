@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,44 +20,38 @@ import java.net.URL
 
 import com.google.inject.ImplementedBy
 import javax.inject.{Inject, Singleton}
-import play.api.Mode.Mode
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
 
 import scala.collection.JavaConverters._
 
 @Singleton
 class MobileUserContactConfig @Inject()(
-  environment: Environment,
+  environment:   Environment,
   configuration: Configuration
-) extends ServicesConfig
- with DocumentationControllerConfig
-  with HelpToSaveConnectorConfig
-  with HmrcDeskproConnectorConfig
-  with ServiceLocatorRegistrationTaskConfig {
+) extends DocumentationControllerConfig
+    with HelpToSaveConnectorConfig
+    with HmrcDeskproConnectorConfig {
 
-  override protected lazy val mode: Mode = environment.mode
-  override protected def runModeConfiguration: Configuration = configuration
+  val servicesConfig = new ServicesConfig(configuration, new RunMode(configuration, environment.mode))
 
   // These are eager vals so that missing or invalid configuration will be detected on startup
   private val accessConfig = configuration.underlying.getConfig("api.access")
-  override val apiAccessType: String = accessConfig.getString("type")
+  override val apiAccessType:              String      = accessConfig.getString("type")
   override val apiWhiteListApplicationIds: Seq[String] = accessConfig.getStringList("white-list.applicationIds").asScala
 
   override val helpToSaveBaseUrl: URL = configBaseUrl("help-to-save")
 
   override val hmrcDeskproBaseUrl: URL = configBaseUrl("hmrc-deskpro")
 
-  override val serviceLocatorEnabled: Boolean = configBoolean("microservice.services.service-locator.enabled")
-
   private def configBoolean(path: String): Boolean = configuration.underlying.getBoolean(path)
 
-  private def configBaseUrl(serviceName: String): URL = new URL(baseUrl(serviceName))
+  private def configBaseUrl(serviceName: String): URL = new URL(servicesConfig.baseUrl(serviceName))
 }
 
 @ImplementedBy(classOf[MobileUserContactConfig])
 trait DocumentationControllerConfig {
-  def apiAccessType: String
+  def apiAccessType:              String
   def apiWhiteListApplicationIds: Seq[String]
 }
 
@@ -69,9 +63,4 @@ trait HelpToSaveConnectorConfig {
 @ImplementedBy(classOf[MobileUserContactConfig])
 trait HmrcDeskproConnectorConfig {
   def hmrcDeskproBaseUrl: URL
-}
-
-@ImplementedBy(classOf[MobileUserContactConfig])
-trait ServiceLocatorRegistrationTaskConfig {
-  def serviceLocatorEnabled: Boolean
 }

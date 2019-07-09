@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 HM Revenue & Customs
+ * Copyright 2019 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.mobileusercontact.api
 
+import controllers.Assets
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpErrorHandler
 import play.api.libs.json.{Json, OWrites}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.mobileusercontact.config.DocumentationControllerConfig
 import uk.gov.hmrc.mobileusercontact.views.txt
 
@@ -30,12 +31,15 @@ object ApiAccess {
 }
 
 @Singleton
-class DocumentationController @Inject() (
+class DocumentationController @Inject()(
   errorHandler: HttpErrorHandler,
-  config: DocumentationControllerConfig
-) extends uk.gov.hmrc.api.controllers.DocumentationController(errorHandler) {
+  config:       DocumentationControllerConfig,
+  cc:           ControllerComponents,
+  assets:       Assets
+) extends uk.gov.hmrc.api.controllers.DocumentationController(cc, assets, errorHandler) {
 
-  private lazy val apiAccess = ApiAccess(config.apiAccessType, config.apiWhiteListApplicationIds)
+  private lazy val apiAccess =
+    ApiAccess(config.apiAccessType, config.apiWhiteListApplicationIds)
 
   override def definition(): Action[AnyContent] = Action {
     Ok(txt.definition(apiAccess)).as(JSON)
