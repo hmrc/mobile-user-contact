@@ -20,12 +20,15 @@ object AppDependencies {
   val integrationTest: Seq[ModuleID] = testCommon("it") ++ Seq(
     "com.github.tomakehurst" % "wiremock" % "2.20.0" % "it"
   )
+  def testCommon(scope: String) = Seq(
+    "uk.gov.hmrc" %% "hmrctest" % "3.1.0" % scope,
+    "org.scalatest" %% "scalatest" % "3.0.5" % scope,
+    "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % scope,
+    "org.pegdown" % "pegdown" % "1.6.0" % scope,
+    "com.eclipsesource" %% "play-json-schema-validator" % "0.9.4" % scope,
 
-  def testCommon(scope: String): Seq[ModuleID] = Seq(
-    "org.scalatest"          %% "scalatest"          % "3.0.5"                  % scope,
-    "org.scalatestplus.play" %% "scalatestplus-play" % scalatestPlusPlayVersion % scope,
-    "org.pegdown"            % "pegdown"             % "1.6.0"                  % scope,
-    "com.typesafe.play"      %% "play-test"          % PlayVersion.current      % scope,
+    "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
+
     // workaround for version clash in IntelliJ where without this line both jetty-util-9.2.15.v20160210 and jetty-util-9.2.22.v20170606 are brought in
     // which results in a NoSuchMethodError when running FeedbackISpec
     "org.eclipse.jetty.websocket" % "websocket-client" % "9.2.22.v20170606" % scope
