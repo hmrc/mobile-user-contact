@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.mobileusercontact.api
 
+import java.util.UUID.randomUUID
+
 import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.libs.json.Json
@@ -28,6 +30,7 @@ import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSu
 class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with DefaultAwaitTimeout with WireMockSupport with OneServerPerSuiteWsClient {
 
   override implicit lazy val app: Application = appBuilder.build()
+  private val journeyId: String = randomUUID().toString
 
   private val feedbackSubmissionJson =
     """
@@ -52,7 +55,7 @@ class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with Defaul
       HmrcDeskproStub.createFeedbackWillSucceed()
 
       val response = await(
-        wsUrl("/feedback-submissions")
+        wsUrl(s"/feedback-submissions?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .addHttpHeaders(HeaderNames.xSessionId -> "test-sessionId")
           .post(feedbackSubmissionJson)
@@ -97,7 +100,7 @@ class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with Defaul
       HmrcDeskproStub.createFeedbackWillSucceed()
 
       val response = await(
-        wsUrl("/feedback-submissions")
+        wsUrl(s"/feedback-submissions?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .post(feedbackSubmissionJson)
       )
@@ -113,7 +116,7 @@ class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with Defaul
       HmrcDeskproStub.createFeedbackWillSucceed()
 
       val response = await(
-        wsUrl("/feedback-submissions")
+        wsUrl(s"/feedback-submissions?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .post(feedbackSubmissionJson)
       )
@@ -129,7 +132,7 @@ class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with Defaul
       HmrcDeskproStub.createFeedbackWillRespondWithInternalServerError()
 
       val response = await(
-        wsUrl("/feedback-submissions")
+        wsUrl(s"/feedback-submissions?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .post(feedbackSubmissionJson)
       )
@@ -143,7 +146,7 @@ class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with Defaul
       HmrcDeskproStub.createFeedbackWillSucceed()
 
       val response = await(
-        wsUrl("/feedback-submissions")
+        wsUrl(s"/feedback-submissions?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .post(feedbackSubmissionJson)
       )

@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.mobileusercontact.api
 
+import java.util.UUID.randomUUID
+
 import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
@@ -36,6 +38,7 @@ class SandboxISpec
   override implicit lazy val app: Application = appBuilder.build()
   val sandboxUserId1 = "208606423740"
   val sandboxUserId2 = "167927702220"
+  private val journeyId: String = randomUUID().toString
 
   "POST /feedback-submissions with prod test account headers" should {
 
@@ -56,7 +59,7 @@ class SandboxISpec
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
         AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-        wsUrl("/feedback-submissions")
+        wsUrl(s"/feedback-submissions?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
           .post(feedbackSubmissionJson)
           .map(_.status)
@@ -85,7 +88,7 @@ class SandboxISpec
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
         AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-        wsUrl("/support-requests")
+        wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
           .post(supportRequestJson)
           .map(_.status)

@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
+import java.util.UUID.randomUUID
+
 import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers.{status, _}
@@ -28,11 +30,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class FeedbackControllerSpec extends PlaySpec with DefaultAwaitTimeout with MockFactory with FeedbackTestData {
 
+  private val journeyId = randomUUID().toString
+
   "submitFeedback" must {
     "ensure user is logged in by checking permissions using Authorised" in {
       val service    = mock[Feedback]
       val controller = new FeedbackController(service, NeverAuthorised, stubControllerComponents())
-      status(controller.submitFeedback()(FakeRequest().withBody[FeedbackSubmission](appFeedback))) mustBe FORBIDDEN
+      status(controller.submitFeedback(journeyId)(FakeRequest().withBody[FeedbackSubmission](appFeedback))) mustBe FORBIDDEN
     }
   }
 }

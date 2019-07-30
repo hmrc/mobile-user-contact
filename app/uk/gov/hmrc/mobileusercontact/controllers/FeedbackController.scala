@@ -34,7 +34,7 @@ class FeedbackController @Inject()(
   implicit ec: ExecutionContext
 ) extends BackendController(cc) {
 
-  val submitFeedback: Action[FeedbackSubmission] = Action.async(parse.json[FeedbackSubmission]) { implicit request =>
+  def submitFeedback(journeyId: String): Action[FeedbackSubmission] = Action.async(parse.json[FeedbackSubmission]) { implicit request =>
     authorised.authorise(request, Retrievals.itmpName and Retrievals.allEnrolments) {
       case itmpName ~ enrolments =>
         val appFeedback: FeedbackSubmission = request.body

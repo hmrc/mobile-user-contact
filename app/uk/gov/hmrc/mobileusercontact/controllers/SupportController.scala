@@ -33,7 +33,7 @@ class SupportController @Inject()(
 )(implicit ec: ExecutionContext)
     extends BackendController(cc) {
 
-  val requestSupport: Action[SupportRequest] = Action.async(parse.json[SupportRequest]) { implicit request =>
+  def requestSupport(journeyId: String): Action[SupportRequest] = Action.async(parse.json[SupportRequest]) { implicit request =>
     authorised.authorise(request, Retrievals.allEnrolments) { enrolments =>
       service.requestSupport(request.body, enrolments) map (_ => Accepted)
     }

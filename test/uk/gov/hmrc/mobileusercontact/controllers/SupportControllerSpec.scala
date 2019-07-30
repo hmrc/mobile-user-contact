@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
+import java.util.UUID.randomUUID
+
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
@@ -30,13 +32,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class SupportControllerSpec extends PlaySpec with DefaultAwaitTimeout with MockFactory with Retrievals with ScalaFutures with SupportTestData {
 
+  private val journeyId: String = randomUUID().toString
+
   "requestSupport" should {
 
     "reject support requests for users that have an insufficient confidence level" in {
-
       val service: Support = stub[Support]
       val controller = new SupportController(service, NeverAuthorised, stubControllerComponents())
-      status(controller.requestSupport(FakeRequest().withBody[SupportRequest](supportTicket))) mustBe FORBIDDEN
+      status(controller.requestSupport("234")(FakeRequest().withBody[SupportRequest](supportTicket))) mustBe FORBIDDEN
     }
   }
 }
