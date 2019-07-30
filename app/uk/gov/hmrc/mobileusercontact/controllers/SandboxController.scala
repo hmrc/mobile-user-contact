@@ -31,6 +31,6 @@ class SandboxController @Inject()(cc: ControllerComponents) extends BackendContr
     successful(Accepted)
   }
 
-  val requestSupport: Action[SupportRequest]     = acceptedAction[SupportRequest]
-  val submitFeedback: Action[FeedbackSubmission] = acceptedAction[FeedbackSubmission]
+  def requestSupport(journeyId: String): Action[SupportRequest]     = acceptedAction[SupportRequest]
+  def submitFeedback(journeyId: String): Action[FeedbackSubmission] = acceptedAction[FeedbackSubmission]
 }

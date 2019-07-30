@@ -1,5 +1,5 @@
 # API platform endpoints
 
-POST    /feedback-submissions           uk.gov.hmrc.mobileusercontact.controllers.FeedbackController.submitFeedback
+POST    /feedback-submissions           uk.gov.hmrc.mobileusercontact.controllers.FeedbackController.submitFeedback(journeyId: String)
 
-POST    /support-requests               uk.gov.hmrc.mobileusercontact.controllers.SupportController.requestSupport
+POST    /support-requests               uk.gov.hmrc.mobileusercontact.controllers.SupportController.requestSupport(journeyId: String)

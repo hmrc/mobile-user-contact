@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.mobileusercontact.api
 
+import java.util.UUID.randomUUID
+
 import org.scalatest.{Matchers, WordSpec}
 import play.api.Application
 import play.api.libs.json.Json
@@ -42,6 +44,7 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
 
   private val generator = new Generator(0)
   private val nino      = generator.nextNino
+  private val journeyId: String = randomUUID().toString
 
   "POST /support-requests" should {
 
@@ -51,7 +54,7 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
       val response = await(
-        wsUrl("/support-requests")
+        wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .addHttpHeaders(HeaderNames.xSessionId -> "test-sessionId")
           .post(supportRequestJson)
@@ -87,7 +90,7 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
       val response = await(
-        wsUrl("/support-requests")
+        wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .post(supportRequestJson))
 
@@ -101,7 +104,7 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
       HmrcDeskproStub.createSupportTicketWillSucceed()
 
       val response = await(
-        wsUrl("/support-requests")
+        wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .post(supportRequestJson))
 
@@ -115,7 +118,7 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
       HmrcDeskproStub.createSupportWillRespondWithInternalServerError()
 
       val response = await(
-        wsUrl("/support-requests")
+        wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .post(supportRequestJson))
 
