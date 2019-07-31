@@ -30,6 +30,10 @@ uses:
         application/json:
           type: !include schemas/feedback-submission.json
           example: !include examples/feedback-submission.json
+      queryParameters:
+        journeyId:
+          type: string
+          required: true
       responses:
         # we'll return 202 initially but want to be able to change this without breaking compatibility
         200:
@@ -49,6 +53,10 @@ uses:
         application/json:
           type: !include schemas/support-request.json
           example: !include examples/support-request.json
+      queryParameters:
+        journeyId:
+          type: string
+          required: true
       responses:
         # we'll return 202 initially but want to be able to change this without breaking compatibility
         200:

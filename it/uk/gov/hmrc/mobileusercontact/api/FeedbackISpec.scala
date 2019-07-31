@@ -153,5 +153,19 @@ class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with Defaul
 
       response.status shouldBe 502
     }
+
+    "return 400 if no journeyId is supplied" in {
+      AuthStub.userIsNotLoggedIn()
+      HelpToSaveStub.currentUserIsEnrolled()
+      HmrcDeskproStub.createFeedbackWillSucceed()
+
+      val response = await(
+        wsUrl(s"/feedback-submissions")
+          .addHttpHeaders("Content-Type" -> "application/json")
+          .post(feedbackSubmissionJson)
+      )
+
+      response.status shouldBe 400
+    }
   }
 }
