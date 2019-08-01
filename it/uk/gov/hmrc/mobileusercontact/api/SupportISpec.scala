@@ -124,5 +124,17 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
 
       response.status shouldBe 502
     }
+
+    "return 400 if journeyId not supplied" in {
+      AuthStub.userIsNotLoggedIn()
+      HmrcDeskproStub.createSupportTicketWillSucceed()
+
+      val response = await(
+        wsUrl(s"/support-requests")
+          .addHttpHeaders("Content-Type" -> "application/json")
+          .post(supportRequestJson))
+
+      response.status shouldBe 400
+    }
   }
 }
