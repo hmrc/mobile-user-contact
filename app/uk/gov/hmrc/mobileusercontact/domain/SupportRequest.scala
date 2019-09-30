@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.mobileusercontact.domain
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.auth.core.Enrolments
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproSupport
@@ -49,5 +49,5 @@ case class SupportRequest(
 
 
 object SupportRequest {
-  implicit val reads: Reads[SupportRequest] = Json.reads[SupportRequest]
+  implicit val format: OFormat[SupportRequest] = Json.format
 }
