@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.test.{MockFieldTransformerForTestData, SupportTestData}
 
-class SupportRequestSpec extends WordSpec with Matchers
-  with SupportTestData
-  with MockFieldTransformerForTestData {
+class SupportRequestSpec extends WordSpec with Matchers with SupportTestData with MockFieldTransformerForTestData {
 
   "toDeskpro" should {
     "map SupportRequest fields to HmrcDeskproSupport and use FieldTransformer to populate authId, sessionId and userTaxIdentifiers" in {

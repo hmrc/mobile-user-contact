@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
 import scala.collection.JavaConverters._
 
 @Singleton
-class MobileUserContactConfig @Inject()(
+class MobileUserContactConfig @Inject() (
   environment:   Environment,
-  configuration: Configuration
-) extends DocumentationControllerConfig
+  configuration: Configuration)
+    extends DocumentationControllerConfig
     with HelpToSaveConnectorConfig
     with HmrcDeskproConnectorConfig {
 
@@ -43,8 +43,6 @@ class MobileUserContactConfig @Inject()(
   override val helpToSaveBaseUrl: URL = configBaseUrl("help-to-save")
 
   override val hmrcDeskproBaseUrl: URL = configBaseUrl("hmrc-deskpro")
-
-  private def configBoolean(path: String): Boolean = configuration.underlying.getBoolean(path)
 
   private def configBaseUrl(serviceName: String): URL = new URL(servicesConfig.baseUrl(serviceName))
 }

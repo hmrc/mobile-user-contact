@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +24,19 @@ import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproFeedback
 import uk.gov.hmrc.mobileusercontact.contactfrontend.FieldTransformer
 
 case class FeedbackSubmission(
-  email: String,
-  message: String,
-  userAgent: String,
+  email:             String,
+  message:           String,
+  userAgent:         String,
   signUpForResearch: Boolean,
-  town: Option[String],
-  journeyId: Option[String]
-) {
-  
+  town:              Option[String],
+  journeyId:         Option[String]) {
+
   def toDeskpro(
-    fieldTransformer: FieldTransformer,
-    itmpName: ItmpName,
+    fieldTransformer:     FieldTransformer,
+    itmpName:             Option[ItmpName],
     enrolledInHelpToSave: Boolean,
-    enrolments: Enrolments
-  )(
-    implicit hc: HeaderCarrier
+    enrolments:           Enrolments
+  )(implicit hc:          HeaderCarrier
   ): HmrcDeskproFeedback = {
     val contactMessage =
       s"""
@@ -65,20 +63,20 @@ case class FeedbackSubmission(
 
     val messageWithExtras = s"$message$contactMessage$htsMessage$townMessage"
 
-    val fullName = Seq(itmpName.givenName, itmpName.middleName, itmpName.familyName).flatten.mkString(" ")
+    val fullName = itmpName.map(name => Seq(name.givenName, name.middleName, name.familyName).flatten.mkString(" "))
 
     HmrcDeskproFeedback(
-      name = fullName,
-      subject = "App Feedback",
-      email = email,
-      message = messageWithExtras,
-      userAgent = userAgent,
-      referrer = journeyId.getOrElse(""),
-      javascriptEnabled = "",
-      authId = fieldTransformer.userIdFrom(hc),
-      areaOfTax = "",
-      sessionId = fieldTransformer.sessionIdFrom(hc),
-      rating = "",
+      name               = fullName.getOrElse(""),
+      subject            = "App Feedback",
+      email              = email,
+      message            = messageWithExtras,
+      userAgent          = userAgent,
+      referrer           = journeyId.getOrElse(""),
+      javascriptEnabled  = "",
+      authId             = fieldTransformer.userIdFrom(hc),
+      areaOfTax          = "",
+      sessionId          = fieldTransformer.sessionIdFrom(hc),
+      rating             = "",
       userTaxIdentifiers = fieldTransformer.userTaxIdentifiersFromEnrolments(Some(enrolments))
     )
   }

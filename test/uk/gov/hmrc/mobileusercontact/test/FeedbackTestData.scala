@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,18 +23,18 @@ import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
 trait FeedbackTestData extends FieldTransformerTestData {
 
   protected val appFeedback = FeedbackSubmission(
-    email = "email@example.com",
-    message = "It's OK",
-    userAgent = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+    email             = "email@example.com",
+    message           = "It's OK",
+    userAgent         = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
     signUpForResearch = true,
-    town = Some("Test town"),
-    journeyId = Some("<JourneyID>")
+    town              = Some("Test town"),
+    journeyId         = Some("<JourneyID>")
   )
 
-  protected val itmpName = ItmpName(
-    givenName = Some("Given"),
+  protected val itmpName = Some(ItmpName(
+    givenName  = Some("Given"),
     middleName = Some("Middle"),
-    familyName = Some("Family")
+    familyName = Some("Family"))
   )
 
   protected val enrolledInHelpToSave = false
@@ -46,22 +46,22 @@ trait FeedbackTestData extends FieldTransformerTestData {
     * and the enrolment status received from help-to-save is [[enrolledInHelpToSave]]
     */
   protected val expectedDeskproFeedback = HmrcDeskproFeedback(
-    name = "Given Middle Family",
-    email = "email@example.com",
-    message =
-      """It's OK
-        |
-        |Contact preference: yes
-        |
-        |Town: Test town""".stripMargin,
-    userAgent = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
-    referrer = "<JourneyID>",
-    subject = "App Feedback",
-    javascriptEnabled = "",
-    authId = testAuthId,
-    areaOfTax = "",
-    sessionId = testSessionId,
-    rating = "",
-    userTaxIdentifiers = expectedUserTaxIdentifiers)
+    name               = "Given Middle Family",
+    email              = "email@example.com",
+    message            = """It's OK
+                |
+                |Contact preference: yes
+                |
+                |Town: Test town""".stripMargin,
+    userAgent          = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+    referrer           = "<JourneyID>",
+    subject            = "App Feedback",
+    javascriptEnabled  = "",
+    authId             = testAuthId,
+    areaOfTax          = "",
+    sessionId          = testSessionId,
+    rating             = "",
+    userTaxIdentifiers = expectedUserTaxIdentifiers
+  )
 
 }

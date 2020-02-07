@@ -1,5 +1,6 @@
-import TestPhases.oneForkedJvmPerTest
-import uk.gov.hmrc.DefaultBuildSettings.addTestReportOption
+import play.sbt.PlayImport.PlayKeys.playDefaultPort
+import sbt.Tests.{Group, SubProcess}
+import scoverage.ScoverageKeys
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "mobile-user-contact"
@@ -14,40 +15,36 @@ lazy val microservice = Project(appName, file("."))
   )
   .settings(
     majorVersion := 0,
-    scalaVersion := "2.11.12",
-    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test ++ AppDependencies.integrationTest,
-    dependencyOverrides ++= AppDependencies.overrides(),
+    playDefaultPort := 8250,
+    scalaVersion := "2.12.8",
+    libraryDependencies ++= AppDependencies(),
+    dependencyOverrides ++= AppDependencies.overrides,
     evictionWarningOptions in update := EvictionWarningOptions.default
       .withWarnScalaVersionEviction(false),
-    PlayKeys.playDefaultPort := 8250,
-    unmanagedResourceDirectories in Compile += baseDirectory.value / "resources"
+    resolvers += Resolver.jcenterRepo,
+    unmanagedResourceDirectories in Compile += baseDirectory.value / "resources",
+    ScoverageKeys.coverageExcludedPackages := """uk\.gov\.hmrc\.BuildInfo;.*\.Routes;.*\.RoutesPrefix;.*\.Reverse[^.]*""",
+    ScoverageKeys.coverageMinimum := 95.00,
+    ScoverageKeys.coverageFailOnMinimum := true,
+    ScoverageKeys.coverageHighlighting := true
+  )
+  .settings(
+    routesImport ++= Seq(
+      "uk.gov.hmrc.mobileusercontact.domain.types._",
+      "uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes._"
+    )
   )
   .settings(publishingSettings: _*)
-  .settings(scoverageSettings: _*)
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(
-    Keys.fork in IntegrationTest := false,
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(
-      base => Seq(base / "it")
-    ).value,
+    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(base => Seq(base / "it")).value,
     testGrouping in IntegrationTest := oneForkedJvmPerTest(
       (definedTests in IntegrationTest).value
-    ),
-    parallelExecution in IntegrationTest := false,
-    addTestReportOption(IntegrationTest, "int-test-reports")
+    )
   )
-  .settings(addCommandAlias("testAll", ";reload;test;it:test"))
-  .settings(resolvers += Resolver.jcenterRepo)
 
-lazy val scoverageSettings = {
-  import scoverage.ScoverageKeys
-  Seq(
-    // Semicolon-separated list of regexs matching classes to exclude
-    ScoverageKeys.coverageExcludedPackages := """uk\.gov\.hmrc\.BuildInfo;.*\.Routes;.*\.RoutesPrefix;.*\.Reverse[^.]*""",
-    ScoverageKeys.coverageMinimum := 80.00,
-    ScoverageKeys.coverageFailOnMinimum := false,
-    ScoverageKeys.coverageHighlighting := true,
-    parallelExecution in Test := false
-  )
-}
+def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] =
+  tests map { test =>
+    Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
+  }

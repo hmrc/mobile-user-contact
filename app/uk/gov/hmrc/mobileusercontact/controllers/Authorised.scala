@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,18 +29,27 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[AuthorisedImpl])
 trait Authorised {
-  def authorise[B, R](request: Request[B], retrievals: Retrieval[R])(block: R => Future[Result]): Future[Result]
+
+  def authorise[B, R](
+    request:    Request[B],
+    retrievals: Retrieval[R]
+  )(block:      R => Future[Result]
+  ): Future[Result]
 }
 
 @Singleton
-class AuthorisedImpl @Inject()(
+class AuthorisedImpl @Inject() (
   logger:        LoggerLike,
   authConnector: AuthConnector
-)(
-  implicit ec: ExecutionContext
-) extends Authorised
+)(implicit ec:   ExecutionContext)
+    extends Authorised
     with Results {
-  override def authorise[B, R](request: Request[B], retrievals: Retrieval[R])(block: R => Future[Result]): Future[Result] = {
+
+  override def authorise[B, R](
+    request:    Request[B],
+    retrievals: Retrieval[R]
+  )(block:      R => Future[Result]
+  ): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers)
 
     val predicates = ConfidenceLevel.L200
@@ -56,7 +65,9 @@ class AuthorisedImpl @Inject()(
           logger.info(message)
           Unauthorized(message)
         case e: InsufficientConfidenceLevel =>
-          logger.warn("Forbidding access due to insufficient confidence level. User will see an error screen. To fix this see NGC-3381.")
+          logger.warn(
+            "Forbidding access due to insufficient confidence level. User will see an error screen. To fix this see NGC-3381."
+          )
           Forbidden(s"Authorisation failure [${e.reason}]")
         case e: AuthorisationException =>
           val message = s"Authorisation failure [${e.reason}]"

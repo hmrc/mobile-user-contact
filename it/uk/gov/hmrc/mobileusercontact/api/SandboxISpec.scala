@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future._
 
 class SandboxISpec
-  extends WordSpec
+    extends WordSpec
     with Matchers
     with FutureAwaits
     with DefaultAwaitTimeout
@@ -45,25 +45,25 @@ class SandboxISpec
     "return the canned sandbox response" in {
 
       val feedbackSubmissionJson =
-      """
-        |{
-        |  "email": "testy@example.com",
-        |  "message": "I think the app is great",
-        |  "signUpForResearch": true,
-        |  "town": "Leeds",
-        |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
-        |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)"
-        |}
+        """
+          |{
+          |  "email": "testy@example.com",
+          |  "message": "I think the app is great",
+          |  "signUpForResearch": true,
+          |  "town": "Leeds",
+          |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
+          |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)"
+          |}
       """.stripMargin
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
-        AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
+          AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-        wsUrl(s"/feedback-submissions?journeyId=$journeyId")
-          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
-          .post(feedbackSubmissionJson)
-          .map(_.status)
-      }
+          wsUrl(s"/feedback-submissions?journeyId=$journeyId")
+            .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+            .post(feedbackSubmissionJson)
+            .map(_.status)
+        }
 
       await(sequence(responses)).distinct shouldBe Seq(202)
     }
@@ -83,13 +83,13 @@ class SandboxISpec
         """.stripMargin
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
-        AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
+          AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-        wsUrl(s"/feedback-submissions")
-          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
-          .post(feedbackSubmissionJson)
-          .map(_.status)
-      }
+          wsUrl(s"/feedback-submissions")
+            .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+            .post(feedbackSubmissionJson)
+            .map(_.status)
+        }
 
       await(sequence(responses)).distinct shouldBe Seq(400)
     }
@@ -112,13 +112,13 @@ class SandboxISpec
         """.stripMargin
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
-        AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
+          AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-        wsUrl(s"/support-requests?journeyId=$journeyId")
-          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
-          .post(supportRequestJson)
-          .map(_.status)
-      }
+          wsUrl(s"/support-requests?journeyId=$journeyId")
+            .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+            .post(supportRequestJson)
+            .map(_.status)
+        }
 
       await(sequence(responses)).distinct shouldBe Seq(202)
     }
@@ -138,9 +138,35 @@ class SandboxISpec
         """.stripMargin
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
+          AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
+
+          wsUrl(s"/support-requests")
+            .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+            .post(supportRequestJson)
+            .map(_.status)
+        }
+
+      await(sequence(responses)).distinct shouldBe Seq(400)
+    }
+
+    "return 400 if invalid journeyId supplied" in {
+
+      val supportRequestJson =
+        """
+          |{
+          |  "name": "John Smith",
+          |  "email": "testy@example.com",
+          |  "message": "I can't find my latest payment",
+          |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
+          |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+          |  "service": "HTS"
+          |}
+        """.stripMargin
+
+      val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
         AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-        wsUrl(s"/support-requests")
+        wsUrl(s"/support-requests?journeyId=InvalidJourneyId")
           .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
           .post(supportRequestJson)
           .map(_.status)

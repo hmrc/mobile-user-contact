@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
 trait SupportTestData extends FieldTransformerTestData {
 
   protected val supportTicket = SupportRequest(
-    email = "email@example.com",
-    message = "Where is my payment?",
+    email     = "email@example.com",
+    message   = "Where is my payment?",
     userAgent = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
     journeyId = Some("<JourneyID>"),
-    name = "Name Namely",
-    service = Some("HTS")
+    name      = "Name Namely",
+    service   = Some("HTS")
   )
 
   /**
@@ -35,17 +35,17 @@ trait SupportTestData extends FieldTransformerTestData {
     * when [[supportTicket]] is received, headers are [[hc]] and enrolments returned by auth are [[enrolments]]
     */
   protected val expectedDeskproSupport = HmrcDeskproSupport(
-    name = "Name Namely",
-    email = "email@example.com",
-    message = "Where is my payment?",
-    userAgent = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
-    referrer = "<JourneyID>",
-    subject = "App Support Request",
-    javascriptEnabled = "",
-    authId = testAuthId,
-    areaOfTax = "",
-    sessionId = testSessionId,
-    service = Some("HTS"),
+    name               = "Name Namely",
+    email              = "email@example.com",
+    message            = "Where is my payment?",
+    userAgent          = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+    referrer           = "<JourneyID>",
+    subject            = "App Support Request",
+    javascriptEnabled  = "",
+    authId             = testAuthId,
+    areaOfTax          = "",
+    sessionId          = testSessionId,
+    service            = Some("HTS"),
     userTaxIdentifiers = expectedUserTaxIdentifiers
   )
 }

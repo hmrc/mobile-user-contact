@@ -1,9 +1,8 @@
 # Add all the application routes to the app.routes file
-->         /mobile-user-contact       app.Routes
-->         /sandbox                   sandbox.Routes
-->         /                          api.Routes
-->         /                          health.Routes
-->         /                          definition.Routes
+->         /sandbox                    sandbox.Routes
+->         /                           api.Routes
+->         /                           health.Routes
+->         /                           definition.Routes
 
-GET        /admin/metrics             com.kenshoo.play.metrics.MetricsController.metrics
+GET        /admin/metrics              com.kenshoo.play.metrics.MetricsController.metrics
 

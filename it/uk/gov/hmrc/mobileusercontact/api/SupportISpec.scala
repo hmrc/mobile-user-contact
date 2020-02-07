@@ -27,19 +27,25 @@ import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HmrcDeskproStub}
 import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
-class SupportISpec extends WordSpec with Matchers with FutureAwaits with DefaultAwaitTimeout with WireMockSupport with OneServerPerSuiteWsClient {
+class SupportISpec
+    extends WordSpec
+    with Matchers
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with WireMockSupport
+    with OneServerPerSuiteWsClient {
 
   override implicit lazy val app: Application = appBuilder.build()
 
   private val supportRequestJson = """
-                             |{
-                             |  "name": "John Smith",
-                             |  "email": "testy@example.com",
-                             |  "message": "I can't find my latest payment",
-                             |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
-                             |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
-                             |  "service": "HTS"
-                             |}
+                                     |{
+                                     |  "name": "John Smith",
+                                     |  "email": "testy@example.com",
+                                     |  "message": "I can't find my latest payment",
+                                     |  "journeyId": "eaded345-4ccd-4c27-9285-cde938bd896d",
+                                     |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
+                                     |  "service": "HTS"
+                                     |}
                            """.stripMargin
 
   private val generator = new Generator(0)
@@ -79,7 +85,8 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
           "userTaxIdentifiers" -> Json.obj(
             "nino" -> nino.value
           )
-        ))
+        )
+      )
 
       // We avoid retrieving the ITMP name as a minor performance enhancement
       AuthStub.itmpNameShouldNotHaveBeenRetrieved()
@@ -92,7 +99,8 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
       val response = await(
         wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
-          .post(supportRequestJson))
+          .post(supportRequestJson)
+      )
 
       response.status shouldBe 401
 
@@ -106,7 +114,8 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
       val response = await(
         wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
-          .post(supportRequestJson))
+          .post(supportRequestJson)
+      )
 
       response.status shouldBe 403
 
@@ -120,7 +129,8 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
       val response = await(
         wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
-          .post(supportRequestJson))
+          .post(supportRequestJson)
+      )
 
       response.status shouldBe 502
     }
@@ -132,7 +142,21 @@ class SupportISpec extends WordSpec with Matchers with FutureAwaits with Default
       val response = await(
         wsUrl(s"/support-requests")
           .addHttpHeaders("Content-Type" -> "application/json")
-          .post(supportRequestJson))
+          .post(supportRequestJson)
+      )
+
+      response.status shouldBe 400
+    }
+
+    "return 400 if invalid journeyId supplied" in {
+      AuthStub.userIsNotLoggedIn()
+      HmrcDeskproStub.createSupportTicketWillSucceed()
+
+      val response = await(
+        wsUrl(s"/support-requests?journeyId=InvalidJourneyId")
+          .addHttpHeaders("Content-Type" -> "application/json")
+          .post(supportRequestJson)
+      )
 
       response.status shouldBe 400
     }
