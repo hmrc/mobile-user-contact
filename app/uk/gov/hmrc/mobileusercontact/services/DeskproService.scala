@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,30 +27,54 @@ import uk.gov.hmrc.mobileusercontact.domain.{FeedbackSubmission, SupportRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-
 @ImplementedBy(classOf[DeskproService])
 trait Feedback {
-  def submitFeedback(appFeedback: FeedbackSubmission, itmpName: ItmpName, enrolments: Enrolments)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+
+  def submitFeedback(
+    appFeedback: FeedbackSubmission,
+    itmpName:    Option[ItmpName],
+    enrolments:  Enrolments
+  )(implicit hc: HeaderCarrier,
+    ec:          ExecutionContext
+  ): Future[Unit]
 }
 
 @ImplementedBy(classOf[DeskproService])
 trait Support {
-  def requestSupport(appSupportRequest: SupportRequest, enrolments: Enrolments)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+
+  def requestSupport(
+    appSupportRequest: SupportRequest,
+    enrolments:        Enrolments
+  )(implicit hc:       HeaderCarrier,
+    ec:                ExecutionContext
+  ): Future[Unit]
 }
 
 @Singleton
-class DeskproService @Inject()(
+class DeskproService @Inject() (
   hmrcDeskproConnector: HmrcDeskproConnector,
-  helpToSaveConnector: HelpToSaveConnector
-) extends Feedback with Support  {
+  helpToSaveConnector:  HelpToSaveConnector)
+    extends Feedback
+    with Support {
 
-  override def submitFeedback(appFeedback: FeedbackSubmission, itmpName: ItmpName, enrolments: Enrolments)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+  override def submitFeedback(
+    appFeedback: FeedbackSubmission,
+    itmpName:    Option[ItmpName],
+    enrolments:  Enrolments
+  )(implicit hc: HeaderCarrier,
+    ec:          ExecutionContext
+  ): Future[Unit] =
     helpToSaveConnector.enrolmentStatus().flatMap { enrolledInHelpToSave =>
-      hmrcDeskproConnector.createFeedback(appFeedback.toDeskpro(FieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments))
+      hmrcDeskproConnector.createFeedback(
+        appFeedback.toDeskpro(FieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments)
+      )
     }
-  }
 
-  override def requestSupport(appSupportRequest: SupportRequest, enrolments: Enrolments)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+  override def requestSupport(
+    appSupportRequest: SupportRequest,
+    enrolments:        Enrolments
+  )(implicit hc:       HeaderCarrier,
+    ec:                ExecutionContext
+  ): Future[Unit] =
     hmrcDeskproConnector.createSupport(appSupportRequest.toDeskpro(FieldTransformer, enrolments))
-  }
 }

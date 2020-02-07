@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,63 +29,81 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[HmrcDeskproConnectorImpl])
 trait HmrcDeskproConnector {
-  def createFeedback(feedback: HmrcDeskproFeedback)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
-  def createSupport(ticket: HmrcDeskproSupport)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
+  def createFeedback(
+    feedback:    HmrcDeskproFeedback
+  )(implicit hc: HeaderCarrier,
+    ec:          ExecutionContext
+  ): Future[Unit]
+
+  def createSupport(
+    ticket:      HmrcDeskproSupport
+  )(implicit hc: HeaderCarrier,
+    ec:          ExecutionContext
+  ): Future[Unit]
 }
 
 @Singleton
 class HmrcDeskproConnectorImpl @Inject() (
-  http: CorePost,
-  config: HmrcDeskproConnectorConfig
-) extends HmrcDeskproConnector {
+  http:   CorePost,
+  config: HmrcDeskproConnectorConfig)
+    extends HmrcDeskproConnector {
 
-  def createFeedback(ticket: HmrcDeskproFeedback)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = create("feedback", ticket)
+  def createFeedback(
+    ticket:      HmrcDeskproFeedback
+  )(implicit hc: HeaderCarrier,
+    ec:          ExecutionContext
+  ): Future[Unit] = create("feedback", ticket)
 
-  def createSupport(ticket: HmrcDeskproSupport)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = create("get-help-ticket", ticket)
+  def createSupport(
+    ticket:      HmrcDeskproSupport
+  )(implicit hc: HeaderCarrier,
+    ec:          ExecutionContext
+  ): Future[Unit] = create("get-help-ticket", ticket)
 
-  private def create[T](resource:String, ticket: T)(implicit hc: HeaderCarrier, ec: ExecutionContext, wts: Writes[T]): Future[Unit] =
+  private def create[T](
+    resource:    String,
+    ticket:      T
+  )(implicit hc: HeaderCarrier,
+    ec:          ExecutionContext,
+    wts:         Writes[T]
+  ): Future[Unit] =
     http.POST[T, JsValue](deskproUrl(resource), ticket).map(_ => ())
 
-  private val deskproUrl = (resource:String) => new URL(config.hmrcDeskproBaseUrl, s"/deskpro/$resource").toString
+  private val deskproUrl = (resource: String) => new URL(config.hmrcDeskproBaseUrl, s"/deskpro/$resource").toString
 }
 
 case class HmrcDeskproFeedback(
-  name: String,
-  email: String,
-  subject: String,
-  message: String,
-
-  referrer: String,
-  javascriptEnabled: String,
-  userAgent: String,
-  authId: String,
-  areaOfTax: String,
-  sessionId: String,
-
-  rating: String,
-  userTaxIdentifiers: UserTaxIdentifiers
-)
+  name:               String,
+  email:              String,
+  subject:            String,
+  message:            String,
+  referrer:           String,
+  javascriptEnabled:  String,
+  userAgent:          String,
+  authId:             String,
+  areaOfTax:          String,
+  sessionId:          String,
+  rating:             String,
+  userTaxIdentifiers: UserTaxIdentifiers)
 
 object HmrcDeskproFeedback {
   implicit val writes: OWrites[HmrcDeskproFeedback] = Json.writes[HmrcDeskproFeedback]
 }
 
 case class HmrcDeskproSupport(
-  name: String,
-  email: String,
-  subject: String,
-  message: String,
-
-  referrer: String,
-  javascriptEnabled: String,
-  userAgent: String,
-  authId: String,
-  areaOfTax: String,
-  sessionId: String,
-  service: Option[String],
-  userTaxIdentifiers: UserTaxIdentifiers
-)
+  name:               String,
+  email:              String,
+  subject:            String,
+  message:            String,
+  referrer:           String,
+  javascriptEnabled:  String,
+  userAgent:          String,
+  authId:             String,
+  areaOfTax:          String,
+  sessionId:          String,
+  service:            Option[String],
+  userTaxIdentifiers: UserTaxIdentifiers)
 
 object HmrcDeskproSupport {
   implicit val writes: OWrites[HmrcDeskproSupport] = Json.writes[HmrcDeskproSupport]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,31 +17,33 @@
 package uk.gov.hmrc.mobileusercontact.domain
 
 import org.scalatest.{Matchers, WordSpec}
+import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.test.{FeedbackTestData, MockFieldTransformerForTestData}
 
-class FeedbackSubmissionSpec extends WordSpec with Matchers
-  with FeedbackTestData
-  with MockFieldTransformerForTestData {
+class FeedbackSubmissionSpec extends WordSpec with Matchers with FeedbackTestData with MockFieldTransformerForTestData {
 
   "toDeskpro" should {
     "map FeedbackSubmission fields to HmrcDeskproFeedback and use FieldTransformer to populate authId, sessionId and userTaxIdentifiers" in {
       val fieldTransformer = mockFieldTransformerForTestData
       implicit val implicitHc: HeaderCarrier = hc
 
-      appFeedback.toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback
+      appFeedback
+        .toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback
     }
 
     "omit town when signUpForResearch = false" in {
       val fieldTransformer = mockFieldTransformerForTestData
       implicit val implicitHc: HeaderCarrier = hc
 
-      appFeedback.copy(signUpForResearch = false).toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback.copy(
-        message =
-          """It's OK
-            |
-            |Contact preference: no""".stripMargin
-      )
+      appFeedback
+        .copy(signUpForResearch = false)
+        .toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback
+        .copy(
+          message = """It's OK
+                      |
+                      |Contact preference: no""".stripMargin
+        )
     }
 
     """include "HtS: yes" when user is not enrolled in Help to Save""" in {
@@ -51,14 +53,13 @@ class FeedbackSubmissionSpec extends WordSpec with Matchers
       val deskproFeedback = appFeedback.toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = true, enrolments)
       deskproFeedback.message should include("HtS: yes")
       deskproFeedback shouldBe expectedDeskproFeedback.copy(
-        message =
-      """It's OK
-        |
-        |Contact preference: yes
-        |
-        |HtS: yes
-        |
-        |Town: Test town""".stripMargin
+        message = """It's OK
+                    |
+                    |Contact preference: yes
+                    |
+                    |HtS: yes
+                    |
+                    |Town: Test town""".stripMargin
       )
     }
 
@@ -66,27 +67,34 @@ class FeedbackSubmissionSpec extends WordSpec with Matchers
       val fieldTransformer = mockFieldTransformerForTestData
       implicit val implicitHc: HeaderCarrier = hc
 
-      appFeedback.toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = false, enrolments).message should not include "HtS: yes"
+      appFeedback
+        .toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = false, enrolments)
+        .message should not include "HtS: yes"
     }
 
     "handle optional fields being None" in {
       val fieldTransformer = mockFieldTransformerForTestData
       implicit val implicitHc: HeaderCarrier = hc
 
-      appFeedback.copy(town = None, journeyId = None).toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback.copy(
-        message =
-          """It's OK
-            |
-            |Contact preference: yes""".stripMargin,
-        referrer = ""
-      )
+      appFeedback
+        .copy(town = None, journeyId = None)
+        .toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback
+        .copy(
+          message  = """It's OK
+                      |
+                      |Contact preference: yes""".stripMargin,
+          referrer = ""
+        )
     }
 
     "format name correctly when middleName is None" in {
       val fieldTransformer = mockFieldTransformerForTestData
       implicit val implicitHc: HeaderCarrier = hc
 
-      appFeedback.toDeskpro(fieldTransformer, itmpName.copy(middleName = None), enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback.copy(
+      appFeedback.toDeskpro(fieldTransformer,
+                            Some(ItmpName(givenName = Some("Given"), None, familyName = Some("Family"))),
+                            enrolledInHelpToSave = enrolledInHelpToSave,
+                            enrolments) shouldBe expectedDeskproFeedback.copy(
         name = "Given Family"
       )
     }

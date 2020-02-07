@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,30 +23,32 @@ import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproSupport
 import uk.gov.hmrc.mobileusercontact.contactfrontend.FieldTransformer
 
 case class SupportRequest(
-   name: String,
-   email: String,
-   message: String,
-   userAgent: String,
-   journeyId: Option[String],
-   service: Option[String]
- ) {
+  name:      String,
+  email:     String,
+  message:   String,
+  userAgent: String,
+  journeyId: Option[String],
+  service:   Option[String]) {
 
-  def toDeskpro(fieldTransformer: FieldTransformer, enrolments: Enrolments)(implicit hc: HeaderCarrier): HmrcDeskproSupport = HmrcDeskproSupport(
-    name = name,
-    email = email,
-    subject = "App Support Request",
-    message = message,
-    referrer = journeyId.getOrElse(""),
-    javascriptEnabled = "",
-    userAgent = userAgent,
-    authId = fieldTransformer.userIdFrom(hc),
-    areaOfTax = "",
-    sessionId = fieldTransformer.sessionIdFrom(hc),
-    service = service,
+  def toDeskpro(
+    fieldTransformer: FieldTransformer,
+    enrolments:       Enrolments
+  )(implicit hc:      HeaderCarrier
+  ): HmrcDeskproSupport = HmrcDeskproSupport(
+    name               = name,
+    email              = email,
+    subject            = "App Support Request",
+    message            = message,
+    referrer           = journeyId.getOrElse(""),
+    javascriptEnabled  = "",
+    userAgent          = userAgent,
+    authId             = fieldTransformer.userIdFrom(hc),
+    areaOfTax          = "",
+    sessionId          = fieldTransformer.sessionIdFrom(hc),
+    service            = service,
     userTaxIdentifiers = fieldTransformer.userTaxIdentifiersFromEnrolments(Some(enrolments))
   )
 }
-
 
 object SupportRequest {
   implicit val reads: Reads[SupportRequest] = Json.reads[SupportRequest]

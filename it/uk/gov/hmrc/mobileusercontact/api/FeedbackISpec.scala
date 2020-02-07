@@ -27,10 +27,16 @@ import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HelpToSaveStub, HmrcDeskproStub}
 import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
 
-class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with DefaultAwaitTimeout with WireMockSupport with OneServerPerSuiteWsClient {
+class FeedbackISpec
+    extends WordSpec
+    with Matchers
+    with FutureAwaits
+    with DefaultAwaitTimeout
+    with WireMockSupport
+    with OneServerPerSuiteWsClient {
 
   override implicit lazy val app: Application = appBuilder.build()
-  private val journeyId: String = randomUUID().toString
+  private val journeyId:          String      = randomUUID().toString
 
   private val feedbackSubmissionJson =
     """
@@ -65,12 +71,12 @@ class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with Defaul
 
       val messageWithExtras =
         """I think the app is great
-           |
-           |Contact preference: yes
-           |
-           |HtS: yes
-           |
-           |Town: Leeds""".stripMargin
+          |
+          |Contact preference: yes
+          |
+          |HtS: yes
+          |
+          |Town: Leeds""".stripMargin
 
       HmrcDeskproStub.createFeedbackShouldHaveBeenCalled(
         Json.obj(
@@ -91,7 +97,8 @@ class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with Defaul
           "userTaxIdentifiers" -> Json.obj(
             "nino" -> nino.value
           )
-        ))
+        )
+      )
     }
 
     "return 401 if no user is logged in" in {
@@ -161,6 +168,20 @@ class FeedbackISpec extends WordSpec with Matchers with FutureAwaits with Defaul
 
       val response = await(
         wsUrl(s"/feedback-submissions")
+          .addHttpHeaders("Content-Type" -> "application/json")
+          .post(feedbackSubmissionJson)
+      )
+
+      response.status shouldBe 400
+    }
+
+    "return 400 if invalid journeyId is supplied" in {
+      AuthStub.userIsNotLoggedIn()
+      HelpToSaveStub.currentUserIsEnrolled()
+      HmrcDeskproStub.createFeedbackWillSucceed()
+
+      val response = await(
+        wsUrl(s"/feedback-submissions?journeyId=InvalidJourneyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .post(feedbackSubmissionJson)
       )

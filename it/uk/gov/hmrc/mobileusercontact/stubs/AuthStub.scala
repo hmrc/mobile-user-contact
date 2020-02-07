@@ -26,7 +26,7 @@ object AuthStub {
   private val authoriseBodyWithItmpNameAndAllEnrolmentsRetrievals: String =
     """{
       |  "authorise": [{"confidenceLevel": 200}],
-      |  "retrieve": ["itmpName", "allEnrolments"]
+      |  "retrieve": ["optionalItmpName", "allEnrolments"]
       |}""".stripMargin
 
   private val authoriseBodyWithAllEnrolmentsRetrieval: String =
@@ -42,15 +42,15 @@ object AuthStub {
 
   private val authoriseBodyRetrieveItmpNameElementOnly: String =
     """{
-      |  "retrieve": ["itmpName"]
+      |  "retrieve": ["optionalItmpName"]
       |}""".stripMargin
 
-
   def userIsLoggedIn(
-    nino: Option[Nino] = None,
-    givenName: Option[String] = Some("Testy"),
+    nino:       Option[Nino]   = None,
+    givenName:  Option[String] = Some("Testy"),
     middleName: Option[String] = Some("Bobins"),
-    familyName: Option[String] = Some("McTest")): Unit = {
+    familyName: Option[String] = Some("McTest")
+  ): Unit = {
 
     val allEnrolmentsJson = Json.obj(
       "allEnrolments" -> nino.toSeq.map(n =>
@@ -58,58 +58,72 @@ object AuthStub {
           "key" -> "HMRC-NI",
           "identifiers" -> Seq(
             Json.obj(
-              "key" -> "NINO",
+              "key"   -> "NINO",
               "value" -> n.value
             )
           ),
-          "state" -> "Activated",
+          "state"           -> "Activated",
           "confidenceLevel" -> 200
         )
       )
     )
 
-    stubFor(post(urlPathEqualTo("/auth/authorise"))
-      .withRequestBody(equalToJson(authoriseBodyWithAllEnrolmentsRetrieval))
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withBody(allEnrolmentsJson.toString)))
-
-    val itmpNameAndAllEnrolmentsJson = allEnrolmentsJson ++ Json.obj(
-      "itmpName" -> JsObject(
-        Seq(
-          givenName.map("givenName" -> JsString(_)),
-          middleName.map("middleName" -> JsString(_)),
-          familyName.map("familyName" -> JsString(_))
-        ).flatten
-      )
+    stubFor(
+      post(urlPathEqualTo("/auth/authorise"))
+        .withRequestBody(equalToJson(authoriseBodyWithAllEnrolmentsRetrieval))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(allEnrolmentsJson.toString)
+        )
     )
 
-    stubFor(post(urlPathEqualTo("/auth/authorise"))
-      .withRequestBody(equalToJson(authoriseBodyWithItmpNameAndAllEnrolmentsRetrievals, true, false))
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withBody(itmpNameAndAllEnrolmentsJson.toString)))
+    val itmpNameAndAllEnrolmentsJson = allEnrolmentsJson ++ Json.obj(
+        "optionalItmpName" -> JsObject(
+          Seq(
+            givenName.map("givenName"   -> JsString(_)),
+            middleName.map("middleName" -> JsString(_)),
+            familyName.map("familyName" -> JsString(_))
+          ).flatten
+        )
+      )
+
+    stubFor(
+      post(urlPathEqualTo("/auth/authorise"))
+        .withRequestBody(equalToJson(authoriseBodyWithItmpNameAndAllEnrolmentsRetrievals, true, false))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(itmpNameAndAllEnrolmentsJson.toString)
+        )
+    )
   }
 
   def userIsLoggedIn(): Unit = userIsLoggedIn(None, None, None)
 
-  def userIsLoggedInWithInsufficientConfidenceLevel(): Unit = {
-    stubFor(post(urlPathEqualTo("/auth/authorise"))
-      .withRequestBody(equalToJson(authoriseBodyConfidenceLevelElementOnly, false, true))
-      .willReturn(aResponse()
-        .withStatus(401)
-        .withHeader("WWW-Authenticate", """MDTP detail="InsufficientConfidenceLevel"""")
-      ))
-  }
+  def userIsLoggedInWithInsufficientConfidenceLevel(): Unit =
+    stubFor(
+      post(urlPathEqualTo("/auth/authorise"))
+        .withRequestBody(equalToJson(authoriseBodyConfidenceLevelElementOnly, false, true))
+        .willReturn(
+          aResponse()
+            .withStatus(401)
+            .withHeader("WWW-Authenticate", """MDTP detail="InsufficientConfidenceLevel"""")
+        )
+    )
 
   def userIsNotLoggedIn(): Unit =
-    stubFor(post(urlPathEqualTo("/auth/authorise"))
-      .willReturn(aResponse()
-        .withStatus(401)
-          .withHeader("WWW-Authenticate", """MDTP detail="MissingBearerToken"""")
-      ))
+    stubFor(
+      post(urlPathEqualTo("/auth/authorise"))
+        .willReturn(
+          aResponse()
+            .withStatus(401)
+            .withHeader("WWW-Authenticate", """MDTP detail="MissingBearerToken"""")
+        )
+    )
 
   def itmpNameShouldNotHaveBeenRetrieved(): Unit =
-    verify(0, postRequestedFor(urlPathEqualTo("/auth/authorise"))
-      .withRequestBody(equalToJson(authoriseBodyRetrieveItmpNameElementOnly, false, true)))
+    verify(0,
+           postRequestedFor(urlPathEqualTo("/auth/authorise"))
+             .withRequestBody(equalToJson(authoriseBodyRetrieveItmpNameElementOnly, false, true)))
 }

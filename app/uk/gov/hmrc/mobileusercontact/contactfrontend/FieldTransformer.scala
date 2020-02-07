@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,27 +30,30 @@ trait FieldTransformer {
   def userIdFrom(hc: HeaderCarrier): String =
     hc.userId.map(_.value).getOrElse(NA)
 
-  private def extractIdentifier(enrolments: Enrolments, enrolment : String, identifierKey : String): Option[String] = {
+  private def extractIdentifier(
+    enrolments:    Enrolments,
+    enrolment:     String,
+    identifierKey: String
+  ): Option[String] =
     enrolments.getEnrolment(enrolment).flatMap(_.identifiers.find(_.key == identifierKey)).map(_.value)
-  }
 
-  def userTaxIdentifiersFromEnrolments(enrolmentsOption: Option[Enrolments]): UserTaxIdentifiers = {
-    enrolmentsOption.map {
-      enrolments =>
-        val nino = extractIdentifier(enrolments, "HMRC-NI", "NINO")
+  def userTaxIdentifiersFromEnrolments(enrolmentsOption: Option[Enrolments]): UserTaxIdentifiers =
+    enrolmentsOption
+      .map { enrolments =>
+        val nino  = extractIdentifier(enrolments, "HMRC-NI", "NINO")
         val saUtr = extractIdentifier(enrolments, "IR-SA", "UTR")
         val ctUtr = extractIdentifier(enrolments, "IR-CT", "UTR")
         val vrn = extractIdentifier(enrolments, "HMCE-VATDEC-ORG", "VATRegNo")
-            .orElse(extractIdentifier(enrolments, "HMCE-VATVAR-ORG", "VATRegNo"))
+          .orElse(extractIdentifier(enrolments, "HMCE-VATVAR-ORG", "VATRegNo"))
 
-        val empRef = for (
-          taxOfficeNumber <- extractIdentifier(enrolments, "IR-PAYE", "TaxOfficeNumber");
-          taxOfficeRef <- extractIdentifier(enrolments, "IR-PAYE", "TaxOfficeReference")
-        ) yield s"$taxOfficeNumber/$taxOfficeRef"
+        val empRef = for {
+          taxOfficeNumber <- extractIdentifier(enrolments, "IR-PAYE", "TaxOfficeNumber")
+          taxOfficeRef    <- extractIdentifier(enrolments, "IR-PAYE", "TaxOfficeReference")
+        } yield s"$taxOfficeNumber/$taxOfficeRef"
 
         UserTaxIdentifiers(nino, ctUtr, saUtr, vrn, empRef)
-    }.getOrElse(UserTaxIdentifiers(None, None, None, None, None))
-  }
+      }
+      .getOrElse(UserTaxIdentifiers(None, None, None, None, None))
 }
 
 object FieldTransformer extends FieldTransformer

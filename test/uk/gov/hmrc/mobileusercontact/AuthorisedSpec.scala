@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,8 @@ class AuthorisedSpec
     }
 
     "return 403 Forbidden and log a warning when AuthConnector throws InsufficientConfidenceLevel" in {
-      val authConnectorStub = authConnectorStubThatWillFail(new InsufficientConfidenceLevel("Insufficient ConfidenceLevel") {})
+      val authConnectorStub =
+        authConnectorStubThatWillFail(new InsufficientConfidenceLevel("Insufficient ConfidenceLevel") {})
 
       val authorised = new AuthorisedImpl(logger, authConnectorStub)
 

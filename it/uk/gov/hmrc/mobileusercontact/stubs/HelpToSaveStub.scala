@@ -20,22 +20,30 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.http.Status
 
 object HelpToSaveStub {
-  def currentUserIsEnrolled(): Unit = enrolmentStatusIs(true)
+  def currentUserIsEnrolled():    Unit = enrolmentStatusIs(true)
   def currentUserIsNotEnrolled(): Unit = enrolmentStatusIs(false)
 
   def enrolmentStatusShouldNotHaveBeenCalled(): Unit =
     verify(0, getRequestedFor(urlPathEqualTo("/help-to-save/enrolment-status")))
 
   def enrolmentStatusReturnsInternalServerError(): Unit =
-    stubFor(get(urlPathEqualTo("/help-to-save/enrolment-status"))
-      .willReturn(aResponse()
-        .withStatus(Status.INTERNAL_SERVER_ERROR)))
+    stubFor(
+      get(urlPathEqualTo("/help-to-save/enrolment-status"))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.INTERNAL_SERVER_ERROR)
+        )
+    )
 
   private def enrolmentStatusIs(status: Boolean): Unit =
-    stubFor(get(urlPathEqualTo("/help-to-save/enrolment-status"))
-      .willReturn(aResponse()
-        .withStatus(Status.OK)
-        .withBody(
-          s"""{"enrolled":$status}"""
-        )))
+    stubFor(
+      get(urlPathEqualTo("/help-to-save/enrolment-status"))
+        .willReturn(
+          aResponse()
+            .withStatus(Status.OK)
+            .withBody(
+              s"""{"enrolled":$status}"""
+            )
+        )
+    )
 }

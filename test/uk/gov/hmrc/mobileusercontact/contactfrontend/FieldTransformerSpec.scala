@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,9 @@ class FieldTransformerSpec extends PlaySpec {
     }
 
     "transform paye authorised user to UserTaxIdentifiers containing one identifier i.e. the SH233544B" in new FieldTransformerScope {
-      transformer.userTaxIdentifiersFromEnrolments(Some(payeUser)) mustBe expectedUserTaxIdentifiers(nino = Some("SH233544B"))
+      transformer.userTaxIdentifiersFromEnrolments(Some(payeUser)) mustBe expectedUserTaxIdentifiers(nino =
+        Some("SH233544B")
+      )
     }
 
     "transform business tax authorised user to UserTaxIdentifiers containing all the Business Tax Identifiers (and HMCE-VATDEC-ORG endorsement)" in new FieldTransformerScope {
@@ -58,7 +60,8 @@ class FieldTransformerSpec extends PlaySpec {
         utr    = Some("sa"),
         ctUtr  = Some("ct"),
         vrn    = Some("vrn1"),
-        empRef = Some(EmpRef("officeNum", "officeRef").value))
+        empRef = Some(EmpRef("officeNum", "officeRef").value)
+      )
     }
 
     "transform business tax authorised user to UserTaxIdentifiers containing all the Business Tax Identifiers (and HMCE-VATVAR-ORG endorsement)" in new FieldTransformerScope {
@@ -66,7 +69,8 @@ class FieldTransformerSpec extends PlaySpec {
         utr    = Some("sa"),
         ctUtr  = Some("ct"),
         vrn    = Some("vrn2"),
-        empRef = Some(EmpRef("officeNum", "officeRef").value))
+        empRef = Some(EmpRef("officeNum", "officeRef").value)
+      )
     }
   }
 
@@ -76,11 +80,13 @@ class FieldTransformerScope {
   lazy val transformer: FieldTransformer = new FieldTransformer {}
 
   lazy val userId = UserId("456")
+
   lazy val payeUser =
     Enrolments(
       Set(
         Enrolment("HMRC-NI").withIdentifier("NINO", "SH233544B")
-      ))
+      )
+    )
 
   lazy val bizTaxUserWithVatDec =
     Enrolments(
@@ -88,8 +94,11 @@ class FieldTransformerScope {
         Enrolment("IR-SA").withIdentifier("UTR", "sa"),
         Enrolment("IR-CT").withIdentifier("UTR", "ct"),
         Enrolment("HMCE-VATDEC-ORG").withIdentifier("VATRegNo", "vrn1"),
-        Enrolment("IR-PAYE").withIdentifier("TaxOfficeNumber", "officeNum").withIdentifier("TaxOfficeReference", "officeRef")
-      ))
+        Enrolment("IR-PAYE")
+          .withIdentifier("TaxOfficeNumber", "officeNum")
+          .withIdentifier("TaxOfficeReference", "officeRef")
+      )
+    )
 
   lazy val bizTaxUserWithVatVar =
     Enrolments(
@@ -97,8 +106,11 @@ class FieldTransformerScope {
         Enrolment("IR-SA").withIdentifier("UTR", "sa"),
         Enrolment("IR-CT").withIdentifier("UTR", "ct"),
         Enrolment("HMCE-VATVAR-ORG").withIdentifier("VATRegNo", "vrn2"),
-        Enrolment("IR-PAYE").withIdentifier("TaxOfficeNumber", "officeNum").withIdentifier("TaxOfficeReference", "officeRef")
-      ))
+        Enrolment("IR-PAYE")
+          .withIdentifier("TaxOfficeNumber", "officeNum")
+          .withIdentifier("TaxOfficeReference", "officeRef")
+      )
+    )
 
   val sessionId: String = "sessionIdValue"
   val hc = HeaderCarrier(userId = Some(userId), sessionId = Some(SessionId(sessionId)))
@@ -114,5 +126,6 @@ class FieldTransformerScope {
     ctUtr:  Option[String] = None,
     utr:    Option[String] = None,
     vrn:    Option[String] = None,
-    empRef: Option[String] = None) = UserTaxIdentifiers(nino, ctUtr, utr, vrn, empRef)
+    empRef: Option[String] = None
+  ) = UserTaxIdentifiers(nino, ctUtr, utr, vrn, empRef)
 }

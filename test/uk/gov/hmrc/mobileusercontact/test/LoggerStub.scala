@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ trait LoggerStub { this: MockFactory with OneInstancePerTest =>
   protected val slf4jLoggerStub: Logger = stub[Logger]
   (slf4jLoggerStub.isWarnEnabled: () => Boolean).when().returning(true)
   (slf4jLoggerStub.isInfoEnabled: () => Boolean).when().returning(true)
+
   protected val logger: LoggerLike = new LoggerLike {
     override val logger: Logger = slf4jLoggerStub
   }

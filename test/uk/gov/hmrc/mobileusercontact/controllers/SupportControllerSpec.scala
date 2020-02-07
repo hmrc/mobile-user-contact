@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,23 +23,29 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.play.PlaySpec
 import play.api.test.Helpers.{status, _}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
-import uk.gov.hmrc.auth.core.retrieve._
 import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
+import uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobileusercontact.services.Support
 import uk.gov.hmrc.mobileusercontact.test.SupportTestData
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import eu.timepit.refined.auto._
 
-class SupportControllerSpec extends PlaySpec with DefaultAwaitTimeout with MockFactory with Retrievals with ScalaFutures with SupportTestData {
+class SupportControllerSpec
+    extends PlaySpec
+    with DefaultAwaitTimeout
+    with MockFactory
+    with ScalaFutures
+    with SupportTestData {
 
-  private val journeyId: String = randomUUID().toString
+  private val journeyId: JourneyId = "27d3c283-a8e9-43f8-bb0b-65c42027494a"
 
   "requestSupport" should {
 
     "reject support requests for users that have an insufficient confidence level" in {
       val service: Support = stub[Support]
       val controller = new SupportController(service, NeverAuthorised, stubControllerComponents())
-      status(controller.requestSupport("234")(FakeRequest().withBody[SupportRequest](supportTicket))) mustBe FORBIDDEN
+      status(controller.requestSupport(journeyId)(FakeRequest().withBody[SupportRequest](supportTicket))) mustBe FORBIDDEN
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,21 +30,27 @@ import scala.language.postfixOps
 
 @ImplementedBy(classOf[HelpToSaveConnectorImpl])
 trait HelpToSaveConnector {
-  def enrolmentStatus()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean]
+
+  def enrolmentStatus(
+  )(implicit hc: HeaderCarrier,
+    ec:          ExecutionContext
+  ): Future[Boolean]
 }
 
 @Singleton
 class HelpToSaveConnectorImpl @Inject() (
   logger: LoggerLike,
   config: HelpToSaveConnectorConfig,
-  http: CoreGet)
-  extends HelpToSaveConnector {
+  http:   CoreGet)
+    extends HelpToSaveConnector {
 
-  override def enrolmentStatus()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
+  override def enrolmentStatus(
+  )(implicit hc: HeaderCarrier,
+    ec:          ExecutionContext
+  ): Future[Boolean] =
     http.GET[JsValue](enrolmentStatusUrl.toString) map { json: JsValue =>
-     (json \ "enrolled").as[Boolean]
+      (json \ "enrolled").as[Boolean]
     }
-  }
 
   private lazy val enrolmentStatusUrl: URL = new URL(config.helpToSaveBaseUrl, "/help-to-save/enrolment-status")
 }

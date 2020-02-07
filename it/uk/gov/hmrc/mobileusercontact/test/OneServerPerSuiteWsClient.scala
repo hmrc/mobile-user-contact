@@ -27,5 +27,5 @@ import play.api.libs.ws.WSClient
   */
 trait OneServerPerSuiteWsClient extends GuiceOneServerPerSuite with WsScalaTestClient { this: TestSuite =>
   implicit lazy val implicitPortNumber: PortNumber = portNumber
-  implicit lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
+  implicit lazy val wsClient:           WSClient   = app.injector.instanceOf[WSClient]
 }

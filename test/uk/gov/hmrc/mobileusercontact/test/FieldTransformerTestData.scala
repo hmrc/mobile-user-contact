@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,21 +24,25 @@ import uk.gov.hmrc.mobileusercontact.contactfrontend.{FieldTransformer, UserTaxI
 
 trait FieldTransformerTestData {
 
-  protected val testAuthId = "test-authId"
+  protected val testAuthId    = "test-authId"
   protected val testSessionId = "test-sessionId"
+
   protected val hc = HeaderCarrier(
-    userId = Some(UserId(testAuthId)),
+    userId    = Some(UserId(testAuthId)),
     sessionId = Some(SessionId(testSessionId))
   )
+
   protected val enrolments = Enrolments(
     Set(Enrolment("HMRC-NI", Seq(EnrolmentIdentifier("NINO", "AA000003D")), "Activated", None))
   )
 
-  protected val expectedUserTaxIdentifiers = UserTaxIdentifiers(nino = Some("AA000003D"), ctUtr = None, utr = None, vrn = None, empRef = None)
+  protected val expectedUserTaxIdentifiers =
+    UserTaxIdentifiers(nino = Some("AA000003D"), ctUtr = None, utr = None, vrn = None, empRef = None)
 
 }
 
 trait MockFieldTransformerForTestData extends FieldTransformerTestData with MockFactory {
+
   def mockFieldTransformerForTestData: FieldTransformer = {
     val fieldTransformer = mock[FieldTransformer]
 

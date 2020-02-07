@@ -1,4 +1,4 @@
 # Add all the application routes to the app.routes file
-POST    /feedback-submissions           uk.gov.hmrc.mobileusercontact.controllers.SandboxController.submitFeedback(journeyId: String)
+POST        /feedback-submissions        uk.gov.hmrc.mobileusercontact.controllers.SandboxController.submitFeedback(journeyId: JourneyId)
 
-POST    /support-requests               uk.gov.hmrc.mobileusercontact.controllers.SandboxController.requestSupport(journeyId: String)
+POST        /support-requests            uk.gov.hmrc.mobileusercontact.controllers.SandboxController.requestSupport(journeyId: JourneyId)
