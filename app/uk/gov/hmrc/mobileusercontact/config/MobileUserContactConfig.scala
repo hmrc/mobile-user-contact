@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.net.URL
 import com.google.inject.ImplementedBy
 import javax.inject.{Inject, Singleton}
 import play.api.{Configuration, Environment}
-import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.collection.JavaConverters._
 
@@ -33,7 +33,7 @@ class MobileUserContactConfig @Inject() (
     with HelpToSaveConnectorConfig
     with HmrcDeskproConnectorConfig {
 
-  val servicesConfig = new ServicesConfig(configuration, new RunMode(configuration, environment.mode))
+  val servicesConfig = new ServicesConfig(configuration)
 
   // These are eager vals so that missing or invalid configuration will be detected on startup
   private val accessConfig = configuration.underlying.getConfig("api.access")
