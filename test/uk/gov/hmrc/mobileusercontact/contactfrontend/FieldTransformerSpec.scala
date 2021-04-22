@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package uk.gov.hmrc.mobileusercontact.contactfrontend
 import org.scalatestplus.play.PlaySpec
 import uk.gov.hmrc.auth.core.{Enrolment, Enrolments}
 import uk.gov.hmrc.domain.EmpRef
-import uk.gov.hmrc.http.logging.SessionId
-import uk.gov.hmrc.http.{HeaderCarrier, UserId}
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 
 /**
   * Based on code in contact-frontend. If you are considering refactoring then consider the cost of keeping up to date with changes in contact-frontend.
@@ -28,14 +27,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, UserId}
 class FieldTransformerSpec extends PlaySpec {
 
   "Field Transformer" should {
-
-    "transform userId in the header carrier to user id" in new FieldTransformerScope {
-      transformer.userIdFrom(hc) mustBe userId.value
-    }
-
-    "transform no userId in the header carrier to n/a" in new FieldTransformerScope {
-      transformer.userIdFrom(hc.copy(userId = None)) mustBe "n/a"
-    }
 
     "transform sessionId in the header carrier to session id" in new FieldTransformerScope {
       transformer.sessionIdFrom(hc) mustBe sessionId
@@ -79,8 +70,6 @@ class FieldTransformerSpec extends PlaySpec {
 class FieldTransformerScope {
   lazy val transformer: FieldTransformer = new FieldTransformer {}
 
-  lazy val userId = UserId("456")
-
   lazy val payeUser =
     Enrolments(
       Set(
@@ -113,7 +102,7 @@ class FieldTransformerScope {
     )
 
   val sessionId: String = "sessionIdValue"
-  val hc = HeaderCarrier(userId = Some(userId), sessionId = Some(SessionId(sessionId)))
+  val hc = HeaderCarrier(sessionId = Some(SessionId(sessionId)))
   val userAgent: String = "Mozilla"
   val name:      String = "name"
   val email:     String = "email"

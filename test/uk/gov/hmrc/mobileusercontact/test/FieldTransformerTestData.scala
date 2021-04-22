@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,15 @@ package uk.gov.hmrc.mobileusercontact.test
 
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
-import uk.gov.hmrc.http.logging.SessionId
-import uk.gov.hmrc.http.{HeaderCarrier, UserId}
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import uk.gov.hmrc.mobileusercontact.contactfrontend.{FieldTransformer, UserTaxIdentifiers}
 
 trait FieldTransformerTestData {
 
-  protected val testAuthId    = "test-authId"
+  protected val testAuthId    = "n/a"
   protected val testSessionId = "test-sessionId"
 
   protected val hc = HeaderCarrier(
-    userId    = Some(UserId(testAuthId)),
     sessionId = Some(SessionId(testSessionId))
   )
 
@@ -46,7 +44,6 @@ trait MockFieldTransformerForTestData extends FieldTransformerTestData with Mock
   def mockFieldTransformerForTestData: FieldTransformer = {
     val fieldTransformer = mock[FieldTransformer]
 
-    fieldTransformer.userIdFrom _ expects hc returning testAuthId
     fieldTransformer.sessionIdFrom _ expects hc returning testSessionId
     fieldTransformer.userTaxIdentifiersFromEnrolments _ expects Some(enrolments) returning expectedUserTaxIdentifiers
 
