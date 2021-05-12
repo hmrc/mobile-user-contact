@@ -26,7 +26,6 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.mobileusercontact.config.HelpToSaveConnectorConfig
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.postfixOps
 
 @ImplementedBy(classOf[HelpToSaveConnectorImpl])
 trait HelpToSaveConnector {
