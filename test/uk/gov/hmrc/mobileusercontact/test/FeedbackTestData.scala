@@ -26,8 +26,6 @@ trait FeedbackTestData extends FieldTransformerTestData {
     email             = "email@example.com",
     message           = "It's OK",
     userAgent         = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
-    signUpForResearch = true,
-    town              = Some("Test town"),
     journeyId         = Some("<JourneyID>")
   )
 
@@ -48,11 +46,7 @@ trait FeedbackTestData extends FieldTransformerTestData {
   protected val expectedDeskproFeedback = HmrcDeskproFeedback(
     name               = "Given Middle Family",
     email              = "email@example.com",
-    message            = """It's OK
-                |
-                |Contact preference: yes
-                |
-                |Town: Test town""".stripMargin,
+    message            = "It's OK",
     userAgent          = "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)",
     referrer           = "<JourneyID>",
     subject            = "App Feedback",

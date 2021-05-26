@@ -32,20 +32,6 @@ class FeedbackSubmissionSpec extends WordSpec with Matchers with FeedbackTestDat
         .toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback
     }
 
-    "omit town when signUpForResearch = false" in {
-      val fieldTransformer = mockFieldTransformerForTestData
-      implicit val implicitHc: HeaderCarrier = hc
-
-      appFeedback
-        .copy(signUpForResearch = false)
-        .toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback
-        .copy(
-          message = """It's OK
-                      |
-                      |Contact preference: no""".stripMargin
-        )
-    }
-
     """include "HtS: yes" when user is not enrolled in Help to Save""" in {
       val fieldTransformer = mockFieldTransformerForTestData
       implicit val implicitHc: HeaderCarrier = hc
@@ -55,11 +41,7 @@ class FeedbackSubmissionSpec extends WordSpec with Matchers with FeedbackTestDat
       deskproFeedback shouldBe expectedDeskproFeedback.copy(
         message = """It's OK
                     |
-                    |Contact preference: yes
-                    |
-                    |HtS: yes
-                    |
-                    |Town: Test town""".stripMargin
+                    |HtS: yes""".stripMargin
       )
     }
 
@@ -77,12 +59,9 @@ class FeedbackSubmissionSpec extends WordSpec with Matchers with FeedbackTestDat
       implicit val implicitHc: HeaderCarrier = hc
 
       appFeedback
-        .copy(town = None, journeyId = None)
+        .copy(journeyId = None)
         .toDeskpro(fieldTransformer, itmpName, enrolledInHelpToSave = enrolledInHelpToSave, enrolments) shouldBe expectedDeskproFeedback
         .copy(
-          message  = """It's OK
-                      |
-                      |Contact preference: yes""".stripMargin,
           referrer = ""
         )
     }

@@ -27,8 +27,6 @@ case class FeedbackSubmission(
   email:             String,
   message:           String,
   userAgent:         String,
-  signUpForResearch: Boolean,
-  town:              Option[String],
   journeyId:         Option[String]) {
 
   def toDeskpro(
@@ -38,10 +36,6 @@ case class FeedbackSubmission(
     enrolments:           Enrolments
   )(implicit hc:          HeaderCarrier
   ): HmrcDeskproFeedback = {
-    val contactMessage =
-      s"""
-         |
-         |Contact preference: ${if (signUpForResearch) "yes" else "no"}""".stripMargin
 
     val htsMessage = if (enrolledInHelpToSave) {
       """
@@ -51,17 +45,7 @@ case class FeedbackSubmission(
       ""
     }
 
-    val townMessage = if (signUpForResearch) {
-      town.fold("") { t =>
-        s"""
-           |
-           |Town: $t""".stripMargin
-      }
-    } else {
-      ""
-    }
-
-    val messageWithExtras = s"$message$contactMessage$htsMessage$townMessage"
+    val messageWithExtras = s"$message$htsMessage"
 
     val fullName = itmpName.map(name => Seq(name.givenName, name.middleName, name.familyName).flatten.mkString(" "))
 
