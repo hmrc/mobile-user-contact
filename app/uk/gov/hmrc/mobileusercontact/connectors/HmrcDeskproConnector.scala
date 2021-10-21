@@ -17,15 +17,17 @@
 package uk.gov.hmrc.mobileusercontact.connectors
 
 import java.net.URL
-
 import com.google.inject.ImplementedBy
+
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json, OWrites, Writes}
-import uk.gov.hmrc.http.{CorePost, HeaderCarrier}
+import uk.gov.hmrc.auth.core.NoActiveSession
+import uk.gov.hmrc.http.{CorePost, HeaderCarrier, HttpException}
 import uk.gov.hmrc.mobileusercontact.config.HmrcDeskproConnectorConfig
 import uk.gov.hmrc.mobileusercontact.contactfrontend.UserTaxIdentifiers
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 @ImplementedBy(classOf[HmrcDeskproConnectorImpl])
 trait HmrcDeskproConnector {
@@ -68,7 +70,12 @@ class HmrcDeskproConnectorImpl @Inject() (
     ec:          ExecutionContext,
     wts:         Writes[T]
   ): Future[Unit] =
-    http.POST[T, JsValue](deskproUrl(resource), ticket).map(_ => ())
+    http.POST[T, JsValue](deskproUrl(resource), ticket)
+        .map(_ => ())
+        .recover {
+          case e: HttpException =>
+            new HttpException("", e.responseCode)
+        }
 
   private val deskproUrl = (resource: String) => new URL(config.hmrcDeskproBaseUrl, s"/deskpro/$resource").toString
 }
