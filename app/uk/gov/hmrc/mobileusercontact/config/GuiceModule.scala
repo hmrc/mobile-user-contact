@@ -23,8 +23,10 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 class GuiceModule extends AbstractModule {
 
+  val logger: Logger = Logger(this.getClass)
+
   override def configure(): Unit = {
-    bind(classOf[LoggerLike]).toInstance(Logger)
+    bind(classOf[LoggerLike]).toInstance(logger)
 
     bind(classOf[CoreGet]).to(classOf[DefaultHttpClient])
     bind(classOf[CorePost]).to(classOf[DefaultHttpClient])

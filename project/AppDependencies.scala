@@ -4,10 +4,10 @@ import sbt._
 
 object AppDependencies {
 
-  private val bootstrapPlayVersion     = "5.1.0"
-  private val playHmrcApiVersion       = "6.2.0-play-27"
+  private val bootstrapPlayVersion     = "5.16.0"
+  private val playHmrcApiVersion       = "6.4.0-play-28"
   private val scalaTestPlusPlayVersion = "4.0.3"
-  private val domainVersion            = "5.11.0-play-27"
+  private val domainVersion            = "6.2.0-play-28"
 
   private val scalaTestVersion       = "3.0.8"
   private val pegdownVersion         = "1.6.0"
@@ -18,7 +18,7 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     ws,
-    "uk.gov.hmrc" %% "bootstrap-backend-play-27" % bootstrapPlayVersion,
+    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % bootstrapPlayVersion,
     "uk.gov.hmrc" %% "domain"                    % domainVersion,
     "uk.gov.hmrc" %% "play-hmrc-api"             % playHmrcApiVersion,
     "eu.timepit"  %% "refined"                   % refinedVersion
