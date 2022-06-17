@@ -51,6 +51,7 @@ class SupportISpec
   private val generator = new Generator(0)
   private val nino      = generator.nextNino
   private val journeyId: String = randomUUID().toString
+  private val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
 
   "POST /support-requests" should {
 
@@ -63,6 +64,7 @@ class SupportISpec
         wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .addHttpHeaders(HeaderNames.xSessionId -> "test-sessionId")
+          .addHttpHeaders(authorisationJsonHeader)
           .post(supportRequestJson)
       )
 
@@ -114,6 +116,7 @@ class SupportISpec
       val response = await(
         wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
+          .addHttpHeaders(authorisationJsonHeader)
           .post(supportRequestJson)
       )
 
@@ -129,6 +132,7 @@ class SupportISpec
       val response = await(
         wsUrl(s"/support-requests?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
+          .addHttpHeaders(authorisationJsonHeader)
           .post(supportRequestJson)
       )
 

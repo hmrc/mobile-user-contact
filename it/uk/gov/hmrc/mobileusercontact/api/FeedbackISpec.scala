@@ -37,6 +37,7 @@ class FeedbackISpec
 
   override implicit lazy val app: Application = appBuilder.build()
   private val journeyId:          String      = randomUUID().toString
+  private val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
 
   private val feedbackSubmissionJson =
     """
@@ -62,6 +63,7 @@ class FeedbackISpec
         wsUrl(s"/feedback-submissions?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
           .addHttpHeaders(HeaderNames.xSessionId -> "test-sessionId")
+          .addHttpHeaders(authorisationJsonHeader)
           .post(feedbackSubmissionJson)
       )
 
@@ -119,6 +121,7 @@ class FeedbackISpec
       val response = await(
         wsUrl(s"/feedback-submissions?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
+          .addHttpHeaders(authorisationJsonHeader)
           .post(feedbackSubmissionJson)
       )
 
@@ -135,6 +138,7 @@ class FeedbackISpec
       val response = await(
         wsUrl(s"/feedback-submissions?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
+          .addHttpHeaders(authorisationJsonHeader)
           .post(feedbackSubmissionJson)
       )
 
@@ -149,6 +153,7 @@ class FeedbackISpec
       val response = await(
         wsUrl(s"/feedback-submissions?journeyId=$journeyId")
           .addHttpHeaders("Content-Type" -> "application/json")
+          .addHttpHeaders(authorisationJsonHeader)
           .post(feedbackSubmissionJson)
       )
 
