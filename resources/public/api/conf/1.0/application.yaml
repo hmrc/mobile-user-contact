@@ -1,0 +1,202 @@
+openapi: 3.0.0
+info:
+  title: Mobile User Contact
+  contact: {}
+  version: '1.0'
+servers:
+  - url: https://test-api.service.hmrc.gov.uk/mobile-user-contact
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk/mobile-user-contact
+    description: Production
+    variables: {}
+paths:
+  /mobile-user-contact/feedback-submissions:
+    post:
+      tags:
+        - mobile-user-contact
+      summary: Submit feedback
+      description: Submits user feedback about the HMRC mobile app. Returns a 2xx response when the feedback submission was successfully added to the queue. May be enhanced in future to include a ticket URL or ID in the response.
+      operationId: Submitfeedback
+      parameters:
+        - name: journeyId
+          in: query
+          description: ''
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/MobileUserContactFeedbackSubmissionsrequest'
+                - example:
+                    email: testy@example.com
+                    message: I think the app is great
+                    journeyId: eaded345-4ccd-4c27-9285-cde938bd896d
+                    userAgent: HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)
+            example:
+              email: testy@example.com
+              message: I think the app is great
+              journeyId: eaded345-4ccd-4c27-9285-cde938bd896d
+              userAgent: HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content: {}
+        '201':
+          description: ''
+          headers: {}
+          content: {}
+        '202':
+          description: ''
+          headers: {}
+          content: {}
+        '204':
+          description: ''
+          headers: {}
+          content: {}
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:native-apps-api-orchestration
+  /mobile-user-contact/support-requests:
+    post:
+      tags:
+        - mobile-user-contact
+      summary: Request support
+      description: Sends a request for support. Returns a 2xx response when the feedback was successfully be added to the queue. May be enhanced in future to include a ticket URL or ID in the response.
+      operationId: Requestsupport
+      parameters:
+        - name: journeyId
+          in: query
+          description: ''
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/MobileUserContactSupportRequestsrequest'
+                - example:
+                    name: Testy McTest
+                    email: testy@example.com
+                    message: Help!
+                    journeyId: eaded345-4ccd-4c27-9285-cde938bd896d
+                    userAgent: HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)
+                    service: mobile-help-to-save
+            example:
+              name: Testy McTest
+              email: testy@example.com
+              message: Help!
+              journeyId: eaded345-4ccd-4c27-9285-cde938bd896d
+              userAgent: HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)
+              service: mobile-help-to-save
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+          content: {}
+        '201':
+          description: ''
+          headers: {}
+          content: {}
+        '202':
+          description: ''
+          headers: {}
+          content: {}
+        '204':
+          description: ''
+          headers: {}
+          content: {}
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:native-apps-api-orchestration
+components:
+  securitySchemes:
+    userRestricted:
+      type: oauth2
+      description: |
+        HMRC supports OAuth 2.0 for authenticating user-restricted API requests using an OAuth 2.0 Bearer Token in the
+        AUTHORIZATION header.
+        See https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints for details.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            read:native-apps-api-orchestration: Feedback and Support API specifically for HMRC mobile apps
+  schemas:
+    errorResponse:
+      title: errorResponse
+      required:
+        - code
+      type: object
+      properties:
+        code:
+          type: string
+    MobileUserContactFeedbackSubmissionsrequest:
+      title: MobileUserContactFeedbackSubmissionsrequest
+      required:
+        - email
+        - message
+        - userAgent
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email address entered by the user submitting the feedback
+        message:
+          type: string
+          description: The feedback message
+        journeyId:
+          type: string
+          description: Mobile app journey ID
+        userAgent:
+          type: string
+          description: Mobile app HTTP user agent
+      description: User feedback about the HMRC mobile app
+    MobileUserContactSupportRequestsrequest:
+      title: MobileUserContactSupportRequestsrequest
+      required:
+        - name
+        - email
+        - message
+        - userAgent
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name entered by the user requesting support
+        email:
+          type: string
+          description: Email address entered by the user requesting support
+        message:
+          type: string
+          description: The message
+        journeyId:
+          type: string
+          description: Mobile app journey ID
+        userAgent:
+          type: string
+          description: Mobile app HTTP user agent
+        service:
+          type: string
+          description: The name of the feature that the support request relates to
+      description: Request for support send by user of the HMRC mobile app
+tags:
+  - name: mobile-user-contact
+    description: ''
