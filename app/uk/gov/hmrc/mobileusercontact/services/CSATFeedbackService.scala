@@ -45,7 +45,5 @@ class CSATFeedbackService @Inject()(auditConnector: AuditConnector)(implicit val
     auditConnector.sendExplicitAudit(auditType, buildAuditMap(feedback))
 
     Future.successful(())
-
   }
-
 }

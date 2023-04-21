@@ -37,5 +37,4 @@ class CSATFeedbackSpec extends WordSpec with Matchers with FeedbackTestData  {
   "correctly read a CSATFeedback model from json when no optional fields are present" in {
     emptyCsatFeedbackJson.as[CSATFeedback] shouldBe emptyCsatFeedbackModel
   }
-
 }

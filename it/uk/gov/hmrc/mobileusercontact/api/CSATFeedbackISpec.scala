@@ -10,7 +10,6 @@ import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSu
 
 import java.util.UUID.randomUUID
 
-
 class CSATFeedbackISpec extends WordSpec
   with Matchers
   with FutureAwaits
@@ -39,8 +38,6 @@ class CSATFeedbackISpec extends WordSpec
       response.status shouldEqual Status.NO_CONTENT
 
     }
-
-
   }
 }
 

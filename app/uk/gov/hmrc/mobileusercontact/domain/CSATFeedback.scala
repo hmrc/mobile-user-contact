@@ -21,7 +21,5 @@ import play.api.libs.json.{Format, Json}
 case class CSATFeedback(origin: String, ableToDo: Option[Boolean], howEasyScore: Option[Int], whyGiveScore: Option[String], howDoYouFeelScore: Option[Int])
 
 object CSATFeedback {
-
   implicit val format:Format[CSATFeedback] = Json.format[CSATFeedback]
-
 }

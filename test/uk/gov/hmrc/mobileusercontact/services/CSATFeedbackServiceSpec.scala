@@ -52,6 +52,5 @@ class CSATFeedbackServiceSpec extends WordSpec with MockFactory with FeedbackTes
       result shouldEqual expected
 
     }
-
   }
 }
