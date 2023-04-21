@@ -3,3 +3,5 @@
 POST        /feedback-submissions        uk.gov.hmrc.mobileusercontact.controllers.FeedbackController.submitFeedback(journeyId: JourneyId)
 
 POST        /support-requests            uk.gov.hmrc.mobileusercontact.controllers.SupportController.requestSupport(journeyId: JourneyId)
+
+POST        /csat-survey                 uk.gov.hmrc.mobileusercontact.controllers.CSATFeedbackController.feedback(journeyId: JourneyId)

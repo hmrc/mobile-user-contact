@@ -124,6 +124,51 @@ paths:
       security:
         - userRestricted:
             - read:native-apps-api-orchestration
+  /mobile-user-contact/csat-survey:
+    post:
+      tags:
+        - mobile-user-contact
+      summary: Submit feedback
+      description: This endpoint posts a customer satisfaction model to splunk. Returns a 204 when the audit model has been successully sent,
+      operationId: SubmitCSATfeedback
+      parameters:
+        - name: journeyId
+          in: query
+          description: ''
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/CustomerSatisfactionSurveyRequest'
+                - example:
+                    origin: mobile-paye
+                    ableToDo: true
+                    howEasyScore: 4
+                    whyGiveScore: It was great
+                    howDoYouFeelScore: 5
+            example:
+              origin: mobile-paye
+              ableToDo: true
+              howEasyScore: 4
+              whyGiveScore: It was great
+              howDoYouFeelScore: 5
+        required: true
+      responses:
+        '204':
+          description: ''
+          headers: {}
+          content: {}
+      deprecated: false
+      security:
+        - userRestricted:
+            - read:native-apps-api-orchestration
 components:
   securitySchemes:
     userRestricted:
@@ -197,6 +242,27 @@ components:
           type: string
           description: The name of the feature that the support request relates to
       description: Request for support send by user of the HMRC mobile app
+    CustomerSatisfactionSurveyRequest:
+      title: CustomerSatisfactionSurveyRequest
+      required:
+        - origin
+      type: object
+      properties:
+        origin:
+          type: string
+          description: Origin of where the feedback has come from
+        ableToDo:
+          type: boolean
+          description: Were they able to do what was intended
+        howEasyScore:
+          type: integer
+          description: How easy was it to do
+        whyGiveScore:
+          type: string
+          description: A description of why they gave the score
+        howDoYouFeelScore:
+          type: integer
+          description: Score indicating how they felt
 tags:
   - name: mobile-user-contact
     description: ''

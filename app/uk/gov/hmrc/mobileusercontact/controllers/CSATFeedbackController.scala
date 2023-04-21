@@ -16,22 +16,31 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Reads
+import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mobileusercontact.domain.CSATFeedback
 import uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes.JourneyId
-import uk.gov.hmrc.mobileusercontact.domain.{FeedbackSubmission, SupportRequest}
+import uk.gov.hmrc.mobileusercontact.services.CSATFeedbackService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import uk.gov.hmrc.play.http.HeaderCarrierConverter.fromRequest
 
-import scala.concurrent.Future._
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
-@Singleton
-class SandboxController @Inject() (cc: ControllerComponents) extends BackendController(cc) {
+class CSATFeedbackController @Inject()(cc: ControllerComponents, service: CSATFeedbackService)(implicit ex: ExecutionContext)
+  extends BackendController(cc){
 
-  private def acceptedAction[A](implicit r: Reads[A]): Action[A] = Action.async(parse.json[A]) { implicit request =>
-    successful(Accepted)
-  }
+  def feedback(journeyId: JourneyId) : Action[JsValue] =
+    Action.async(parse.json) { implicit request =>
+      implicit val hc: HeaderCarrier =
+        fromRequest(request)
+        withJsonBody[CSATFeedback] { response =>
+          service.sendAudit(response).map{ _ =>
+            NoContent
+          }
+        }
+    }
 
-  def requestSupport(journeyId: JourneyId): Action[SupportRequest]     = acceptedAction[SupportRequest]
-  def submitFeedback(journeyId: JourneyId): Action[FeedbackSubmission] = acceptedAction[FeedbackSubmission]
+
 }

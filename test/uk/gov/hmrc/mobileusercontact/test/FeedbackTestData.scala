@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.mobileusercontact.test
 
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproFeedback
-import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
+import uk.gov.hmrc.mobileusercontact.domain.{CSATFeedback, FeedbackSubmission}
 
 trait FeedbackTestData extends FieldTransformerTestData {
 
@@ -57,5 +58,22 @@ trait FeedbackTestData extends FieldTransformerTestData {
     rating             = "",
     userTaxIdentifiers = expectedUserTaxIdentifiers
   )
+
+  val csatFeedbackModel: CSATFeedback = CSATFeedback("mobile-paye",Some(true), Some(5), Some("It was great"), Some(4))
+  val emptyCsatFeedbackModel: CSATFeedback = CSATFeedback("mobile-paye",None, None, None, None)
+
+  val csatFeedbackJson: JsObject = Json.obj(
+    "origin"-> "mobile-paye",
+    "ableToDo" -> true,
+    "howEasyScore" -> 5,
+    "whyGiveScore" -> "It was great",
+    "howDoYouFeelScore" -> 4)
+
+  val emptyCsatFeedbackJson: JsObject = Json.obj(
+    "origin" -> "mobile-paye")
+
+  val testAuditModel: Map[String, String] = Map("origin" -> "mobile-paye", "ableToDo" -> "true", "howEasyScore" -> "5", "whyGiveScore" -> "It was great", "howDoYouFeelScore" -> "4")
+
+  val testAuditModelNoAnswers: Map[String, String] = Map("origin" -> "mobile-paye", "ableToDo" -> "-", "howEasyScore" -> "-", "whyGiveScore" -> "-", "howDoYouFeelScore" -> "-")
 
 }

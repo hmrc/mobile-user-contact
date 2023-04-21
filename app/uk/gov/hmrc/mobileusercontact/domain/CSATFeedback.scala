@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.domain.types
+package uk.gov.hmrc.mobileusercontact.domain
 
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.string.MatchesRegex
-import eu.timepit.refined._
+import play.api.libs.json.{Format, Json}
 
-object ModelTypes {
+case class CSATFeedback(origin: String, ableToDo: Option[Boolean], howEasyScore: Option[Int], whyGiveScore: Option[String], howDoYouFeelScore: Option[Int])
 
-  type JourneyId = String Refined ValidJourneyId
+object CSATFeedback {
 
-  private type ValidJourneyId =
-    MatchesRegex[W.`"""[A-Fa-f0-9]{8}\\-[A-Fa-f0-9]{4}\\-[A-Fa-f0-9]{4}\\-[A-Fa-f0-9]{4}\\-[A-Fa-f0-9]{12}"""`.T]
+  implicit val format:Format[CSATFeedback] = Json.format[CSATFeedback]
 
 }
