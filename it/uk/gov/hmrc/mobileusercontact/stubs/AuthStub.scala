@@ -40,9 +40,22 @@ object AuthStub {
       |  "authorise": [{"confidenceLevel": 200}]
       |}""".stripMargin
 
+  private val authoriseResponseBodyConfidenceLevelElementOnly: String =
+    """{
+      |  "confidenceLevel": 200
+      |}""".stripMargin
+
   private val authoriseBodyRetrieveItmpNameElementOnly: String =
     """{
       |  "retrieve": ["optionalItmpName"]
+      |}""".stripMargin
+
+  private val authoriseBodyRetrieveConfidenceElementOnly: String =
+    """{
+      |  "authorise": [ {
+      |    "confidenceLevel" : 200
+      |  } ],
+      |   "retrieve" : [ "confidenceLevel" ]
       |}""".stripMargin
 
   def userIsLoggedIn(
@@ -95,6 +108,18 @@ object AuthStub {
           aResponse()
             .withStatus(200)
             .withBody(itmpNameAndAllEnrolmentsJson.toString)
+        )
+    )
+  }
+
+  def confidenceLevelRetrieved(): Unit = {
+    stubFor(
+      post(urlPathEqualTo("/auth/authorise"))
+        .withRequestBody(equalToJson(authoriseBodyRetrieveConfidenceElementOnly, true, false))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(authoriseResponseBodyConfidenceLevelElementOnly)
         )
     )
   }

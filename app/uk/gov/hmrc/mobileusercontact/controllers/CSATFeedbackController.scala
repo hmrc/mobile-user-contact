@@ -16,28 +16,31 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
-import javax.inject.{Inject, Singleton}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.mobileusercontact.domain.CSATFeedback
 import uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes.JourneyId
-import uk.gov.hmrc.mobileusercontact.services.Support
+import uk.gov.hmrc.mobileusercontact.services.CSATFeedbackService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import uk.gov.hmrc.play.http.HeaderCarrierConverter.fromRequest
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-@Singleton
-class SupportController @Inject() (
-  service:     Support,
-  authorised:  Authorised,
-  cc:          ControllerComponents
-)(implicit ec: ExecutionContext)
-    extends BackendController(cc) {
+class CSATFeedbackController @Inject()(cc: ControllerComponents, service: CSATFeedbackService, authorised: Authorised)(implicit ex: ExecutionContext)
+  extends BackendController(cc){
 
-  def requestSupport(journeyId: JourneyId): Action[SupportRequest] = Action.async(parse.json[SupportRequest]) {
-    implicit request =>
-      authorised.authorise(request, Retrievals.allEnrolments) { enrolments =>
-        service.requestSupport(request.body, enrolments) map (_ => Accepted)
+  def feedback(journeyId: JourneyId) : Action[JsValue] =
+    Action.async(parse.json) { implicit request =>
+      authorised.authorise(request, Retrievals.confidenceLevel) { _ =>
+        withJsonBody[CSATFeedback] { response =>
+          Json.toJson(response)
+          service.sendAudit(response).map { _ =>
+            NoContent
+          }
+        }
       }
-  }
+    }
 }

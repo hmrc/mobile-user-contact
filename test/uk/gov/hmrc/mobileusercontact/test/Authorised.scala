@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.domain.types
+package uk.gov.hmrc.mobileusercontact.test
 
-import eu.timepit.refined.api.Refined
-import eu.timepit.refined.string.MatchesRegex
-import eu.timepit.refined._
+import play.api.mvc.{Request, Result, Results}
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.mobileusercontact.controllers.Authorised
 
-object ModelTypes {
+import scala.concurrent.Future
 
-  type JourneyId = String Refined ValidJourneyId
+object Authorised extends Authorised with Results {
 
-  private type ValidJourneyId =
-    MatchesRegex[W.`"""[A-Fa-f0-9]{8}\\-[A-Fa-f0-9]{4}\\-[A-Fa-f0-9]{4}\\-[A-Fa-f0-9]{4}\\-[A-Fa-f0-9]{12}"""`.T]
-
+  override def authorise[B, R](
+    request:    Request[B],
+    retrievals: Retrieval[R]
+  )(block:      R => Future[Result]
+  ): Future[Result] =
+    Future successful NoContent
 }
