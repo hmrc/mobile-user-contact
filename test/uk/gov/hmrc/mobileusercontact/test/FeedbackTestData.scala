@@ -19,7 +19,7 @@ package uk.gov.hmrc.mobileusercontact.test
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproFeedback
-import uk.gov.hmrc.mobileusercontact.domain.{CSATFeedback, FeedbackSubmission}
+import uk.gov.hmrc.mobileusercontact.domain.{CSATFeedback, FeedbackSubmission, OriginEnum}
 
 trait FeedbackTestData extends FieldTransformerTestData {
 
@@ -59,11 +59,19 @@ trait FeedbackTestData extends FieldTransformerTestData {
     userTaxIdentifiers = expectedUserTaxIdentifiers
   )
 
-  val csatFeedbackModel: CSATFeedback = CSATFeedback("mobile-paye",Some(true), Some(5), Some("It was great"), Some(4))
-  val emptyCsatFeedbackModel: CSATFeedback = CSATFeedback("mobile-paye",None, None, None, None)
+  val csatFeedbackModel: CSATFeedback = CSATFeedback(OriginEnum.mobilePaye,Some(true), Some(5), Some("It was great"), Some(4))
+  val emptyCsatFeedbackModel: CSATFeedback = CSATFeedback(OriginEnum.mobilePaye,None, None, None, None)
+
 
   val csatFeedbackJson: JsObject = Json.obj(
     "origin"-> "mobile-paye",
+    "ableToDo" -> true,
+    "howEasyScore" -> 5,
+    "whyGiveScore" -> "It was great",
+    "howDoYouFeelScore" -> 4)
+
+  val csatFeedbackInvalidOriginJson: JsObject = Json.obj(
+    "origin" -> "mobile-push-notifications",
     "ableToDo" -> true,
     "howEasyScore" -> 5,
     "whyGiveScore" -> "It was great",

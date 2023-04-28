@@ -23,7 +23,7 @@ lazy val microservice = Project(appName, file("."))
     resolvers += Resolver.jcenterRepo,
     unmanagedResourceDirectories in Compile += baseDirectory.value / "resources",
     ScoverageKeys.coverageExcludedPackages := """uk\.gov\.hmrc\.BuildInfo;.*\.Routes;.*\.RoutesPrefix;.*\.Reverse[^.]*""",
-    ScoverageKeys.coverageMinimum := 95.00,
+    ScoverageKeys.coverageMinimumStmtTotal := 95.00,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true
   )

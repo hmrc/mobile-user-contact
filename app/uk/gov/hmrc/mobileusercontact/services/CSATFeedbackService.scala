@@ -28,7 +28,7 @@ class CSATFeedbackService @Inject()(auditConnector: AuditConnector)(implicit val
   val auditType = "feedback"
 
   def buildAuditMap(feedback: CSATFeedback): Map[String, String] = {
-    val withOrigin: Map[String, String] = Map("origin" -> feedback.origin)
+    val withOrigin: Map[String, String] = Map("origin" -> feedback.origin.toString)
     val ableToDo: Map[String, String] = Map("ableToDo" -> feedback.ableToDo.map(_.toString).getOrElse("-"))
     val howEasyScore: Map[String, String] = Map("howEasyScore" -> feedback.howEasyScore.map(_.toString).getOrElse("-"))
     val whyGiveScore: Map[String, String] = Map("whyGiveScore" -> feedback.whyGiveScore.getOrElse("-"))

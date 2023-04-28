@@ -20,19 +20,23 @@ import org.scalamock.scalatest.MockFactory
 import org.scalatestplus.play.PlaySpec
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, Helpers}
 import uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes.JourneyId
-import uk.gov.hmrc.mobileusercontact.test.FeedbackTestData
+import uk.gov.hmrc.mobileusercontact.test.{Authorised, FeedbackTestData}
 import eu.timepit.refined.auto._
 import org.scalamock.handlers.CallHandler2
 import play.api.http.Status
-import play.api.mvc.Headers
+import play.api.libs.json.JsError
+import play.api.mvc.{Headers, Request, Result}
 import play.api.test.Helpers._
+import uk.gov.hmrc.auth.core.ConfidenceLevel
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.domain.CSATFeedback
 import uk.gov.hmrc.mobileusercontact.services.CSATFeedbackService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CSATFeedbackControllerSpec extends PlaySpec with DefaultAwaitTimeout with MockFactory with FeedbackTestData{
+class CSATFeedbackControllerSpec extends PlaySpec with DefaultAwaitTimeout with MockFactory with FeedbackTestData {
 
   private val journeyId: JourneyId = "27d3c283-a8e9-43f8-bb0b-65c42027494a"
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
@@ -42,13 +46,12 @@ class CSATFeedbackControllerSpec extends PlaySpec with DefaultAwaitTimeout with 
     (mockService.sendAudit(_: CSATFeedback)(_: HeaderCarrier)).expects(*, *).returning(f)
 
   private val fakeRequest = FakeRequest("POST", "/", Headers((CONTENT_TYPE, JSON)), csatFeedbackJson)
-  private val controller = new CSATFeedbackController(Helpers.stubControllerComponents(), mockService)
+  private val fakeRequestInvalidOrigin = FakeRequest("POST", "/", Headers((CONTENT_TYPE, JSON)), csatFeedbackInvalidOriginJson)
+  private val controller = new CSATFeedbackController(Helpers.stubControllerComponents(), mockService, Authorised)
 
   "POST /feedback" should {
     "return 204" in {
-      mockSendAudit(Future.successful(()))
       val result = controller.feedback(journeyId)(fakeRequest)
-
       status(result) mustBe Status.NO_CONTENT
     }
   }

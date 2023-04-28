@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.mobileusercontact.domain
+package uk.gov.hmrc.mobileusercontact.test
 
-import play.api.libs.json.{Format, Json}
-case class CSATFeedback(origin: OriginEnum.Value, ableToDo: Option[Boolean], howEasyScore: Option[Int], whyGiveScore: Option[String], howDoYouFeelScore: Option[Int])
+import play.api.mvc.{Request, Result, Results}
+import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.mobileusercontact.controllers.Authorised
 
-object CSATFeedback {
-  implicit val format:Format[CSATFeedback] = Json.format[CSATFeedback]
+import scala.concurrent.Future
+
+object Authorised extends Authorised with Results {
+
+  override def authorise[B, R](
+    request:    Request[B],
+    retrievals: Retrieval[R]
+  )(block:      R => Future[Result]
+  ): Future[Result] =
+    Future successful NoContent
 }

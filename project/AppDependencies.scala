@@ -21,7 +21,7 @@ object AppDependencies {
     "uk.gov.hmrc" %% "bootstrap-backend-play-28" % bootstrapPlayVersion,
     "uk.gov.hmrc" %% "domain"                    % domainVersion,
     "uk.gov.hmrc" %% "play-hmrc-api"             % playHmrcApiVersion,
-    "eu.timepit"  %% "refined"                   % refinedVersion
+    "eu.timepit"  %% "refined"                    % refinedVersion
   )
 
   trait TestDependencies {

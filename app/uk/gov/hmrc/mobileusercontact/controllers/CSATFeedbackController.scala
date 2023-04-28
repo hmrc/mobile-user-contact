@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.domain.CSATFeedback
 import uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes.JourneyId
@@ -28,17 +29,18 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter.fromRequest
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class CSATFeedbackController @Inject()(cc: ControllerComponents, service: CSATFeedbackService)(implicit ex: ExecutionContext)
+class CSATFeedbackController @Inject()(cc: ControllerComponents, service: CSATFeedbackService, authorised: Authorised)(implicit ex: ExecutionContext)
   extends BackendController(cc){
 
   def feedback(journeyId: JourneyId) : Action[JsValue] =
     Action.async(parse.json) { implicit request =>
-      implicit val hc: HeaderCarrier =
-        fromRequest(request)
+      authorised.authorise(request, Retrievals.confidenceLevel) { _ =>
         withJsonBody[CSATFeedback] { response =>
-          service.sendAudit(response).map{ _ =>
+          Json.toJson(response)
+          service.sendAudit(response).map { _ =>
             NoContent
           }
         }
+      }
     }
 }
