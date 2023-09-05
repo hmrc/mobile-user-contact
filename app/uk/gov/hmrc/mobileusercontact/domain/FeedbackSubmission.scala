@@ -24,10 +24,10 @@ import uk.gov.hmrc.mobileusercontact.connectors.HmrcDeskproFeedback
 import uk.gov.hmrc.mobileusercontact.contactfrontend.FieldTransformer
 
 case class FeedbackSubmission(
-  email:             String,
-  message:           String,
-  userAgent:         String,
-  journeyId:         Option[String]) {
+  email:     String,
+  message:   String,
+  userAgent: String,
+  journeyId: Option[String]) {
 
   def toDeskpro(
     fieldTransformer:     FieldTransformer,

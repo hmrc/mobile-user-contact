@@ -16,12 +16,11 @@
 
 package uk.gov.hmrc.mobileusercontact.domain
 
-import org.scalatest.{Matchers, WordSpec}
 import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mobileusercontact.test.{FeedbackTestData, MockFieldTransformerForTestData}
+import uk.gov.hmrc.mobileusercontact.test.{BaseSpec, FeedbackTestData, MockFieldTransformerForTestData}
 
-class FeedbackSubmissionSpec extends WordSpec with Matchers with FeedbackTestData with MockFieldTransformerForTestData {
+class FeedbackSubmissionSpec extends BaseSpec with MockFieldTransformerForTestData with FeedbackTestData {
 
   "toDeskpro" should {
     "map FeedbackSubmission fields to HmrcDeskproFeedback and use FieldTransformer to populate authId, sessionId and userTaxIdentifiers" in {

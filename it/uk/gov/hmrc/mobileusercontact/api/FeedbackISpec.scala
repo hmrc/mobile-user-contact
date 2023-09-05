@@ -16,28 +16,12 @@
 
 package uk.gov.hmrc.mobileusercontact.api
 
-import java.util.UUID.randomUUID
-
-import org.scalatest.{Matchers, WordSpec}
-import play.api.Application
 import play.api.libs.json.Json
-import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HelpToSaveStub, HmrcDeskproStub}
-import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.BaseISpec
 
-class FeedbackISpec
-    extends WordSpec
-    with Matchers
-    with FutureAwaits
-    with DefaultAwaitTimeout
-    with WireMockSupport
-    with OneServerPerSuiteWsClient {
-
-  override implicit lazy val app: Application = appBuilder.build()
-  private val journeyId:          String      = randomUUID().toString
-  private val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
+class FeedbackISpec extends BaseISpec {
 
   private val feedbackSubmissionJson =
     """
@@ -48,9 +32,6 @@ class FeedbackISpec
       |  "userAgent": "HMRCNextGenConsumer/uk.gov.hmrc.TaxCalc 5.5.1 (iOS 10.3.3)"
       |}
     """.stripMargin
-
-  private val generator = new Generator(0)
-  private val nino      = generator.nextNino
 
   "POST /feedback-submissions" should {
 
@@ -130,7 +111,7 @@ class FeedbackISpec
       HmrcDeskproStub.createFeedbackShouldNotHaveBeenCalled()
     }
 
-    "return 502 if hmrc-deskpro returns an error 500" in {
+    "return 500 if hmrc-deskpro returns an error 500" in {
       AuthStub.userIsLoggedIn(nino = Some(nino), Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.currentUserIsEnrolled()
       HmrcDeskproStub.createFeedbackWillRespondWithInternalServerError()
@@ -142,10 +123,10 @@ class FeedbackISpec
           .post(feedbackSubmissionJson)
       )
 
-      response.status shouldBe 502
+      response.status shouldBe 500
     }
 
-    "return 502 if help-to-save returns an error 500" in {
+    "return 500 if help-to-save returns an error 500" in {
       AuthStub.userIsLoggedIn(nino = Some(nino), Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.enrolmentStatusReturnsInternalServerError()
       HmrcDeskproStub.createFeedbackWillSucceed()
@@ -157,7 +138,7 @@ class FeedbackISpec
           .post(feedbackSubmissionJson)
       )
 
-      response.status shouldBe 502
+      response.status shouldBe 500
     }
 
     "return 400 if no journeyId is supplied" in {

@@ -17,28 +17,9 @@
 package uk.gov.hmrc.mobileusercontact.api
 
 import org.scalatest.concurrent.Eventually
-import org.scalatest.{Matchers, WordSpec}
-import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
-import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.BaseISpec
 
-class ApiDefinitionISpec
-    extends WordSpec
-    with Matchers
-    with Eventually
-    with FutureAwaits
-    with DefaultAwaitTimeout
-    with WireMockSupport
-    with OneServerPerSuiteWsClient {
-
-  override protected def appBuilder: GuiceApplicationBuilder = super.appBuilder.configure(
-    "api.access.white-list.applicationIds" -> Seq("00010002-0003-0004-0005-000600070008",
-                                                  "00090002-0003-0004-0005-000600070008"),
-    "api.access.type" -> "TEST_ACCESS_TYPE"
-  )
-
-  override implicit lazy val app: Application = appBuilder.build()
+class ApiDefinitionISpec extends BaseISpec with Eventually {
 
   "GET /api/definition" should {
 

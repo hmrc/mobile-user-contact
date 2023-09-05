@@ -16,26 +16,12 @@
 
 package uk.gov.hmrc.mobileusercontact.api
 
-import java.util.UUID.randomUUID
-
-import org.scalatest.{Matchers, WordSpec}
-import play.api.Application
 import play.api.libs.json.Json
-import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
-import uk.gov.hmrc.domain.Generator
 import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HmrcDeskproStub}
-import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.BaseISpec
 
-class SupportISpec
-    extends WordSpec
-    with Matchers
-    with FutureAwaits
-    with DefaultAwaitTimeout
-    with WireMockSupport
-    with OneServerPerSuiteWsClient {
-
-  override implicit lazy val app: Application = appBuilder.build()
+class SupportISpec extends BaseISpec {
 
   private val supportRequestJson = """
                                      |{
@@ -47,11 +33,6 @@ class SupportISpec
                                      |  "service": "HTS"
                                      |}
                            """.stripMargin
-
-  private val generator = new Generator(0)
-  private val nino      = generator.nextNino
-  private val journeyId: String = randomUUID().toString
-  private val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
 
   "POST /support-requests" should {
 
@@ -125,7 +106,7 @@ class SupportISpec
       HmrcDeskproStub.createSupportShouldNotHaveBeenCalled()
     }
 
-    "return 502 if hmrc-deskpro returns an error 500" in {
+    "return 500 if hmrc-deskpro returns an error 500" in {
       AuthStub.userIsLoggedIn()
       HmrcDeskproStub.createSupportWillRespondWithInternalServerError()
 
@@ -136,7 +117,7 @@ class SupportISpec
           .post(supportRequestJson)
       )
 
-      response.status shouldBe 502
+      response.status shouldBe 500
     }
 
     "return 400 if journeyId not supplied" in {

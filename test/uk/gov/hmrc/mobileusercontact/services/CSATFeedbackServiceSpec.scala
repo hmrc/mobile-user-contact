@@ -16,21 +16,9 @@
 
 package uk.gov.hmrc.mobileusercontact.services
 
-import org.scalamock.handlers.CallHandler4
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.mobileusercontact.domain.{CSATFeedback, OriginEnum}
-import uk.gov.hmrc.mobileusercontact.test.FeedbackTestData
-import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.mobileusercontact.test.{BaseSpec, FeedbackTestData}
 
-import scala.concurrent.ExecutionContext
-
-class CSATFeedbackServiceSpec extends WordSpec with MockFactory with FeedbackTestData with OneInstancePerTest with Matchers {
-
-  implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-  lazy val auditConnector: AuditConnector = mock[AuditConnector]
-  lazy val csatFeedbackService: CSATFeedbackService = new CSATFeedbackService(auditConnector)
+class CSATFeedbackServiceSpec extends BaseSpec with FeedbackTestData {
 
   "Calling the .buildAuditModel" should {
 
@@ -53,7 +41,6 @@ class CSATFeedbackServiceSpec extends WordSpec with MockFactory with FeedbackTes
       result shouldEqual expected
 
     }
-
 
   }
 }

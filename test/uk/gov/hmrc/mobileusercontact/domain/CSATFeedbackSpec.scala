@@ -16,11 +16,10 @@
 
 package uk.gov.hmrc.mobileusercontact.domain
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.Json
-import uk.gov.hmrc.mobileusercontact.test.FeedbackTestData
+import uk.gov.hmrc.mobileusercontact.test.{BaseSpec, FeedbackTestData}
 
-class CSATFeedbackSpec extends WordSpec with Matchers with FeedbackTestData  {
+class CSATFeedbackSpec extends BaseSpec with FeedbackTestData {
 
   "correctly write CSATFeedback model to JSON" in {
     Json.toJson(csatFeedbackModel) shouldBe csatFeedbackJson
