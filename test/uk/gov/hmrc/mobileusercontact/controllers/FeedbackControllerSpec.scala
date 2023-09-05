@@ -16,27 +16,19 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
-import eu.timepit.refined.auto._
-import org.scalamock.scalatest.MockFactory
-import org.scalatestplus.play.PlaySpec
-import play.api.test.Helpers.{status, _}
-import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import play.api.test.Helpers._
+import play.api.test.FakeRequest
 import uk.gov.hmrc.mobileusercontact.domain.FeedbackSubmission
-import uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobileusercontact.services.Feedback
-import uk.gov.hmrc.mobileusercontact.test.FeedbackTestData
+import uk.gov.hmrc.mobileusercontact.test.{BaseSpec, FeedbackTestData}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+class FeedbackControllerSpec extends BaseSpec with FeedbackTestData {
 
-class FeedbackControllerSpec extends PlaySpec with DefaultAwaitTimeout with MockFactory with FeedbackTestData {
-
-  private val journeyId: JourneyId = "27d3c283-a8e9-43f8-bb0b-65c42027494a"
-
-  "submitFeedback" must {
+  "submitFeedback" should {
     "ensure user is logged in by checking permissions using Authorised" in {
       val service    = mock[Feedback]
       val controller = new FeedbackController(service, NeverAuthorised, stubControllerComponents())
-      status(controller.submitFeedback(journeyId)(FakeRequest().withBody[FeedbackSubmission](appFeedback))) mustBe FORBIDDEN
+      status(controller.submitFeedback(journeyId)(FakeRequest().withBody[FeedbackSubmission](appFeedback))) shouldBe FORBIDDEN
     }
   }
 }

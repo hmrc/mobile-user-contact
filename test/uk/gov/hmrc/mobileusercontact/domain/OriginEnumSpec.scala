@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.mobileusercontact.domain
 
-import org.scalatest.{Matchers, WordSpec}
 import play.api.libs.json.{JsString, Json}
+import uk.gov.hmrc.mobileusercontact.test.BaseSpec
 
-class OriginEnumSpec extends WordSpec with Matchers{
+class OriginEnumSpec extends BaseSpec {
 
   "be writable to JSON for mobile-paye" in {
     val result = Json.toJson(OriginEnum.mobilePaye)
@@ -66,6 +66,16 @@ class OriginEnumSpec extends WordSpec with Matchers{
     result shouldBe JsString("mobile-customer-profile")
   }
 
+  "be writable to JSON for mobile-child-benefit" in {
+    val result = Json.toJson(OriginEnum.mobileChildBenefit)
+    result shouldBe JsString("mobile-child-benefit")
+  }
+
+  "be writable to JSON for mobile-signing-in-to-the-app" in {
+    val result = Json.toJson(OriginEnum.mobileSigningIntoApp)
+    result shouldBe JsString("mobile-signing-in-to-the-app")
+  }
+
   "be readable from JSON for mobile-paye" in {
     val result = Json.fromJson(JsString("mobile-paye"))(OriginEnum.format)
     result.get shouldBe OriginEnum.mobilePaye
@@ -109,6 +119,16 @@ class OriginEnumSpec extends WordSpec with Matchers{
   "be readable from JSON for mobile-customer-profile" in {
     val result = Json.fromJson(JsString("mobile-customer-profile"))(OriginEnum.format)
     result.get shouldBe OriginEnum.mobileCustomerProfile
+  }
+
+  "be readable from JSON for mobile-child-benefit" in {
+    val result = Json.fromJson(JsString("mobile-child-benefit"))(OriginEnum.format)
+    result.get shouldBe OriginEnum.mobileChildBenefit
+  }
+
+  "be readable from JSON for mobile-signing-in-to-the-app" in {
+    val result = Json.fromJson(JsString("mobile-signing-in-to-the-app"))(OriginEnum.format)
+    result.get shouldBe OriginEnum.mobileSigningIntoApp
   }
 
   "return JsError when the enum is not readable" in {

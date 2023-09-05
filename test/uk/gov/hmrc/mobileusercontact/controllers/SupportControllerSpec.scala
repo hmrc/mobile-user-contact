@@ -16,29 +16,14 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
-import java.util.UUID.randomUUID
-
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.PlaySpec
-import play.api.test.Helpers.{status, _}
-import play.api.test.{DefaultAwaitTimeout, FakeRequest}
+import play.api.test.Helpers._
+import play.api.test.FakeRequest
 import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
-import uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes.JourneyId
 import uk.gov.hmrc.mobileusercontact.services.Support
-import uk.gov.hmrc.mobileusercontact.test.SupportTestData
+import uk.gov.hmrc.mobileusercontact.test.{BaseSpec, SupportTestData}
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import eu.timepit.refined.auto._
-
-class SupportControllerSpec
-    extends PlaySpec
-    with DefaultAwaitTimeout
-    with MockFactory
-    with ScalaFutures
-    with SupportTestData {
-
-  private val journeyId: JourneyId = "27d3c283-a8e9-43f8-bb0b-65c42027494a"
+class SupportControllerSpec extends BaseSpec with SupportTestData {
 
   "requestSupport" should {
 

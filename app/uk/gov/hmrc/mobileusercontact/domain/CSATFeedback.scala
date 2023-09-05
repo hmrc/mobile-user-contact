@@ -17,8 +17,14 @@
 package uk.gov.hmrc.mobileusercontact.domain
 
 import play.api.libs.json.{Format, Json}
-case class CSATFeedback(origin: OriginEnum.Value, ableToDo: Option[Boolean], howEasyScore: Option[Int], whyGiveScore: Option[String], howDoYouFeelScore: Option[Int])
+
+case class CSATFeedback(
+  origin:            OriginEnum.Value,
+  ableToDo:          Option[Boolean],
+  howEasyScore:      Option[Int],
+  whyGiveScore:      Option[String],
+  howDoYouFeelScore: Option[Int])
 
 object CSATFeedback {
-  implicit val format:Format[CSATFeedback] = Json.format[CSATFeedback]
+  implicit val format: Format[CSATFeedback] = Json.format[CSATFeedback]
 }

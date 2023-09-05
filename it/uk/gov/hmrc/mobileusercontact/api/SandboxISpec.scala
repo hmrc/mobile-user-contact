@@ -16,29 +16,16 @@
 
 package uk.gov.hmrc.mobileusercontact.api
 
-import java.util.UUID.randomUUID
-
-import org.scalatest.{Matchers, WordSpec}
-import play.api.Application
-import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import uk.gov.hmrc.mobileusercontact.stubs.AuthStub
-import uk.gov.hmrc.mobileusercontact.test.{OneServerPerSuiteWsClient, WireMockSupport}
+import uk.gov.hmrc.mobileusercontact.test.BaseISpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future._
 
-class SandboxISpec
-    extends WordSpec
-    with Matchers
-    with FutureAwaits
-    with DefaultAwaitTimeout
-    with WireMockSupport
-    with OneServerPerSuiteWsClient {
+class SandboxISpec extends BaseISpec {
 
-  override implicit lazy val app: Application = appBuilder.build()
   val sandboxUserId1 = "208606423740"
   val sandboxUserId2 = "167927702220"
-  private val journeyId: String = randomUUID().toString
 
   "POST /feedback-submissions with prod test account headers" should {
 
@@ -160,13 +147,13 @@ class SandboxISpec
         """.stripMargin
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
-        AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
+          AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-        wsUrl(s"/support-requests?journeyId=InvalidJourneyId")
-          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
-          .post(supportRequestJson)
-          .map(_.status)
-      }
+          wsUrl(s"/support-requests?journeyId=InvalidJourneyId")
+            .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+            .post(supportRequestJson)
+            .map(_.status)
+        }
 
       await(sequence(responses)).distinct shouldBe Seq(400)
     }

@@ -20,10 +20,10 @@ import java.net.URL
 
 import com.google.inject.ImplementedBy
 import javax.inject.{Inject, Singleton}
-import play.api.LoggerLike
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.mobileusercontact.config.HelpToSaveConnectorConfig
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,7 +38,6 @@ trait HelpToSaveConnector {
 
 @Singleton
 class HelpToSaveConnectorImpl @Inject() (
-  logger: LoggerLike,
   config: HelpToSaveConnectorConfig,
   http:   CoreGet)
     extends HelpToSaveConnector {

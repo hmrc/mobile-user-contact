@@ -18,32 +18,21 @@ package uk.gov.hmrc.mobileusercontact
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import org.scalamock.scalatest.MockFactory
-import org.scalatest.{Matchers, OneInstancePerTest, WordSpec}
 import play.api.http.Status._
 import play.api.mvc.Results
-import play.api.test.Helpers.{contentAsString, status}
-import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import play.api.test.Helpers.{await, contentAsString, status}
+import play.api.test.FakeRequest
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.{EmptyRetrieval, ItmpName, Retrieval, Retrievals}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.{EmptyRetrieval, ItmpName, Retrieval}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.controllers.AuthorisedImpl
-import uk.gov.hmrc.mobileusercontact.test.LoggerStub
+import uk.gov.hmrc.mobileusercontact.test.{BaseSpec, LoggerStub}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthorisedSpec
-    extends WordSpec
-    with Matchers
-    with FutureAwaits
-    with DefaultAwaitTimeout
-    with MockFactory
-    with OneInstancePerTest
-    with LoggerStub
-    with Retrievals
-    with Results {
+class AuthorisedSpec extends BaseSpec with LoggerStub with Retrievals with Results {
 
   implicit val system:       ActorSystem       = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -52,15 +41,16 @@ class AuthorisedSpec
     "retrieve ItmpName when specified and pass it to the block" in {
       val authConnectorStub = stub[AuthConnector]
       (authConnectorStub
-        .authorise[ItmpName](_: Predicate, _: Retrieval[ItmpName])(_: HeaderCarrier, _: ExecutionContext))
-        .when(ConfidenceLevel.L200, itmpName, *, *)
-        .returns(Future successful ItmpName(Some("Testgiven"), None, Some("Testfamily")))
+        .authorise[Option[ItmpName]](_: Predicate, _: Retrieval[Option[ItmpName]])(_: HeaderCarrier,
+                                                                                   _: ExecutionContext))
+        .when(ConfidenceLevel.L200, *, *, *)
+        .returns(Future successful Some(ItmpName(Some("Testgiven"), None, Some("Testfamily"))))
 
       val authorised = new AuthorisedImpl(logger, authConnectorStub)
 
       var capturedItmpName: Option[ItmpName] = None
-      val action = authorised.authorise(FakeRequest(), itmpName) { itmpName =>
-        capturedItmpName = Some(itmpName)
+      val action = authorised.authorise(FakeRequest(), Retrievals.itmpName) { itmpName =>
+        capturedItmpName = itmpName
         Future successful Ok
       }
 

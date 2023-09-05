@@ -1,7 +1,6 @@
 import play.sbt.PlayImport.PlayKeys.playDefaultPort
 import sbt.Tests.{Group, SubProcess}
 import scoverage.ScoverageKeys
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "mobile-user-contact"
 
@@ -17,11 +16,10 @@ lazy val microservice = Project(appName, file("."))
     playDefaultPort := 8250,
     scalaVersion := "2.12.15",
     libraryDependencies ++= AppDependencies(),
-    dependencyOverrides ++= AppDependencies.overrides,
-    evictionWarningOptions in update := EvictionWarningOptions.default
+    update / evictionWarningOptions := EvictionWarningOptions.default
       .withWarnScalaVersionEviction(false),
     resolvers += Resolver.jcenterRepo,
-    unmanagedResourceDirectories in Compile += baseDirectory.value / "resources",
+    Compile / unmanagedResourceDirectories += baseDirectory.value / "resources",
     ScoverageKeys.coverageExcludedPackages := """uk\.gov\.hmrc\.BuildInfo;.*\.Routes;.*\.RoutesPrefix;.*\.Reverse[^.]*""",
     ScoverageKeys.coverageMinimumStmtTotal := 95.00,
     ScoverageKeys.coverageFailOnMinimum := true,
@@ -33,13 +31,12 @@ lazy val microservice = Project(appName, file("."))
       "uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes._"
     )
   )
-  .settings(publishingSettings: _*)
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest)(base => Seq(base / "it")).value,
-    testGrouping in IntegrationTest := oneForkedJvmPerTest(
-      (definedTests in IntegrationTest).value
+    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
+    IntegrationTest / testGrouping := oneForkedJvmPerTest(
+      (IntegrationTest / definedTests).value
     )
   )
 
