@@ -19,7 +19,7 @@ package uk.gov.hmrc.mobileusercontact.stubs
 import com.github.tomakehurst.wiremock.client.WireMock._
 import play.api.libs.json.JsValue
 
-object HmrcDeskproStub {
+object DeskproTicketQStub {
 
   private val createFeedbackPath = "/deskpro/feedback"
   private val createSupportPath  = "/deskpro/get-help-ticket"
