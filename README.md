@@ -4,7 +4,7 @@
 
 The mobile-user-contact microservice provides an API that allows mobile app users to contact HMRC. It allows users to send feedback and to request support.
 
-Currently this is implemented using Deskpro (via the `hmrc-deskpro` microservice).
+Currently this is implemented using Deskpro (via the `deskpro-ticket-queue` microservice).
 
 ## License
 

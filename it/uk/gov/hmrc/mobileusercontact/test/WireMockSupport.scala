@@ -66,8 +66,8 @@ trait WireMockSupport extends BeforeAndAfterAll with BeforeAndAfterEach with App
     "microservice.services.auth.port"         -> wireMockPort,
     "microservice.services.help-to-save.host" -> wireMockHost,
     "microservice.services.help-to-save.port" -> wireMockPort,
-    "microservice.services.hmrc-deskpro.host" -> wireMockHost,
-    "microservice.services.hmrc-deskpro.port" -> wireMockPort,
+    "microservice.services.deskpro-ticket-queue.host" -> wireMockHost,
+    "microservice.services.deskpro-ticket-queue.port" -> wireMockPort,
     "api.access.white-list.applicationIds" -> Seq("00010002-0003-0004-0005-000600070008",
                                                   "00090002-0003-0004-0005-000600070008"),
     "api.access.type" -> "TEST_ACCESS_TYPE"

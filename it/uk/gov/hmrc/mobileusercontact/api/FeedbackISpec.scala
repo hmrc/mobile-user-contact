@@ -18,7 +18,7 @@ package uk.gov.hmrc.mobileusercontact.api
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HelpToSaveStub, HmrcDeskproStub}
+import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, DeskproTicketQueueStub, HelpToSaveStub}
 import uk.gov.hmrc.mobileusercontact.test.BaseISpec
 
 class FeedbackISpec extends BaseISpec {
@@ -35,10 +35,10 @@ class FeedbackISpec extends BaseISpec {
 
   "POST /feedback-submissions" should {
 
-    "Use hmrc-deskpro to create a feedback Deskpro ticket" in {
+    "Use deskpro-ticket-queue to create a feedback Deskpro ticket" in {
       AuthStub.userIsLoggedIn(nino = Some(nino), Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.currentUserIsEnrolled()
-      HmrcDeskproStub.createFeedbackWillSucceed()
+      DeskproTicketQueueStub.createFeedbackWillSucceed()
 
       val response = await(
         wsUrl(s"/feedback-submissions?journeyId=$journeyId")
@@ -55,7 +55,7 @@ class FeedbackISpec extends BaseISpec {
           |
           |HtS: yes""".stripMargin
 
-      HmrcDeskproStub.createFeedbackShouldHaveBeenCalled(
+      DeskproTicketQueueStub.createFeedbackShouldHaveBeenCalled(
         Json.obj(
           "name"      -> "Given Middle Family",
           "email"     -> "testy@example.com",
@@ -81,7 +81,7 @@ class FeedbackISpec extends BaseISpec {
     "return 401 if no user is logged in" in {
       AuthStub.userIsNotLoggedIn()
       HelpToSaveStub.currentUserIsEnrolled()
-      HmrcDeskproStub.createFeedbackWillSucceed()
+      DeskproTicketQueueStub.createFeedbackWillSucceed()
 
       val response = await(
         wsUrl(s"/feedback-submissions?journeyId=$journeyId")
@@ -91,13 +91,13 @@ class FeedbackISpec extends BaseISpec {
 
       response.status shouldBe 401
 
-      HmrcDeskproStub.createFeedbackShouldNotHaveBeenCalled()
+      DeskproTicketQueueStub.createFeedbackShouldNotHaveBeenCalled()
     }
 
     "return 403 Forbidden when the user is logged in with an insufficient confidence level" in {
       AuthStub.userIsLoggedInWithInsufficientConfidenceLevel()
       HelpToSaveStub.currentUserIsEnrolled()
-      HmrcDeskproStub.createFeedbackWillSucceed()
+      DeskproTicketQueueStub.createFeedbackWillSucceed()
 
       val response = await(
         wsUrl(s"/feedback-submissions?journeyId=$journeyId")
@@ -108,13 +108,13 @@ class FeedbackISpec extends BaseISpec {
 
       response.status shouldBe 403
 
-      HmrcDeskproStub.createFeedbackShouldNotHaveBeenCalled()
+      DeskproTicketQueueStub.createFeedbackShouldNotHaveBeenCalled()
     }
 
-    "return 500 if hmrc-deskpro returns an error 500" in {
+    "return 500 if deskpro-ticket-queue returns an error 500" in {
       AuthStub.userIsLoggedIn(nino = Some(nino), Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.currentUserIsEnrolled()
-      HmrcDeskproStub.createFeedbackWillRespondWithInternalServerError()
+      DeskproTicketQueueStub.createFeedbackWillRespondWithInternalServerError()
 
       val response = await(
         wsUrl(s"/feedback-submissions?journeyId=$journeyId")
@@ -129,7 +129,7 @@ class FeedbackISpec extends BaseISpec {
     "return 500 if help-to-save returns an error 500" in {
       AuthStub.userIsLoggedIn(nino = Some(nino), Some("Given"), Some("Middle"), Some("Family"))
       HelpToSaveStub.enrolmentStatusReturnsInternalServerError()
-      HmrcDeskproStub.createFeedbackWillSucceed()
+      DeskproTicketQueueStub.createFeedbackWillSucceed()
 
       val response = await(
         wsUrl(s"/feedback-submissions?journeyId=$journeyId")
@@ -144,7 +144,7 @@ class FeedbackISpec extends BaseISpec {
     "return 400 if no journeyId is supplied" in {
       AuthStub.userIsNotLoggedIn()
       HelpToSaveStub.currentUserIsEnrolled()
-      HmrcDeskproStub.createFeedbackWillSucceed()
+      DeskproTicketQueueStub.createFeedbackWillSucceed()
 
       val response = await(
         wsUrl(s"/feedback-submissions")
@@ -158,7 +158,7 @@ class FeedbackISpec extends BaseISpec {
     "return 400 if invalid journeyId is supplied" in {
       AuthStub.userIsNotLoggedIn()
       HelpToSaveStub.currentUserIsEnrolled()
-      HmrcDeskproStub.createFeedbackWillSucceed()
+      DeskproTicketQueueStub.createFeedbackWillSucceed()
 
       val response = await(
         wsUrl(s"/feedback-submissions?journeyId=InvalidJourneyId")

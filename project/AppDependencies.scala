@@ -11,7 +11,7 @@ object AppDependencies {
 
   private val scalaTestVersion       = "3.0.8"
   private val pegdownVersion         = "1.6.0"
-  private val refinedVersion         = "0.9.4"
+  private val refinedVersion          = "0.9.4"
   private val wireMockVersion        = "2.21.0"
   private val scalaMockVersion       = "4.1.0"
   private val websocketClientVersion = "9.2.22.v20170606"
@@ -21,7 +21,7 @@ object AppDependencies {
     "uk.gov.hmrc" %% "bootstrap-backend-play-28" % bootstrapPlayVersion,
     "uk.gov.hmrc" %% "domain"                    % domainVersion,
     "uk.gov.hmrc" %% "play-hmrc-api"             % playHmrcApiVersion,
-    "eu.timepit"  %% "refined"                   % refinedVersion
+    "eu.timepit"  %% "refined"                    % refinedVersion
   )
 
   trait TestDependencies {

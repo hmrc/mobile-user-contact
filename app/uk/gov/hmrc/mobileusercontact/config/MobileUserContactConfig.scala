@@ -42,7 +42,7 @@ class MobileUserContactConfig @Inject() (
 
   override val helpToSaveBaseUrl: URL = configBaseUrl("help-to-save")
 
-  override val hmrcDeskproBaseUrl: URL = configBaseUrl("hmrc-deskpro")
+  override val hmrcDeskproBaseUrl: URL = configBaseUrl("deskpro-ticket-queue")
 
   private def configBaseUrl(serviceName: String): URL = new URL(servicesConfig.baseUrl(serviceName))
 }
