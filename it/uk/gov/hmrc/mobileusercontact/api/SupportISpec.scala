@@ -18,7 +18,7 @@ package uk.gov.hmrc.mobileusercontact.api
 
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, HmrcDeskproStub}
+import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, DeskproTicketQueueStub}
 import uk.gov.hmrc.mobileusercontact.test.BaseISpec
 
 class SupportISpec extends BaseISpec {
@@ -36,10 +36,10 @@ class SupportISpec extends BaseISpec {
 
   "POST /support-requests" should {
 
-    "Use hmrc-deskpro to create a support Deskpro ticket" in {
+    "Use deskpro-ticket-queue to create a support Deskpro ticket" in {
 
       AuthStub.userIsLoggedIn(nino = Some(nino))
-      HmrcDeskproStub.createSupportTicketWillSucceed()
+      DeskproTicketQueueStub.createSupportTicketWillSucceed()
 
       val response = await(
         wsUrl(s"/support-requests?journeyId=$journeyId")
@@ -51,7 +51,7 @@ class SupportISpec extends BaseISpec {
 
       response.status shouldBe 202
 
-      HmrcDeskproStub.createSupportShouldHaveBeenCalled(
+      DeskproTicketQueueStub.createSupportShouldHaveBeenCalled(
         Json.obj(
           "name"              -> "John Smith",
           "email"             -> "testy@example.com",
@@ -77,7 +77,7 @@ class SupportISpec extends BaseISpec {
 
     "return 401 if no user is logged in" in {
       AuthStub.userIsNotLoggedIn()
-      HmrcDeskproStub.createSupportTicketWillSucceed()
+      DeskproTicketQueueStub.createSupportTicketWillSucceed()
 
       val response = await(
         wsUrl(s"/support-requests?journeyId=$journeyId")
@@ -87,12 +87,12 @@ class SupportISpec extends BaseISpec {
 
       response.status shouldBe 401
 
-      HmrcDeskproStub.createSupportShouldNotHaveBeenCalled()
+      DeskproTicketQueueStub.createSupportShouldNotHaveBeenCalled()
     }
 
     "return 403 Forbidden when the user is logged in with an insufficient confidence level" in {
       AuthStub.userIsLoggedInWithInsufficientConfidenceLevel()
-      HmrcDeskproStub.createSupportTicketWillSucceed()
+      DeskproTicketQueueStub.createSupportTicketWillSucceed()
 
       val response = await(
         wsUrl(s"/support-requests?journeyId=$journeyId")
@@ -103,12 +103,12 @@ class SupportISpec extends BaseISpec {
 
       response.status shouldBe 403
 
-      HmrcDeskproStub.createSupportShouldNotHaveBeenCalled()
+      DeskproTicketQueueStub.createSupportShouldNotHaveBeenCalled()
     }
 
-    "return 500 if hmrc-deskpro returns an error 500" in {
+    "return 500 if deskpro-ticket-queue returns an error 500" in {
       AuthStub.userIsLoggedIn()
-      HmrcDeskproStub.createSupportWillRespondWithInternalServerError()
+      DeskproTicketQueueStub.createSupportWillRespondWithInternalServerError()
 
       val response = await(
         wsUrl(s"/support-requests?journeyId=$journeyId")
@@ -122,7 +122,7 @@ class SupportISpec extends BaseISpec {
 
     "return 400 if journeyId not supplied" in {
       AuthStub.userIsNotLoggedIn()
-      HmrcDeskproStub.createSupportTicketWillSucceed()
+      DeskproTicketQueueStub.createSupportTicketWillSucceed()
 
       val response = await(
         wsUrl(s"/support-requests")
@@ -135,7 +135,7 @@ class SupportISpec extends BaseISpec {
 
     "return 400 if invalid journeyId supplied" in {
       AuthStub.userIsNotLoggedIn()
-      HmrcDeskproStub.createSupportTicketWillSucceed()
+      DeskproTicketQueueStub.createSupportTicketWillSucceed()
 
       val response = await(
         wsUrl(s"/support-requests?journeyId=InvalidJourneyId")
