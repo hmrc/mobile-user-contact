@@ -131,6 +131,11 @@ class OriginEnumSpec extends BaseSpec {
     result.get shouldBe OriginEnum.mobileSigningIntoApp
   }
 
+  "be readable from JSON for mobile-simple-assessment-payment-status" in {
+    val result = Json.fromJson(JsString("mobile-simple-assessment-payment-status"))(OriginEnum.format)
+    result.get shouldBe OriginEnum.mobileSimpleAssessmentPaymentStatus
+  }
+
   "return JsError when the enum is not readable" in {
     val result = Json.fromJson(JsString("unknown"))(OriginEnum.format)
     result.isError shouldBe true
