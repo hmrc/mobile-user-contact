@@ -23,7 +23,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 @Singleton
 class MobileUserContactConfig @Inject() (
@@ -38,7 +38,7 @@ class MobileUserContactConfig @Inject() (
   // These are eager vals so that missing or invalid configuration will be detected on startup
   private val accessConfig = configuration.underlying.getConfig("api.access")
   override val apiAccessType:              String      = accessConfig.getString("type")
-  override val apiWhiteListApplicationIds: Seq[String] = accessConfig.getStringList("white-list.applicationIds").asScala
+  override val apiWhiteListApplicationIds: Seq[String] = accessConfig.getStringList("white-list.applicationIds").asScala.toSeq
 
   override val helpToSaveBaseUrl: URL = configBaseUrl("help-to-save")
 
