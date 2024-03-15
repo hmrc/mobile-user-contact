@@ -17,16 +17,18 @@
 package uk.gov.hmrc.mobileusercontact.api
 
 import controllers.Assets
+
 import javax.inject.{Inject, Singleton}
 import play.api.http.HttpErrorHandler
 import play.api.libs.json.{Json, OWrites}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.mobileusercontact.config.DocumentationControllerConfig
 import uk.gov.hmrc.mobileusercontact.views.txt
+
+import scala.collection.mutable
 
 case class ApiAccess(
   `type`:                    String,
-  whitelistedApplicationIds: Seq[String])
+  whitelistedApplicationIds: mutable.Buffer[String])
 
 object ApiAccess {
   implicit val writes: OWrites[ApiAccess] = Json.writes[ApiAccess]
@@ -34,16 +36,13 @@ object ApiAccess {
 
 @Singleton
 class DocumentationController @Inject() (
-  errorHandler: HttpErrorHandler,
-  config:       DocumentationControllerConfig,
+  apiAccess:    ApiAccess,
   cc:           ControllerComponents,
-  assets:       Assets)
+  assets:       Assets,
+  errorHandler: HttpErrorHandler)
     extends uk.gov.hmrc.api.controllers.DocumentationController(cc, assets, errorHandler) {
 
-  private lazy val apiAccess =
-    ApiAccess(config.apiAccessType, config.apiWhiteListApplicationIds)
-
   override def definition(): Action[AnyContent] = Action {
-    Ok(txt.definition(apiAccess)).as(JSON)
+    Ok(txt.definition(apiAccess)).withHeaders("Content-Type" -> "application/json")
   }
 }

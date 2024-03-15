@@ -17,11 +17,19 @@
 package uk.gov.hmrc.mobileusercontact.config
 
 import com.google.inject.AbstractModule
-import play.api.{Logger, LoggerLike}
+import play.api.{Configuration, Environment, Logger, LoggerLike}
+import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.http.{CoreGet, CorePost}
+import uk.gov.hmrc.mobileusercontact.api.ApiAccess
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
-class GuiceModule extends AbstractModule {
+import scala.jdk.CollectionConverters._
+
+class GuiceModule(
+  environment:   Environment,
+  configuration: Configuration)
+    extends AbstractModule {
 
   val logger: Logger = Logger(this.getClass)
 
@@ -30,5 +38,13 @@ class GuiceModule extends AbstractModule {
 
     bind(classOf[CoreGet]).to(classOf[DefaultHttpClient])
     bind(classOf[CorePost]).to(classOf[DefaultHttpClient])
+    bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
+    bind(classOf[ApiAccess]).toInstance(
+      ApiAccess(
+        "PRIVATE",
+        configuration.underlying
+          .getStringList("api.access.white-list.applicationIds").asScala
+      )
+    )
   }
 }

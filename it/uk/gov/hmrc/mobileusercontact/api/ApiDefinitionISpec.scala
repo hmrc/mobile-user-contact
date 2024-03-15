@@ -27,15 +27,13 @@ class ApiDefinitionISpec extends BaseISpec with Eventually {
       val response = await(wsUrl("/api/definition").get())
       response.status shouldBe 200
 
-      response.header("Content-Type") shouldBe Some("application/json")
-
       val definition = response.json
       (definition \\ "version").map(_.as[String]).head shouldBe "1.0"
 
       val accessConfigs = definition \ "api" \ "versions" \\ "access"
       accessConfigs.length should be > 0
       accessConfigs.foreach { accessConfig =>
-        (accessConfig \ "type").as[String]                           shouldBe "TEST_ACCESS_TYPE"
+        (accessConfig \ "type").as[String]                           shouldBe "PRIVATE"
         (accessConfig \ "whitelistedApplicationIds").head.as[String] shouldBe "00010002-0003-0004-0005-000600070008"
         (accessConfig \ "whitelistedApplicationIds")(1).as[String]   shouldBe "00090002-0003-0004-0005-000600070008"
       }

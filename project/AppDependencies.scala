@@ -1,20 +1,16 @@
-import play.core.PlayVersion
 import play.sbt.PlayImport._
 import sbt._
 
 object AppDependencies {
 
-  private val bootstrapPlayVersion     = "5.24.0"
-  private val playHmrcApiVersion       = "7.0.0-play-28"
-  private val scalaTestPlusPlayVersion = "4.0.3"
+  private val bootstrapPlayVersion     = "7.19.0"
+  private val playHmrcApiVersion       = "7.2.0-play-28"
   private val domainVersion            = "8.1.0-play-28"
 
-  private val scalaTestVersion       = "3.0.8"
   private val pegdownVersion         = "1.6.0"
-  private val refinedVersion          = "0.9.4"
+  private val refinedVersion          = "0.9.26"
   private val wireMockVersion        = "2.21.0"
-  private val scalaMockVersion       = "4.1.0"
-  private val websocketClientVersion = "9.2.22.v20170606"
+  private val scalaMockVersion       = "5.1.0"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
@@ -54,10 +50,7 @@ object AppDependencies {
   }
 
   def testCommon(scope: String): Seq[ModuleID] = Seq(
-    "org.scalatest"          %% "scalatest"              % scalaTestVersion         % scope,
-    "org.scalatestplus.play" %% "scalatestplus-play"     % scalaTestPlusPlayVersion % scope,
     "org.pegdown"            % "pegdown"                 % pegdownVersion           % scope,
-    "com.typesafe.play"      %% "play-test"              % PlayVersion.current      % scope,
     "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapPlayVersion     % scope
   )
 
