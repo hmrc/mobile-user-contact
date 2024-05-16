@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.mobileusercontact
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.stream.ActorMaterializer
 import play.api.http.Status._
 import play.api.mvc.Results
 import play.api.test.Helpers.{await, contentAsString, status}
