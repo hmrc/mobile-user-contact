@@ -23,34 +23,20 @@ import javax.inject.{Inject, Singleton}
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import scala.jdk.CollectionConverters._
-
 @Singleton
 class MobileUserContactConfig @Inject() (
   environment:   Environment,
   configuration: Configuration)
-    extends DocumentationControllerConfig
-    with HelpToSaveConnectorConfig
+    extends HelpToSaveConnectorConfig
     with HmrcDeskproConnectorConfig {
 
   val servicesConfig = new ServicesConfig(configuration)
-
-  // These are eager vals so that missing or invalid configuration will be detected on startup
-  private val accessConfig = configuration.underlying.getConfig("api.access")
-  override val apiAccessType:              String      = accessConfig.getString("type")
-  override val apiWhiteListApplicationIds: Seq[String] = accessConfig.getStringList("white-list.applicationIds").asScala.toSeq
 
   override val helpToSaveBaseUrl: URL = configBaseUrl("help-to-save")
 
   override val hmrcDeskproBaseUrl: URL = configBaseUrl("deskpro-ticket-queue")
 
   private def configBaseUrl(serviceName: String): URL = new URL(servicesConfig.baseUrl(serviceName))
-}
-
-@ImplementedBy(classOf[MobileUserContactConfig])
-trait DocumentationControllerConfig {
-  def apiAccessType:              String
-  def apiWhiteListApplicationIds: Seq[String]
 }
 
 @ImplementedBy(classOf[MobileUserContactConfig])
