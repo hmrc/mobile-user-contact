@@ -17,13 +17,14 @@
 package uk.gov.hmrc.mobileusercontact.connectors
 
 import java.net.URL
-
 import com.google.inject.ImplementedBy
+
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.JsValue
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.mobileusercontact.config.HelpToSaveConnectorConfig
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,16 +40,17 @@ trait HelpToSaveConnector {
 @Singleton
 class HelpToSaveConnectorImpl @Inject() (
   config: HelpToSaveConnectorConfig,
-  http:   CoreGet)
+  http:   HttpClientV2)
     extends HelpToSaveConnector {
 
   override def enrolmentStatus(
   )(implicit hc: HeaderCarrier,
     ec:          ExecutionContext
   ): Future[Boolean] =
-    http.GET[JsValue](enrolmentStatusUrl.toString) map { json: JsValue =>
-      (json \ "enrolled").as[Boolean]
-    }
+    http
+      .get(enrolmentStatusUrl)
+      .execute[JsValue]
+      .map(json => (json \ "enrolled").as[Boolean])
 
   private lazy val enrolmentStatusUrl: URL = new URL(config.helpToSaveBaseUrl, "/help-to-save/enrolment-status")
 }

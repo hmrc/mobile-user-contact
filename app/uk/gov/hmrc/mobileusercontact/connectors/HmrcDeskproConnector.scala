@@ -21,10 +21,11 @@ import com.google.inject.ImplementedBy
 
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json, OWrites, Writes}
-import uk.gov.hmrc.http.{CorePost, HeaderCarrier, HttpException}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import uk.gov.hmrc.mobileusercontact.config.HmrcDeskproConnectorConfig
 import uk.gov.hmrc.mobileusercontact.contactfrontend.UserTaxIdentifiers
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -46,7 +47,7 @@ trait HmrcDeskproConnector {
 
 @Singleton
 class HmrcDeskproConnectorImpl @Inject() (
-  http:   CorePost,
+  http:   HttpClientV2,
   config: HmrcDeskproConnectorConfig)
     extends HmrcDeskproConnector {
 
@@ -70,14 +71,16 @@ class HmrcDeskproConnectorImpl @Inject() (
     wts:         Writes[T]
   ): Future[Unit] =
     http
-      .POST[T, JsValue](deskproUrl(resource), ticket)
+      .post(deskproUrl(resource))
+      .withBody(Json.toJson(ticket))
+      .execute[JsValue]
       .map(_ => ())
       .recover {
         case e: HttpException =>
           new HttpException("", e.responseCode)
       }
 
-  private val deskproUrl = (resource: String) => new URL(config.hmrcDeskproBaseUrl, s"/deskpro/$resource").toString
+  private val deskproUrl = (resource: String) => new URL(config.hmrcDeskproBaseUrl, s"/deskpro/$resource")
 }
 
 case class HmrcDeskproFeedback(

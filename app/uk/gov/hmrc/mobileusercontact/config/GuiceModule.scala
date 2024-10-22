@@ -19,10 +19,8 @@ package uk.gov.hmrc.mobileusercontact.config
 import com.google.inject.AbstractModule
 import play.api.{Configuration, Environment, Logger, LoggerLike}
 import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.http.{CoreGet, CorePost}
 import uk.gov.hmrc.mobileusercontact.api.ApiAccess
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 class GuiceModule(
   environment:   Environment,
@@ -33,9 +31,6 @@ class GuiceModule(
 
   override def configure(): Unit = {
     bind(classOf[LoggerLike]).toInstance(logger)
-
-    bind(classOf[CoreGet]).to(classOf[DefaultHttpClient])
-    bind(classOf[CorePost]).to(classOf[DefaultHttpClient])
     bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
     bind(classOf[ApiAccess]).toInstance(ApiAccess("PRIVATE"))
   }
