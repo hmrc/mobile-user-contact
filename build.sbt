@@ -6,7 +6,6 @@ val appName = "mobile-user-contact"
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(
     play.sbt.PlayScala,
-    SbtAutoBuildPlugin,
     SbtDistributablesPlugin
   )
   .disablePlugins(JUnitXmlReportPlugin)
@@ -17,7 +16,6 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= AppDependencies(),
     update / evictionWarningOptions := EvictionWarningOptions.default
       .withWarnScalaVersionEviction(false),
-    resolvers += Resolver.jcenterRepo,
     Compile / unmanagedResourceDirectories += baseDirectory.value / "resources",
     ScoverageKeys.coverageExcludedPackages := """uk\.gov\.hmrc\.BuildInfo;.*\.Routes;.*\.RoutesPrefix;.*\.Reverse[^.]*""",
     ScoverageKeys.coverageMinimumStmtTotal := 95.00,
