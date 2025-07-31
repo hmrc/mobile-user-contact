@@ -10,6 +10,12 @@ Currently this is implemented using Deskpro (via the `deskpro-ticket-queue` micr
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
 
+## Run Tests
+- Run Unit Tests:  `sbt test`
+- Run Integration Tests: `sbt it:test`
+- Run Unit and Integration Tests: `sbt test it:test`
+- Run Unit and Integration Tests with coverage report: `sbt clean compile coverage test it:test coverageReport`
+
 ### Standard Responses
 
 We use standard HTTP status codes to show whether an API request succeeded or not. They're usually:
