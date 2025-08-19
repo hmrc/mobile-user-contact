@@ -20,7 +20,8 @@ import uk.gov.hmrc.mobileusercontact.stubs.AuthStub
 import uk.gov.hmrc.mobileusercontact.test.BaseISpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future._
+import scala.concurrent.Future.*
+import play.api.libs.ws.WSBodyWritables.*
 
 class SandboxISpec extends BaseISpec {
 
@@ -42,13 +43,13 @@ class SandboxISpec extends BaseISpec {
       """.stripMargin
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
-          AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
+        AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-          wsUrl(s"/feedback-submissions?journeyId=$journeyId")
-            .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
-            .post(feedbackSubmissionJson)
-            .map(_.status)
-        }
+        wsUrl(s"/feedback-submissions?journeyId=$journeyId")
+          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+          .post(feedbackSubmissionJson)
+          .map(_.status)
+      }
 
       await(sequence(responses)).distinct shouldBe Seq(202)
     }
@@ -66,13 +67,13 @@ class SandboxISpec extends BaseISpec {
         """.stripMargin
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
-          AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
+        AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-          wsUrl(s"/feedback-submissions")
-            .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
-            .post(feedbackSubmissionJson)
-            .map(_.status)
-        }
+        wsUrl(s"/feedback-submissions")
+          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+          .post(feedbackSubmissionJson)
+          .map(_.status)
+      }
 
       await(sequence(responses)).distinct shouldBe Seq(400)
     }
@@ -95,13 +96,13 @@ class SandboxISpec extends BaseISpec {
         """.stripMargin
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
-          AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
+        AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-          wsUrl(s"/support-requests?journeyId=$journeyId")
-            .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
-            .post(supportRequestJson)
-            .map(_.status)
-        }
+        wsUrl(s"/support-requests?journeyId=$journeyId")
+          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+          .post(supportRequestJson)
+          .map(_.status)
+      }
 
       await(sequence(responses)).distinct shouldBe Seq(202)
     }
@@ -121,13 +122,13 @@ class SandboxISpec extends BaseISpec {
         """.stripMargin
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
-          AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
+        AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-          wsUrl(s"/support-requests")
-            .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
-            .post(supportRequestJson)
-            .map(_.status)
-        }
+        wsUrl(s"/support-requests")
+          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+          .post(supportRequestJson)
+          .map(_.status)
+      }
 
       await(sequence(responses)).distinct shouldBe Seq(400)
     }
@@ -147,13 +148,13 @@ class SandboxISpec extends BaseISpec {
         """.stripMargin
 
       val responses = Seq(sandboxUserId1, sandboxUserId2) map { id =>
-          AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
+        AuthStub.userIsLoggedIn() // Sandbox doesn't use any retrievals
 
-          wsUrl(s"/support-requests?journeyId=InvalidJourneyId")
-            .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
-            .post(supportRequestJson)
-            .map(_.status)
-        }
+        wsUrl(s"/support-requests?journeyId=InvalidJourneyId")
+          .addHttpHeaders("Content-Type" -> "application/json", "X-MOBILE-USER-ID" -> id)
+          .post(supportRequestJson)
+          .map(_.status)
+      }
 
       await(sequence(responses)).distinct shouldBe Seq(400)
     }

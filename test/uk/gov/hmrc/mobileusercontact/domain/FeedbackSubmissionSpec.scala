@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.mobileusercontact.domain
 
+import play.api.libs.json.{JsResultException, Json}
 import uk.gov.hmrc.auth.core.retrieve.ItmpName
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.test.{BaseSpec, FeedbackTestData, MockFieldTransformerForTestData}
@@ -72,9 +73,55 @@ class FeedbackSubmissionSpec extends BaseSpec with MockFieldTransformerForTestDa
       appFeedback.toDeskpro(fieldTransformer,
                             Some(ItmpName(givenName = Some("Given"), None, familyName = Some("Family"))),
                             enrolledInHelpToSave = enrolledInHelpToSave,
-                            enrolments) shouldBe expectedDeskproFeedback.copy(
+                            enrolments
+                           ) shouldBe expectedDeskproFeedback.copy(
         name = "Given Family"
       )
+    }
+  }
+
+  "FeedbackSubmission JSON reads" should {
+
+    "deserialize JSON with all fields" in {
+      val json = Json.obj(
+        "email"     -> "user@test.com",
+        "message"   -> "This app is great!",
+        "userAgent" -> "Mozilla/5.0",
+        "journeyId" -> "journey-123"
+      )
+
+      val feedback = json.as[FeedbackSubmission]
+
+      feedback.email     shouldBe "user@test.com"
+      feedback.message   shouldBe "This app is great!"
+      feedback.userAgent shouldBe "Mozilla/5.0"
+      feedback.journeyId shouldBe Some("journey-123")
+    }
+
+    "deserialize JSON without optional journeyId" in {
+      val json = Json.obj(
+        "email"     -> "user@test.com",
+        "message"   -> "Missing journey ID",
+        "userAgent" -> "Safari"
+      )
+
+      val feedback = json.as[FeedbackSubmission]
+
+      feedback.email     shouldBe "user@test.com"
+      feedback.message   shouldBe "Missing journey ID"
+      feedback.userAgent shouldBe "Safari"
+      feedback.journeyId shouldBe None
+    }
+
+    "fail to deserialize when required fields are missing" in {
+      val json = Json.obj(
+        "email" -> "user@test.com"
+        // missing message and userAgent
+      )
+
+      an[JsResultException] shouldBe thrownBy {
+        json.as[FeedbackSubmission]
+      }
     }
   }
 

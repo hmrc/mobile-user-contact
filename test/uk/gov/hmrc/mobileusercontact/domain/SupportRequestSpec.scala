@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.mobileusercontact.domain
 
+import play.api.libs.json.*
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.test.{BaseSpec, MockFieldTransformerForTestData, SupportTestData}
 
@@ -27,6 +28,28 @@ class SupportRequestSpec extends BaseSpec with MockFieldTransformerForTestData w
 
       implicit val implicitHc: HeaderCarrier = hc
       supportTicket.toDeskpro(fieldTransformer, enrolments) shouldBe expectedDeskproSupport
+    }
+  }
+
+  "SupportRequest JSON reads" should {
+    "deserialize JSON into SupportRequest" in {
+      val json = Json.obj(
+        "name"      -> "John Doe",
+        "email"     -> "john.doe@test.com",
+        "message"   -> "Help me!",
+        "userAgent" -> "Mozilla/5.0",
+        "journeyId" -> "journey-123",
+        "service"   -> "mobile-app"
+      )
+
+      val request = json.as[SupportRequest]
+
+      request.name      shouldBe "John Doe"
+      request.email     shouldBe "john.doe@test.com"
+      request.message   shouldBe "Help me!"
+      request.userAgent shouldBe "Mozilla/5.0"
+      request.journeyId shouldBe Some("journey-123")
+      request.service   shouldBe Some("mobile-app")
     }
   }
 }

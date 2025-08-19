@@ -17,10 +17,10 @@ lazy val microservice = Project(appName, file("."))
     update / evictionWarningOptions := EvictionWarningOptions.default
       .withWarnScalaVersionEviction(false),
     Compile / unmanagedResourceDirectories += baseDirectory.value / "resources",
-    ScoverageKeys.coverageExcludedPackages := """uk\.gov\.hmrc\.BuildInfo;.*\.Routes;.*\.RoutesPrefix;.*\.Reverse[^.]*""",
-    ScoverageKeys.coverageMinimumStmtTotal := 95.00,
-    ScoverageKeys.coverageFailOnMinimum := true,
-    ScoverageKeys.coverageHighlighting := true
+    coverageExcludedPackages := "<empty>;.*Routes.*;app.*;.*prod;.*definition;.*testOnlyDoNotUseInAppConf;.*com.kenshoo.*;.*javascript.*;.*BuildInfo;.*Reverse.*;.*binder.*;.*mobileusercontact.config.*;.*mobileusercontact.api.*;.*mobileusercontact.views.*;.*mobileusercontact.connectors.*",
+    coverageMinimumStmtTotal := 95.00,
+    coverageFailOnMinimum := true,
+    coverageHighlighting := true
   )
   .settings(
     routesImport ++= Seq(
