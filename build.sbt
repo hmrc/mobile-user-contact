@@ -12,7 +12,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     majorVersion := 0,
     playDefaultPort := 8250,
-    scalaVersion := "2.13.16",
+    scalaVersion := "3.6.4",
     libraryDependencies ++= AppDependencies(),
     update / evictionWarningOptions := EvictionWarningOptions.default
       .withWarnScalaVersionEviction(false),
@@ -25,12 +25,21 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     routesImport ++= Seq(
       "uk.gov.hmrc.mobileusercontact.domain.types._",
-      "uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes._"
+      "uk.gov.hmrc.mobileusercontact.domain.types.JourneyId._"
     )
   )
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(
-    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value,
+    IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory)(base => Seq(base / "it")).value
   )
-
+  .settings(
+    scalacOptions ++= Seq(
+      // Suppress warnings matching specific message pattern
+      "-Wconf:msg=possible missing interpolator.*\\$date:silent",
+      // Suppress warnings in generated files (e.g., target directory)
+      "-Wconf:src=target/.*:silent",
+      // Default rule to warn on everything else
+      "-Wconf:any:warning"
+    )
+  )

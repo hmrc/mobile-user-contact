@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,26 +19,21 @@ package uk.gov.hmrc.mobileusercontact.test
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.wordspec.{AnyWordSpec, AnyWordSpecLike}
 import play.api.test.DefaultAwaitTimeout
-import uk.gov.hmrc.mobileusercontact.domain.types.ModelTypes.JourneyId
+import uk.gov.hmrc.mobileusercontact.domain.types.JourneyId
 import uk.gov.hmrc.mobileusercontact.services.CSATFeedbackService
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import eu.timepit.refined.auto._
+import eu.timepit.refined.auto.*
 
 import scala.concurrent.ExecutionContext
 
-trait BaseSpec
-    extends AnyWordSpec
-    with MockFactory
-    with OneInstancePerTest
-    with Matchers
-    with DefaultAwaitTimeout {
+trait BaseSpec extends AnyWordSpecLike with MockFactory with OneInstancePerTest with Matchers with DefaultAwaitTimeout {
 
-  implicit val ec:         ExecutionContext    = scala.concurrent.ExecutionContext.Implicits.global
-  val journeyId:           JourneyId           = "27d3c283-a8e9-43f8-bb0b-65c42027494a"
-  val mockService:         CSATFeedbackService = mock[CSATFeedbackService]
-  val auditConnector:      AuditConnector      = mock[AuditConnector]
+  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  val journeyId: JourneyId = JourneyId.from("27d3c283-a8e9-43f8-bb0b-65c42027494a").toOption.get
+  val mockService: CSATFeedbackService = mock[CSATFeedbackService]
+  val auditConnector: AuditConnector = mock[AuditConnector]
   val csatFeedbackService: CSATFeedbackService = new CSATFeedbackService(auditConnector)
 
 }

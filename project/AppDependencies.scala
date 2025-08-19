@@ -1,13 +1,13 @@
-import play.sbt.PlayImport._
-import sbt._
+import play.sbt.PlayImport.*
+import sbt.*
 
 object AppDependencies {
 
-  private val bootstrapPlayVersion = "9.16.0"
-  private val playHmrcApiVersion   = "8.0.0"
-  private val domainVersion        = "11.0.0"
-  private val refinedVersion       = "0.11.2"
-  private val scalaMockVersion     = "5.2.0"
+  private val bootstrapPlayVersion = "10.1.0"
+  private val playHmrcApiVersion = "8.2.0"
+  private val domainVersion = "12.1.0"
+  private val refinedVersion = "0.11.3"
+  private val scalaMockVersion = "7.4.1"
 
   val compile: Seq[ModuleID] = Seq(
     ws,
@@ -18,8 +18,8 @@ object AppDependencies {
   )
 
   trait TestDependencies {
-    lazy val scope: String        = "test"
-    lazy val test:  Seq[ModuleID] = ???
+    lazy val scope: String = "test"
+    lazy val test: Seq[ModuleID] = ???
   }
 
   object Test {
@@ -28,8 +28,8 @@ object AppDependencies {
       new TestDependencies {
 
         override lazy val test: Seq[ModuleID] = testCommon("test") ++ Seq(
-            "org.scalamock" %% "scalamock" % scalaMockVersion % scope
-          )
+          "org.scalamock" %% "scalamock" % scalaMockVersion % scope
+        )
       }.test
   }
 

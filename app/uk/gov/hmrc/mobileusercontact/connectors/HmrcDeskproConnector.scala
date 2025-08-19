@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@ import play.api.libs.json.{JsValue, Json, OWrites, Writes}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpException}
 import uk.gov.hmrc.mobileusercontact.config.HmrcDeskproConnectorConfig
 import uk.gov.hmrc.mobileusercontact.contactfrontend.UserTaxIdentifiers
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.client.HttpClientV2
+import play.api.libs.ws.writeableOf_JsValue
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,87 +34,72 @@ import scala.concurrent.{ExecutionContext, Future}
 trait HmrcDeskproConnector {
 
   def createFeedback(
-    feedback:    HmrcDeskproFeedback
-  )(implicit hc: HeaderCarrier,
-    ec:          ExecutionContext
-  ): Future[Unit]
+    feedback: HmrcDeskproFeedback
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 
   def createSupport(
-    ticket:      HmrcDeskproSupport
-  )(implicit hc: HeaderCarrier,
-    ec:          ExecutionContext
-  ): Future[Unit]
+    ticket: HmrcDeskproSupport
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit]
 }
 
 @Singleton
-class HmrcDeskproConnectorImpl @Inject() (
-  http:   HttpClientV2,
-  config: HmrcDeskproConnectorConfig)
-    extends HmrcDeskproConnector {
+class HmrcDeskproConnectorImpl @Inject() (http: HttpClientV2, config: HmrcDeskproConnectorConfig) extends HmrcDeskproConnector {
 
   def createFeedback(
-    ticket:      HmrcDeskproFeedback
-  )(implicit hc: HeaderCarrier,
-    ec:          ExecutionContext
-  ): Future[Unit] = create("feedback", ticket)
+    ticket: HmrcDeskproFeedback
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = create("feedback", ticket)
 
   def createSupport(
-    ticket:      HmrcDeskproSupport
-  )(implicit hc: HeaderCarrier,
-    ec:          ExecutionContext
-  ): Future[Unit] = create("get-help-ticket", ticket)
+    ticket: HmrcDeskproSupport
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = create("get-help-ticket", ticket)
 
   private def create[T](
-    resource:    String,
-    ticket:      T
-  )(implicit hc: HeaderCarrier,
-    ec:          ExecutionContext,
-    wts:         Writes[T]
-  ): Future[Unit] =
+    resource: String,
+    ticket: T
+  )(implicit hc: HeaderCarrier, ec: ExecutionContext, wts: Writes[T]): Future[Unit] =
     http
       .post(deskproUrl(resource))
       .withBody(Json.toJson(ticket))
       .execute[JsValue]
       .map(_ => ())
-      .recover {
-        case e: HttpException =>
-          new HttpException("", e.responseCode)
+      .recover { case e: HttpException =>
+        new HttpException("", e.responseCode)
       }
 
   private val deskproUrl = (resource: String) => new URL(config.hmrcDeskproBaseUrl, s"/deskpro/$resource")
 }
 
-case class HmrcDeskproFeedback(
-  name:               String,
-  email:              String,
-  subject:            String,
-  message:            String,
-  referrer:           String,
-  javascriptEnabled:  String,
-  userAgent:          String,
-  authId:             String,
-  areaOfTax:          String,
-  sessionId:          String,
-  rating:             String,
-  userTaxIdentifiers: UserTaxIdentifiers)
+case class HmrcDeskproFeedback(name: String,
+                               email: String,
+                               subject: String,
+                               message: String,
+                               referrer: String,
+                               javascriptEnabled: String,
+                               userAgent: String,
+                               authId: String,
+                               areaOfTax: String,
+                               sessionId: String,
+                               rating: String,
+                               userTaxIdentifiers: UserTaxIdentifiers
+                              )
 
 object HmrcDeskproFeedback {
   implicit val writes: OWrites[HmrcDeskproFeedback] = Json.writes[HmrcDeskproFeedback]
 }
 
-case class HmrcDeskproSupport(
-  name:               String,
-  email:              String,
-  subject:            String,
-  message:            String,
-  referrer:           String,
-  javascriptEnabled:  String,
-  userAgent:          String,
-  authId:             String,
-  areaOfTax:          String,
-  sessionId:          String,
-  service:            Option[String],
-  userTaxIdentifiers: UserTaxIdentifiers)
+case class HmrcDeskproSupport(name: String,
+                              email: String,
+                              subject: String,
+                              message: String,
+                              referrer: String,
+                              javascriptEnabled: String,
+                              userAgent: String,
+                              authId: String,
+                              areaOfTax: String,
+                              sessionId: String,
+                              service: Option[String],
+                              userTaxIdentifiers: UserTaxIdentifiers
+                             )
 
 object HmrcDeskproSupport {
   implicit val writes: OWrites[HmrcDeskproSupport] = Json.writes[HmrcDeskproSupport]

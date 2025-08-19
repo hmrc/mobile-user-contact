@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,10 @@ trait SupportTestData extends FieldTransformerTestData {
     service   = Some("HTS")
   )
 
-  /**
-    * The HmrcDeskproSupport that should be sent
-    * when [[supportTicket]] is received, headers are [[hc]] and enrolments returned by auth are [[enrolments]]
+  /** The HmrcDeskproSupport that should be sent when [[supportTicket]] is received, headers are [[hc]] and enrolments returned by auth are
+    * [[enrolments]]
     */
-  protected val expectedDeskproSupport = HmrcDeskproSupport(
+  val expectedDeskproSupport = HmrcDeskproSupport(
     name               = "Name Namely",
     email              = "email@example.com",
     message            = "Where is my payment?",

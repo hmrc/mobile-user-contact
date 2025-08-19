@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,14 @@
 package uk.gov.hmrc.mobileusercontact.test
 
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.wordspec.AnyWordSpecLike
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import uk.gov.hmrc.mobileusercontact.contactfrontend.{FieldTransformer, UserTaxIdentifiers}
 
 trait FieldTransformerTestData {
 
-  protected val testAuthId    = "n/a"
+  protected val testAuthId = "n/a"
   protected val testSessionId = "test-sessionId"
 
   protected val hc = HeaderCarrier(
@@ -39,13 +40,13 @@ trait FieldTransformerTestData {
 
 }
 
-trait MockFieldTransformerForTestData extends FieldTransformerTestData with MockFactory {
+trait MockFieldTransformerForTestData extends AnyWordSpecLike with MockFactory with FieldTransformerTestData {
 
   def mockFieldTransformerForTestData: FieldTransformer = {
     val fieldTransformer = mock[FieldTransformer]
 
-    fieldTransformer.sessionIdFrom _ expects hc returning testSessionId
-    fieldTransformer.userTaxIdentifiersFromEnrolments _ expects Some(enrolments) returning expectedUserTaxIdentifiers
+    fieldTransformer.sessionIdFrom expects hc returning testSessionId
+    fieldTransformer.userTaxIdentifiersFromEnrolments expects Some(enrolments) returning expectedUserTaxIdentifiers
 
     fieldTransformer
   }

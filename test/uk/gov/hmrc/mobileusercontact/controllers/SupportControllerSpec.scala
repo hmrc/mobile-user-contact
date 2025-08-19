@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.mobileusercontact.controllers
 
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import play.api.test.FakeRequest
 import uk.gov.hmrc.mobileusercontact.domain.SupportRequest
 import uk.gov.hmrc.mobileusercontact.services.Support
 import uk.gov.hmrc.mobileusercontact.test.{BaseSpec, SupportTestData}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers.*
 
 class SupportControllerSpec extends BaseSpec with SupportTestData {
 

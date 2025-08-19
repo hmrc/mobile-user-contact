@@ -1,7 +1,7 @@
 # API platform endpoints
 
-POST        /feedback-submissions        uk.gov.hmrc.mobileusercontact.controllers.FeedbackController.submitFeedback(journeyId: JourneyId)
+POST        /feedback-submissions        uk.gov.hmrc.mobileusercontact.controllers.FeedbackController.submitFeedback(journeyId: uk.gov.hmrc.mobileusercontact.domain.types.JourneyId)
 
-POST        /support-requests            uk.gov.hmrc.mobileusercontact.controllers.SupportController.requestSupport(journeyId: JourneyId)
+POST        /support-requests            uk.gov.hmrc.mobileusercontact.controllers.SupportController.requestSupport(journeyId: uk.gov.hmrc.mobileusercontact.domain.types.JourneyId)
 
-POST        /csat-survey                 uk.gov.hmrc.mobileusercontact.controllers.CSATFeedbackController.feedback(journeyId: JourneyId)
+POST        /csat-survey                 uk.gov.hmrc.mobileusercontact.controllers.CSATFeedbackController.feedback(journeyId: uk.gov.hmrc.mobileusercontact.domain.types.JourneyId)
