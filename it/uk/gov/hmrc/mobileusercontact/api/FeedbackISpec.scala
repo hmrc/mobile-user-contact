@@ -20,6 +20,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.HeaderNames
 import uk.gov.hmrc.mobileusercontact.stubs.{AuthStub, DeskproTicketQueueStub, HelpToSaveStub}
 import uk.gov.hmrc.mobileusercontact.test.BaseISpec
+import play.api.libs.ws.WSBodyWritables.*
 
 class FeedbackISpec extends BaseISpec {
 

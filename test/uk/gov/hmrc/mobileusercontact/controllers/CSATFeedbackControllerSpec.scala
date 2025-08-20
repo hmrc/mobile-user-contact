@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package uk.gov.hmrc.mobileusercontact.controllers
 import play.api.test.{FakeRequest, Helpers}
 import uk.gov.hmrc.mobileusercontact.test.{Authorised, BaseSpec, FeedbackTestData}
 import org.scalamock.handlers.CallHandler2
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers.*
 import play.api.http.Status
 import play.api.mvc.Headers
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.mobileusercontact.domain.CSATFeedback
 
@@ -34,7 +34,7 @@ class CSATFeedbackControllerSpec extends BaseSpec with FeedbackTestData {
     (mockService.sendAudit(_: CSATFeedback)(_: HeaderCarrier)).expects(*, *).returning(f)
 
   private val fakeRequest = FakeRequest("POST", "/", Headers((CONTENT_TYPE, JSON)), csatFeedbackJson)
-  private val controller  = new CSATFeedbackController(Helpers.stubControllerComponents(), mockService, Authorised)
+  private val controller = new CSATFeedbackController(Helpers.stubControllerComponents(), mockService, Authorised)
 
   "POST /feedback" should {
     "return 204" in {

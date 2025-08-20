@@ -21,16 +21,13 @@ import org.scalatest.OneInstancePerTest
 import org.slf4j.Logger
 import play.api.LoggerLike
 
-trait LoggerStub { this: MockFactory & OneInstancePerTest =>
+trait LoggerMock { this: MockFactory & OneInstancePerTest =>
+  val slf4jLoggerMock: Logger = mock[Logger]
 
-  // when https://github.com/paulbutcher/ScalaMock/issues/39 is fixed we will be able to simplify this code by mocking LoggerLike directly (instead of slf4j.Logger)
-  protected val slf4jLoggerStub: Logger = stub[Logger]
-  (slf4jLoggerStub.isWarnEnabled: () => Boolean).when().returning(true)
-  (slf4jLoggerStub.isInfoEnabled: () => Boolean).when().returning(true)
-  
+  (slf4jLoggerMock.isWarnEnabled _).expects().anyNumberOfTimes().returning(true)
+  (slf4jLoggerMock.isInfoEnabled _).expects().anyNumberOfTimes().returning(true)
 
-  protected val logger: LoggerLike = new LoggerLike {
-    override val logger: Logger = slf4jLoggerStub
+  val logger: LoggerLike = new LoggerLike {
+    override val logger: Logger = slf4jLoggerMock
   }
-
 }
