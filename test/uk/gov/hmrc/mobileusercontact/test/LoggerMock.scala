@@ -24,8 +24,9 @@ import play.api.LoggerLike
 trait LoggerMock { this: MockFactory & OneInstancePerTest =>
   val slf4jLoggerMock: Logger = mock[Logger]
 
-  (slf4jLoggerMock.isWarnEnabled _).expects().anyNumberOfTimes().returning(true)
-  (slf4jLoggerMock.isInfoEnabled _).expects().anyNumberOfTimes().returning(true)
+  (() => slf4jLoggerMock.isWarnEnabled()).expects().anyNumberOfTimes().returning(true)
+  (() => slf4jLoggerMock.isInfoEnabled()).expects().anyNumberOfTimes().returning(true)
+  // (slf4jLoggerMock.isInfoEnabled _).expects().anyNumberOfTimes().returning(true)
 
   val logger: LoggerLike = new LoggerLike {
     override val logger: Logger = slf4jLoggerMock

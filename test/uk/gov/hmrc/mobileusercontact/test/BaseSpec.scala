@@ -19,7 +19,7 @@ package uk.gov.hmrc.mobileusercontact.test
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.{AnyWordSpec, AnyWordSpecLike}
+import org.scalatest.wordspec.AnyWordSpecLike
 import play.api.test.DefaultAwaitTimeout
 import uk.gov.hmrc.mobileusercontact.domain.types.JourneyId
 import uk.gov.hmrc.mobileusercontact.services.CSATFeedbackService

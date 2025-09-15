@@ -7,7 +7,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.libs.ws.WSClient
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
-import uk.gov.hmrc.domain.Generator
+import uk.gov.hmrc.domain.NinoGenerator
 
 trait BaseISpec
     extends AnyWordSpec
@@ -28,7 +28,7 @@ trait BaseISpec
 
   protected implicit lazy val wsClient: WSClient = app.injector.instanceOf[WSClient]
 
-  private val generator = new Generator(0)
+  private val generator = new NinoGenerator()
   val nino              = generator.nextNino
   val journeyId:               String           = "3051e9be-e4de-11ed-b5ea-0242ac120002"
   val authorisationJsonHeader: (String, String) = "AUTHORIZATION" -> "Bearer 123"
