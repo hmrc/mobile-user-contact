@@ -26,7 +26,7 @@ trait LoggerMock { this: MockFactory & OneInstancePerTest =>
 
   (() => slf4jLoggerMock.isWarnEnabled()).expects().anyNumberOfTimes().returning(true)
   (() => slf4jLoggerMock.isInfoEnabled()).expects().anyNumberOfTimes().returning(true)
-  // (slf4jLoggerMock.isInfoEnabled _).expects().anyNumberOfTimes().returning(true)
+
 
   val logger: LoggerLike = new LoggerLike {
     override val logger: Logger = slf4jLoggerMock
