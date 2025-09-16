@@ -17,9 +17,7 @@
 package uk.gov.hmrc.mobileusercontact
 
 import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.stream.ActorMaterializer
-import org.slf4j.Logger
-import play.api.{LoggerLike, MarkerContext}
+import org.apache.pekko.stream.Materializer
 import play.api.http.Status.*
 import play.api.mvc.Results
 import play.api.test.Helpers.{await, contentAsString, status}
@@ -37,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AuthorisedSpec extends BaseSpec with LoggerMock with Retrievals with Results {
 
   implicit val system: ActorSystem = ActorSystem()
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val materializer: Materializer = Materializer(system)
 
   "Authorised" should {
     "retrieve ItmpName when specified and pass it to the block" in {
@@ -111,7 +109,7 @@ class AuthorisedSpec extends BaseSpec with LoggerMock with Retrievals with Resul
         Future successful Ok
       }
 
-      status(action) shouldBe FORBIDDEN
+      status(action)          shouldBe FORBIDDEN
       contentAsString(action) shouldBe "Authorisation failure [test not authorised reason]"
 
     }
