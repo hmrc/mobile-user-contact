@@ -17,22 +17,15 @@
 package uk.gov.hmrc.mobileusercontact.api
 
 import controllers.Assets
-
-import javax.inject.{Inject, Singleton}
 import play.api.http.HttpErrorHandler
-import play.api.libs.json.{Json, OWrites}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.mobileusercontact.views.txt
 
-case class ApiAccess(`type`: String)
-
-object ApiAccess {
-  implicit val writes: OWrites[ApiAccess] = Json.writes[ApiAccess]
-}
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class DocumentationController @Inject() (
-  apiAccess:    ApiAccess,
+  apiAccess:    String,
   cc:           ControllerComponents,
   assets:       Assets,
   errorHandler: HttpErrorHandler)
