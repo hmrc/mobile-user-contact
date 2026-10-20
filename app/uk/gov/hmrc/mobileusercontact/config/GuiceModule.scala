@@ -31,6 +31,6 @@ class GuiceModule(
   override def configure(): Unit = {
     bind(classOf[LoggerLike]).toInstance(logger)
     bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
-    bind(classOf[String]).toInstance("CONTROLLED")
+    bind(classOf[String]).toInstance("INTERNAL")
   }
 }
